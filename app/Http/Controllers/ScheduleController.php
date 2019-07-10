@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Gym;
 use App\User;
 use App\Coach;
@@ -19,8 +20,21 @@ class ScheduleController extends Controller
      */
     public function index(Request $request, $id)
     {
-        // querystring [date, customer, status]
-        $query = Schedule::with(['coach.user', 'customer'])->where('gym_id', $id);
+        $foreignKeys = ['coach.user', 'customer'];
+        $query = Schedule::with($foreignKeys);
+
+        $group = ''; //keep count param to add a `group by` at the end
+        // could be [customer_id, coach_id]
+        if ($request->input('count')) {
+            $group = $request->input('count');
+            $query->select(DB::raw('count(id) as course_amount, '. $group));
+        }
+
+        $query->where('gym_id', $id);
+        if ($request->input('start') && $request->input('end')) {
+            $query->where('date', '>=', $request->input('start'));
+            $query->where('date', '<=', $request->input('end'));
+        }
         if ($request->input('date')) {
             $query->where('date', $request->input('date'));
         }
@@ -30,6 +44,12 @@ class ScheduleController extends Controller
         if ($request->input('status')) {
             $query->where('status', $request->input('status'));
         }
+
+        if (!empty($group)) {
+            $query->groupBy($group)->orderBy('course_amount', 'DESC');
+        }
+
+        // $query->dd();
         $ret = $query->get();
         if ($ret) {
             return response()->json($ret, 200);

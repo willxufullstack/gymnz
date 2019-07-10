@@ -15,7 +15,8 @@ class MonthlyReport extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            date: new Date()
+            date: new Date(),
+            selectedTabIndex: 0
         };
     }
 
@@ -24,7 +25,10 @@ class MonthlyReport extends React.Component {
     };
 
     getSaleTab = () => {
-        let orders = this.props.gym.orders;
+        if(this.state.selectedTabIndex !== 0) {
+            return 'hide';
+        }
+        let orders = this.props.gym.report.orders;
         if (!orders) {
             return <p>No Orders</p>;
         }
@@ -38,13 +42,60 @@ class MonthlyReport extends React.Component {
         />;
     };
 
+    getScheduleCountByCoachTab = () => {
+        if(this.state.selectedTabIndex !== 1) {
+            return 'hide';
+        }
+        let groups = this.props.gym.report.scheduleCountByCoach;
+        if (!groups) {
+            return <p>No Orders</p>;
+        }
+        let header = ['Coach', 'Count'];
+        let tableData = groups.map(r => [r.coach.user.name + '', r.course_amount + '']);
+
+        return <Table classes={{ tableResponsive: 'no-margin-top' }}
+            tableHeaderColor='primary'
+            tableHead={header}
+            tableData={tableData}
+        />;
+    };
+
+    getScheduleCountByCustomerTab = () => {
+        if(this.state.selectedTabIndex !== 2) {
+            return 'hide';
+        }
+
+        let groups = this.props.gym.report.scheduleCountByCustomer;
+        if (!groups) {
+            return <p>No Orders</p>;
+        }
+        let header = ['Coach', 'Count'];
+        let tableData = groups.map(r => [r.customer.name + '', r.course_amount + '']);
+
+        return <Table classes={{ tableResponsive: 'no-margin-top' }}
+            tableHeaderColor='primary'
+            tableHead={header}
+            tableData={tableData}
+        />;
+    };
+
     tapTab = (tabIndex) => {
+        this.setState({selectedTabIndex: tabIndex});
+        let params = utils.getMonthStartEnd(this.state.date);
         switch (tabIndex) {
             case 0:
                 this.loadSale();
                 break;
             case 1:
+                params.count = 'coach_id';
+                this.props.actions.loadGymScheduleCount(this.props.selectedGym.id, params);
                 break;
+
+            case 2:
+                params.count = 'customer_id';
+                this.props.actions.loadGymScheduleCount(this.props.selectedGym.id, params);
+                break;
+
             default:
                 break;
         }
@@ -63,6 +114,12 @@ class MonthlyReport extends React.Component {
                 tabs={[{
                     tabName: "Sale",
                     tabContent: this.getSaleTab(),
+                }, {
+                    tabName: "Coach",
+                    tabContent: this.getScheduleCountByCoachTab(),
+                }, {
+                    tabName: "Customer",
+                    tabContent: this.getScheduleCountByCustomerTab(),
                 }]}
             />
         </Paper>);

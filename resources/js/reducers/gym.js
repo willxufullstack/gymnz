@@ -4,7 +4,11 @@ const initState = {
     // data
     coaches: [],
     schedules: [],
-    orders: [],
+    report: {
+        orders: [],
+        scheduleCountByCoach: [],
+        scheduleCountByCustomer: [],
+    },
     customers: [],
     customerPage: {
         customerBalance: { total: 0, booked: 0 },
@@ -281,8 +285,32 @@ const gym = (state = initState, action = NonAction) => {
         case ActionTypes.LOAD_GYM_ORDERS:
             return Object.assign({}, state, { loading: true });
         case ActionTypes.LOAD_GYM_ORDERS_SUCCESS:
-            return Object.assign({}, state, { loading: false, orders: action.payload.data });
+            {
+                let report = { ...state.report };
+                report.orders = action.payload.data;
+                return Object.assign({}, state, { loading: false, report });
+            }
         case ActionTypes.LOAD_GYM_ORDERS_FAIL:
+            return Object.assign({}, state, {
+                loading: false,
+                errorMsg: 'Load gym orders failed',
+            });;
+        case ActionTypes.LOAD_GYM_SCHEDULE_COUNT:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.LOAD_GYM_SCHEDULE_COUNT_SUCCESS:
+            {
+                let report = { ...state.report };
+                switch (action.payload.config.params.count) {
+                    case 'coach_id':
+                        report.scheduleCountByCoach = action.payload.data;
+                        break;
+                    case 'customer_id':
+                        report.scheduleCountByCustomer = action.payload.data;
+                        break;
+                }
+                return Object.assign({}, state, { loading: false, report });
+            }
+        case ActionTypes.LOAD_GYM_SCHEDULE_COUNT_FAIL:
             return Object.assign({}, state, {
                 loading: false,
                 errorMsg: 'Load gym orders failed',

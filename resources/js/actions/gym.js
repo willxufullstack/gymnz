@@ -67,9 +67,9 @@ export function deleteCoach($gymId, $coachId) {
     return {
         type: ActionTypes.DELETE_COACH,
         payload: {
-            request:{
+            request: {
                 method: 'DELETE',
-                url:'/gym/' + $gymId + '/coach/' +  $coachId ,
+                url: '/gym/' + $gymId + '/coach/' + $coachId,
             }
         }
     }
@@ -107,7 +107,7 @@ export function loadWorkload(gymId, date) {
 
 /********SCHEDULE*********/
 export function updatePendingSchedule(data) {
-    return  {
+    return {
         type: ActionTypes.UPDATE_PENDING_SCHEDULE,
         data,
     }
@@ -199,13 +199,24 @@ export function loadCustomerOrders(userId, params) {
 }
 
 
-/********SALE*********/
+/********REPORT*********/
 export function loadGymOrders(gymId, params) {
     return {
         type: ActionTypes.LOAD_GYM_ORDERS,
         payload: {
             request: {
                 url: '/gym/' + gymId + '/order',
+                params
+            }
+        }
+    };
+}
+export function loadGymScheduleCount(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_GYM_SCHEDULE_COUNT,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/schedule',
                 params
             }
         }
