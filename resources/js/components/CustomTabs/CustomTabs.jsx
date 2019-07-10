@@ -97,7 +97,6 @@ CustomTabs.propTypes = {
     "info",
     "primary"
   ]),
-  title: PropTypes.string,
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       tabName: PropTypes.isRequired,

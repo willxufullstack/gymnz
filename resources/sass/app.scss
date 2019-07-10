@@ -1,11 +1,11 @@
 // Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url("https://fonts.googleapis.com/css?family=Nunito");
 
 // Variables
-@import 'variables';
+@import "variables";
 
 // Bootstrap
-@import '~bootstrap/scss/bootstrap';
+@import "~bootstrap/scss/bootstrap";
 .nzg-container {
   display: flex;
   .nzg-side-nav {
@@ -36,9 +36,9 @@
 .form-selection {
   padding-top: 40px;
   > div {
-    border-top: none !important;;
-    border-left: none !important;;
-    border-right: none !important;;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
     border-radius: 0;
     border-color: rgb(184, 184, 184);
     &:hover {
@@ -46,11 +46,43 @@
     }
     box-shadow: none !important;
     > div:first-child {
-      padding-left:0;
+      padding-left: 0;
     }
   }
 }
 
 .no-margin-top {
   margin-top: 0 !important;
+}
+
+.report-month-selector {
+  max-width: 70px;
+  background: linear-gradient(60deg, #ab47bc, #8e24aa);
+  border: 1px solid white !important;
+  border-radius: 4px;
+  height: 2rem;
+  bottom: 4px;
+  .MuiInputBase-input {
+    text-align: center;
+    color: white;
+    font-weight: 500;
+  }
+  .MuiInput-underline {
+    &:after {
+      border: none !important;
+    }
+    &:before {
+      border: none !important;
+    }
+  }
+}
+.MuiPickersToolbar-toolbar {
+  background: linear-gradient(60deg, #ab47bc, #8e24aa);
+}
+.MuiPickersMonth-monthSelected {
+  color: #9c27b0 !important;
+}
+
+.MuiButton-textPrimary {
+  color: #9c27b0 !important;
 }

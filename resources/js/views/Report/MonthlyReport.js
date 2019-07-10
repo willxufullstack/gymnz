@@ -1,5 +1,3 @@
-
-
 import React from "react";
 import connect from "react-redux/es/connect/connect";
 import { bindActionCreators } from "redux";
@@ -9,6 +7,12 @@ import Paper from '@material-ui/core/Paper';
 import Tabs from "-components/CustomTabs/CustomTabs.jsx";
 import Table from "-components/Table/Table.jsx";
 import * as utils from "-utils";
+import {
+    DatePicker,
+    MuiPickersUtilsProvider,
+} from "@material-ui/pickers";
+// import dayjs from 'dayjs';
+import DayjsUtils from "@date-io/dayjs";
 
 class MonthlyReport extends React.Component {
 
@@ -18,16 +22,36 @@ class MonthlyReport extends React.Component {
             date: new Date(),
             selectedTabIndex: 0
         };
+        this.refreshFunMap = [
+            this.loadSale,  // refresh sale
+            () => { //refresh coach
+                let params = utils.getMonthStartEnd(this.state.date);
+                params.count = 'coach_id';
+                this.props.actions.loadGymScheduleCount(this.props.selectedGym.id, params);
+            },
+            () => { //refresh customer
+                let params = utils.getMonthStartEnd(this.state.date);
+                params.count = 'customer_id';
+                this.props.actions.loadGymScheduleCount(this.props.selectedGym.id, params);
+            },
+        ];
     }
+
+    handleDateChange = (date) => {
+        this.setState({ date }, () => {
+            this.refresh();
+        });
+    };
+
+    refresh = () => {
+        this.refreshFunMap[this.state.selectedTabIndex] &&  this.refreshFunMap[this.state.selectedTabIndex]();
+    };
 
     loadSale = () => {
         this.props.actions.loadGymOrders(this.props.selectedGym.id, utils.getMonthStartEnd(this.state.date));
     };
 
     getSaleTab = () => {
-        if(this.state.selectedTabIndex !== 0) {
-            return 'hide';
-        }
         let orders = this.props.gym.report.orders;
         if (!orders) {
             return <p>No Orders</p>;
@@ -43,9 +67,6 @@ class MonthlyReport extends React.Component {
     };
 
     getScheduleCountByCoachTab = () => {
-        if(this.state.selectedTabIndex !== 1) {
-            return 'hide';
-        }
         let groups = this.props.gym.report.scheduleCountByCoach;
         if (!groups) {
             return <p>No Orders</p>;
@@ -61,10 +82,6 @@ class MonthlyReport extends React.Component {
     };
 
     getScheduleCountByCustomerTab = () => {
-        if(this.state.selectedTabIndex !== 2) {
-            return 'hide';
-        }
-
         let groups = this.props.gym.report.scheduleCountByCustomer;
         if (!groups) {
             return <p>No Orders</p>;
@@ -80,35 +97,23 @@ class MonthlyReport extends React.Component {
     };
 
     tapTab = (tabIndex) => {
-        this.setState({selectedTabIndex: tabIndex});
-        let params = utils.getMonthStartEnd(this.state.date);
-        switch (tabIndex) {
-            case 0:
-                this.loadSale();
-                break;
-            case 1:
-                params.count = 'coach_id';
-                this.props.actions.loadGymScheduleCount(this.props.selectedGym.id, params);
-                break;
-
-            case 2:
-                params.count = 'customer_id';
-                this.props.actions.loadGymScheduleCount(this.props.selectedGym.id, params);
-                break;
-
-            default:
-                break;
-        }
+        this.setState({ selectedTabIndex: tabIndex }, () => {
+            this.refresh();
+        });
     };
 
     componentWillMount() {
-        this.loadSale(this.state.date);
+      this.refresh();
     }
 
     render() {
+        const dateSelector = (<MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>
+            <DatePicker format="MM/YYYY" className="report-month-selector" openTo="month" views={["year", "month"]} value={this.state.date} onChange={this.handleDateChange} />
+        </MuiPickersUtilsProvider>);
+
         return (<Paper square>
             <Tabs
-                title={'Orders'}
+                title={dateSelector}
                 headerColor="primary"
                 onSwitch={this.tapTab}
                 tabs={[{

@@ -11153,5 +11153,38 @@ a.text-dark:focus {
   margin-top: 0 !important;
 }
 
+.report-month-selector {
+  max-width: 70px;
+  background: -webkit-linear-gradient(30deg, #ab47bc, #8e24aa);
+  background: linear-gradient(60deg, #ab47bc, #8e24aa);
+  border: 1px solid white !important;
+  border-radius: 4px;
+  height: 2rem;
+  bottom: 4px;
+}
+
+.report-month-selector .MuiInputBase-input {
+  text-align: center;
+  color: white;
+  font-weight: 500;
+}
+
+.report-month-selector .MuiInput-underline:after {
+  border: none !important;
+}
+
+.report-month-selector .MuiInput-underline:before {
+  border: none !important;
+}
+
+.MuiPickersToolbar-toolbar {
+  background: -webkit-linear-gradient(30deg, #ab47bc, #8e24aa);
+  background: linear-gradient(60deg, #ab47bc, #8e24aa);
+}
+
+.MuiPickersMonth-monthSelected {
+  color: #9c27b0 !important;
+}
+
 
 /*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiIvY3NzL2FwcC5jc3MiLCJzb3VyY2VSb290IjoiIn0=*/

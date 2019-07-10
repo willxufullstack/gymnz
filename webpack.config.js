@@ -1,7 +1,11 @@
 const path = require('path');
 const webpack = require('webpack');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
+    plugins: [
+        new BundleAnalyzerPlugin()
+    ],
     resolve: {
         alias: {
             '-assets': __dirname + '/resources/js/assets',
