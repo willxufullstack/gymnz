@@ -1,5 +1,18 @@
 import * as ActionTypes from './actionTypes'
-import { Action } from 'rxjs/internal/scheduler/Action';
+
+
+/********BANNER*********/
+export function closeErrMsg() {
+    return {
+        type: ActionTypes.CLOSE_ERR_MSG,
+    }
+}
+
+export function closeSuccessMsg() {
+    return {
+        type: ActionTypes.CLOSE_SUCCESS_MSG,
+    }
+}
 
 /********COACH*********/
 export function showNewCoach() {
@@ -178,22 +191,23 @@ export function loadCustomerOrders(userId, params) {
         type: ActionTypes.LOAD_CUSTOMER_ORDERS,
         payload: {
             request: {
-                url: '/user/' + userId + '/orders',
+                url: '/user/' + userId + '/order',
                 params
             }
         }
     };
 }
 
-/********BANNER*********/
-export function closeErrMsg() {
-    return {
-        type: ActionTypes.CLOSE_ERR_MSG,
-    }
-}
 
-export function closeSuccessMsg() {
+/********SALE*********/
+export function loadGymOrders(gymId, params) {
     return {
-        type: ActionTypes.CLOSE_SUCCESS_MSG,
-    }
+        type: ActionTypes.LOAD_GYM_ORDERS,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/order',
+                params
+            }
+        }
+    };
 }

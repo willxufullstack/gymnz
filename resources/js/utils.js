@@ -1,6 +1,8 @@
+import dayjs from 'dayjs';
+
 export const TimeStrMap = getTimeStrMap();
 
-export function getTimeStrMap(){
+export function getTimeStrMap() {
     let minMap = ['00', '15', '30', '45'];
     let timeStrMap = [];
     for (let i = 0; i < 96; i++) {
@@ -13,22 +15,30 @@ export function getTimeStrMap(){
     return timeStrMap;
 };
 
-export function getTimeStr(i){
+export function getTimeStr(i) {
     return TimeStrMap[i];
 };
 
-export function getTimeRange(start, end, step = 1){
+export function getTimeRange(start, end, step = 1) {
     let ret = [];
-    for(let i = start; i<end; i += step ) {
+    for (let i = start; i < end; i += step) {
         ret.push(TimeStrMap[i]);
     }
     return ret;
 }
 
-export function range(start, end, step = 1){
+export function range(start, end, step = 1) {
     let ret = [];
-    for(let i = start; i<end; i += step ) {
+    for (let i = start; i < end; i += step) {
         ret.push(i);
     }
     return ret;
+}
+
+export function getMonthStartEnd(date, format = 'YYYYMMDD') {
+    const d = dayjs(date)
+    return {
+        start: d.startOf('month').format(format),
+        end: d.endOf('month').format(format),
+    }
 }

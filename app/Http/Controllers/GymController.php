@@ -8,7 +8,6 @@ use App\Coach;
 use App\Schedule;
 use Auth;
 
-use http\Env\Response;
 use Illuminate\Http\Request;
 
 class GymController extends Controller
@@ -155,7 +154,6 @@ class GymController extends Controller
                 }
             }
         }
-
         return response()->json($coaches, 200);
     }
 }

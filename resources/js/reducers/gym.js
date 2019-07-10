@@ -4,6 +4,7 @@ const initState = {
     // data
     coaches: [],
     schedules: [],
+    orders: [],
     customers: [],
     customerPage: {
         customerBalance: { total: 0, booked: 0 },
@@ -275,8 +276,17 @@ const gym = (state = initState, action = NonAction) => {
             return Object.assign({}, state, {
                 loading: false,
                 errorMsg: 'Load gym schedule failed',
-            });;
+            });
 
+        case ActionTypes.LOAD_GYM_ORDERS:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.LOAD_GYM_ORDERS_SUCCESS:
+            return Object.assign({}, state, { loading: false, orders: action.payload.data });
+        case ActionTypes.LOAD_GYM_ORDERS_FAIL:
+            return Object.assign({}, state, {
+                loading: false,
+                errorMsg: 'Load gym orders failed',
+            });;
 
         default:
             return state;

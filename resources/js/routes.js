@@ -26,6 +26,7 @@ import LinkedCoach from "-views/Coach/Coach";
 import Customers from "-views/Customer/Customers";
 import Customer from "-views/Customer/Customer"
 import GymSettings from "-views/GymSetting/GymSettings";
+import LinkedMonthlyReport from '-views/Report/MonthlyReport';
 
 const dashboardRoutes = [
     {
@@ -58,6 +59,14 @@ const dashboardRoutes = [
         rtlName: "分公司",
         icon: OrganizationIcon,
         component: () => <Organization/>,
+        layout: "/admin"
+    },
+    {
+        path: "/report/monthly",
+        name: "Report",
+        rtlName: "",
+        icon: LibraryBooks,
+        component: props => <LinkedMonthlyReport {...props}/>,
         layout: "/admin"
     },
     {

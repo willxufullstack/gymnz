@@ -33,6 +33,11 @@ export const UPDATE_GYM_FAIL = 'UPDATE_GYM_FAIL';
 export const SHOW_NEW_GYM = 'SHOW_NEW_GYM';
 export const CANCEL_NEW_GYM = 'CANCEL_NEW_GYM';
 
+/**********GYM ORDERS************/
+export const LOAD_GYM_ORDERS = 'LOAD_GYM_ORDERS';
+export const LOAD_GYM_ORDERS_SUCCESS = 'LOAD_GYM_ORDERS_SUCCESS';
+export const LOAD_GYM_ORDERS_FAIL = 'LOAD_GYM_ORDERS_FAIL';
+
 /**********HEADER************/
 export const SWITCH_GYM = 'SWITCH_GYM';
 export const LOAD_LOGGED_IN_COACH_INFO = 'LOAD_LOGGED_IN_COACH_INFO';

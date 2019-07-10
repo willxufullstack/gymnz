@@ -20,11 +20,20 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($gym_id)
+    public function index(Request $request, $gymId)
     {
-        $ret = Order::with(['customer', 'coach'])->where("gym_id", "=", $gym_id)->get();
-        if ($ret) {
-            return response()->json($ret, 200);
+        if (!$request->has('start') || !$request->has('end')) {
+            return response()->json(array('message' => 'missing time range'), 500);
+        }
+
+        $orders = Order::with(['customer','coach.user'])
+            ->where('gym_id', '=', $gymId)
+            ->where('created_at', '>=', $request->input('start'))
+            ->where('created_at', '<=', $request->input('end'))
+            ->get();
+
+        if ($orders) {
+            return response()->json($orders, 200);
         }
         return response()->json(array('message' => 'fail'), 500);
     }

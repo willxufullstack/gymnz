@@ -35,7 +35,7 @@ Route::group([
     Route::get('gym/{gym}/available', 'GymController@getAvailableTime');
 
     Route::get('user/{user}/coursebalance', 'OrderController@getCustomerCourseBalance');
-    Route::get('user/{user}/orders', 'OrderController@getCustomerOrders');
+    Route::get('user/{user}/order', 'OrderController@getCustomerOrders');
 
     Route::resource('org', 'OrganizationController');
     Route::resource('gym', 'GymController');
