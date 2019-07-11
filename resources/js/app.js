@@ -13,6 +13,7 @@ import {Provider} from 'react-redux'
 import rootReducer from './reducers'
 import LinkedAdmin from "./layouts/Admin.jsx";
 import "./assets/css/material-dashboard-react.css?v=1.6.0";
+import "./assets/css/chartist.min.css";
 import {createStore, applyMiddleware} from 'redux';
 import axios from 'axios';
 import axiosMiddleware from 'redux-axios-middleware';

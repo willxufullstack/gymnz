@@ -2,7 +2,8 @@ import React from "react";
 import connect from "react-redux/es/connect/connect";
 import { bindActionCreators } from "redux";
 import * as Actions from "../../actions";
-
+// react plugin for creating charts
+import ChartistGraph from "react-chartist";
 import Paper from '@material-ui/core/Paper';
 import Tabs from "-components/CustomTabs/CustomTabs.jsx";
 import Table from "-components/Table/Table.jsx";
@@ -11,8 +12,9 @@ import {
     DatePicker,
     MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-// import dayjs from 'dayjs';
 import DayjsUtils from "@date-io/dayjs";
+import GridItem from "-components/Grid/GridItem.jsx";
+import GridContainer from "-components/Grid/GridContainer.jsx";
 
 class MonthlyReport extends React.Component {
 
@@ -44,7 +46,7 @@ class MonthlyReport extends React.Component {
     };
 
     refresh = () => {
-        this.refreshFunMap[this.state.selectedTabIndex] &&  this.refreshFunMap[this.state.selectedTabIndex]();
+        this.refreshFunMap[this.state.selectedTabIndex] && this.refreshFunMap[this.state.selectedTabIndex]();
     };
 
     loadSale = () => {
@@ -72,13 +74,39 @@ class MonthlyReport extends React.Component {
             return <p>No Orders</p>;
         }
         let header = ['Coach', 'Count'];
-        let tableData = groups.map(r => [r.coach.user.name + '', r.course_amount + '']);
+        let tableData = [];
+        let chartData = {
+            labels: [],
+            series: [],
+        };
+        groups.forEach(r => {
+            tableData.push([r.coach.user.name + '', r.course_amount + '']);
+            chartData.labels.push(r.coach.user.name);
+            chartData.series.push(r.course_amount);
+        });
 
-        return <Table classes={{ tableResponsive: 'no-margin-top' }}
-            tableHeaderColor='primary'
-            tableHead={header}
-            tableData={tableData}
-        />;
+
+        let chartOptions = {
+            labelInterpolationFnc: function (value) {
+                return value
+            }
+        }
+
+        return <GridContainer alignItems='center'>
+            <GridItem xs={12} sm={12} md={8}>
+                <Table classes={{ tableResponsive: 'no-margin-top' }}
+                    tableHeaderColor='primary'
+                    tableHead={header}
+                    tableData={tableData}
+                /></GridItem>
+            <GridItem xs={12} sm={12} md={4}>
+                <ChartistGraph
+                    className="ct-chart"
+                    data={chartData}
+                    type="Pie"
+                    options={chartOptions}
+                /></GridItem>
+        </GridContainer >;
     };
 
     getScheduleCountByCustomerTab = () => {
@@ -103,7 +131,7 @@ class MonthlyReport extends React.Component {
     };
 
     componentWillMount() {
-      this.refresh();
+        this.refresh();
     }
 
     render() {
