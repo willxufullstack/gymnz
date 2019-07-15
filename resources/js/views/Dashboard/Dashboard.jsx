@@ -159,13 +159,17 @@ class Dashboard extends React.Component {
     let sealed = {};
     let desc = {};
     schedules.forEach(s => {
+      let suffix = '';
+      if (s.status === 2) {
+        suffix = ' done';
+      }
       utils.range(s.start, s.end).forEach(i => {
-        sealed[i] = '-x';
+        sealed[i] = '-x' + suffix;
       })
-      sealed[s.start] = '-start';
+      sealed[s.start] = '-start' + suffix;
       desc[s.start] = s.customer.name;
       // sealed[s.start + 1] = '-start';
-      sealed[s.end] = '-end';
+      sealed[s.end] = '-end' + suffix;
       // sealed[s.end - 1] = '-end';
     });
     return (

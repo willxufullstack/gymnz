@@ -70,9 +70,14 @@
     .schedule-slot-x,
     .schedule-slot-start,
     .schedule-slot-end {
-      background: rgb(224, 247, 217);
-      color: rgb(54, 98, 44);
-      border-left: 4px solid rgb(54, 98, 44);
+      background: #fff0f5;
+      color:rgb(189, 0, 78);
+      border-left: 4px solid rgb(189, 0, 78);
+      &.done{
+        background: rgb(224, 247, 217);
+        color: rgb(54, 98, 44);
+        border-left: 4px solid rgb(54, 98, 44);
+      }
     }
 
     .schedule-slot-x,
