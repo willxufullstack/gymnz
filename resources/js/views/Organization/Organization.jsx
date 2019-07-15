@@ -26,11 +26,13 @@ import LoadingLayer from "-components/LoadingLayer/LoadingLayer"
 import classNames from "classnames"
 import Snackbar from "-components/Snackbar/Snackbar";
 import AddAlert from "@material-ui/icons/AddAlert";
+import Confirmation from "-components/CustomDialogues/Confirmation";
 
 class Organization extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            showDeleteConfirmation: false,
             activeOrg: {}
         };
     }
@@ -44,8 +46,17 @@ class Organization extends React.Component {
             this.props.actions.showNewGym();
         });
     };
-    deleteOrg = (org) => () => {
-        this.props.actions.deleteOrg(org);
+
+    showDeleteOrgConfirmation = (org) => () => {
+        this.setState({ showDeleteConfirmation: true, activeOrg: org });
+    };
+
+    hideDeleteOrgConfirmation = () => {
+        this.setState({ showDeleteConfirmation: false });
+    };
+    deleteOrg = () => {
+        this.setState({ showDeleteConfirmation: false });  
+        this.props.actions.deleteOrg(this.state.activeOrg.id);
         
     };
 
@@ -87,10 +98,16 @@ class Organization extends React.Component {
     };
 
     render() {
+        const deleteOrgParams = {
+            message: this.state.activeOrg && 'Do you want to remove ' + this.state.activeOrg.name + '?',
+            onCancel: this.hideDeleteOrgConfirmation,
+            onConfirm: this.deleteOrg
+        };
         const {classes} = this.props;
 
         return (
             <React.Fragment>
+                {this.state.showDeleteConfirmation && <Confirmation {...deleteOrgParams} />}
                 {this.props.organization.loading && <LoadingLayer/>}
                 <div className={classNames({'loading': this.props.organization.loading})}>
                     {this.getDialogue()}
@@ -131,7 +148,7 @@ class Organization extends React.Component {
                                                     <Button size="sm" onClick={this.showAddGym(item)}>
                                                         Add Gym
                                                     </Button>
-                                                    <Button size="sm" onClick={this.deleteOrg(item.id)}>
+                                                    <Button size="sm" onClick={this.showDeleteOrgConfirmation(item)}>
                                                         Delete Org
                                                     </Button>
                                                 </CardFooter>
