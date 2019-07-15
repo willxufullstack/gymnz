@@ -117,13 +117,13 @@ class Admin extends React.Component {
                         {...rest}
                     />
                     <div className={classes.content}>
-                        {this.props.gym.loading && <LoadingLayer />}
+                        {(this.props.gym.loading || this.props.setting.loading) && <LoadingLayer />}
                         <Snackbar
                             place="tc"
                             color="danger"
                             icon={AddAlert}
-                            message={this.props.gym.errorMsg}
-                            open={!!this.props.gym.errorMsg}
+                            message={this.props.gym.errorMsg || this.props.setting.errorMsg}
+                            open={!!(this.props.gym.errorMsg || this.props.setting.errorMsg)}
                             closeNotification={() => this.props.actions.closeErrMsg()}
                             close
                         />
@@ -132,8 +132,8 @@ class Admin extends React.Component {
                             color="success"
                             icon={AddAlert}
                             autoHideDuration={6000}
-                            message={this.props.gym.successMsg}
-                            open={!!this.props.gym.successMsg}
+                            message={this.props.gym.successMsg || this.props.setting.successMsg}
+                            open={!! (this.props.gym.successMsg || this.props.setting.successMsg)}
                             closeNotification={() => this.props.actions.closeSuccessMsg()}
                             onClose={() => this.props.actions.closeSuccessMsg()}
                             close
