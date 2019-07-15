@@ -72,7 +72,7 @@ class Dashboard extends React.Component {
   }
 
   handleDateChange = (selectedDate) => {
-    this.setState({selectedDate}, () => {
+    this.setState({ selectedDate }, () => {
       this.props.actions.LoadGymSchedule(this.props.selectedGym.id, {
         date: dayjs(selectedDate).format('YYYY-MM-DD')
       })
@@ -101,7 +101,11 @@ class Dashboard extends React.Component {
         this.props.actions.cancelNewOrder();
       },
       onSave: (data) => {
-        this.props.actions.createOrder(data);
+        this.props.actions.createOrder(data).
+          then(() => {
+            // reload customer when success
+            this.props.actions.loadCustomer(this.props.selectedGym.id);
+          });
       },
       subtitle: this.props.selectedGym.name,
       title: 'Create Order',
@@ -188,7 +192,7 @@ class Dashboard extends React.Component {
       <Paper square elevation={0} className="gym-day-view-header">
         <GridContainer alignItems='center'>
           <GridItem xs={12} sm={12} md={1} container alignItems={'center'}>
-            <MuiPickersUtilsProvider utils={DayjsUtils}  locale={'zh-cn'}>
+            <MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>
               <DatePicker className='gymd-day-picker' format="MM/DD" value={this.state.selectedDate} onChange={this.handleDateChange} />
             </MuiPickersUtilsProvider>
           </GridItem>
