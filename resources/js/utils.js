@@ -35,7 +35,7 @@ export function range(start, end, step = 1) {
     return ret;
 }
 
-export function getMonthStartEnd(date, format = 'YYYYMMDD') {
+export function getMonthStartEnd(date, format = 'YYYY-MM-DD') {
     const d = dayjs(date)
     return {
         start: d.startOf('month').format(format),

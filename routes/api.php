@@ -33,6 +33,7 @@ Route::group([
 
     Route::get('gym/{gym}/customer', 'GymController@getCustomerList');
     Route::get('gym/{gym}/available', 'GymController@getAvailableTime');
+    Route::get('gym/{gym}/summary', 'GymController@getSummary');
 
     Route::get('user/{user}/coursebalance', 'OrderController@getCustomerCourseBalance');
     Route::get('user/{user}/order', 'OrderController@getCustomerOrders');

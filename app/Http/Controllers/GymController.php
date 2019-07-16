@@ -156,4 +156,37 @@ class GymController extends Controller
         }
         return response()->json($coaches, 200);
     }
+
+
+    public function getSummary(Request $request, $id)
+    {
+        if (!$request->has('start') || !$request->has('end')) {
+            return response()->json(array('message' => 'missing time range'), 500);
+        }
+        // schedules
+        $schedules = Schedule::where('gym_id', $id)
+            ->where('date', '>=', $request->input('start'))
+            ->where('date', '<=', $request->input('end'));
+
+        $scheduleCount = $schedules->count();
+
+        $activeCustomerCount = $schedules->groupBy('customer_id')->count();
+
+        $orders = Order::where('gym_id', $id)
+            ->where('created_at', '>=', $request->input('start'))
+            ->where('created_at', '<=', $request->input('end'));
+        // order count
+        $orderCount = $orders->count();
+
+        // order total price
+        $orderPrice = $orders->sum('price');
+
+        $res = [
+            'orderCount' => $orderCount,
+            'scheduleCount' => $scheduleCount,
+            'orderPrice' => $orderPrice,
+            'activeCustomerCount' => $activeCustomerCount
+        ];
+        return response()->json($res, 200);
+    }
 }

@@ -102,7 +102,7 @@ class Customer extends React.Component {
 
     render() {
         let { booked, total } = this.props.gym.customerPage.customerBalance;
-        let unfinishedTabHeader = <Badge className="customer-tab-badge" color="secondary" badgeContent={this.props.gym.customerPage.schedules.booked.length}>Unfinished</Badge>;
+        let unfinishedTabHeader = <Badge className="tab-badge" color="secondary" badgeContent={this.props.gym.customerPage.schedules.booked.length}>Unfinished</Badge>;
         let confirmationParams = {
             message: 'Are you sure to cancel the schedule?',
             onCancel: this.hideCancelConfirmation,

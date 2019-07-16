@@ -15,6 +15,8 @@ import {
 import DayjsUtils from "@date-io/dayjs";
 import GridItem from "-components/Grid/GridItem.jsx";
 import GridContainer from "-components/Grid/GridContainer.jsx";
+import Primary from "-components/Typography/Primary.jsx";
+import Typography from '@material-ui/core/Typography';
 
 class MonthlyReport extends React.Component {
 
@@ -25,6 +27,10 @@ class MonthlyReport extends React.Component {
             selectedTabIndex: 0
         };
         this.refreshFunMap = [
+            () => {
+                let params = utils.getMonthStartEnd(this.state.date);
+                this.props.actions.loadGymSummary(this.props.selectedGym.id, params);
+            },
             this.loadSale,  // refresh sale
             () => { //refresh coach
                 let params = utils.getMonthStartEnd(this.state.date);
@@ -50,8 +56,34 @@ class MonthlyReport extends React.Component {
     };
 
     loadSale = () => {
-        this.props.actions.loadGymOrders(this.props.selectedGym.id, utils.getMonthStartEnd(this.state.date));
+        const month = utils.getMonthStartEnd(this.state.date);
+        this.props.actions.loadGymOrders(this.props.selectedGym.id, month);
     };
+
+    getSummaryTab = () => {
+        let summary = this.props.gym.report.summary;
+
+        let row = (label, value) => {
+            return (<GridItem xs={12} sm={12} md={12} container alignItems='center' classes={{ grid: 'gym-summary-row' }}>
+                <GridItem xs={6} sm={6} md={6}>
+                    <Typography variant="button" display="block" gutterBottom className='gym-summary-label'>
+                        <Primary>{label}</Primary>
+                    </Typography>
+                </GridItem>
+                <GridItem xs={6} sm={6} md={6}>
+                    <Typography variant="subtitle2" display="block" gutterBottom className='gym-summary-value' >
+                        {value}
+                    </Typography>
+                </GridItem>
+            </GridItem>)
+        };
+        return <GridContainer>
+            {row('Active Customer', summary.activeCustomerCount)}
+            {row('Schedule Count', summary.scheduleCount)}
+            {row('Total Order Count', summary.orderCount)}
+            {row('Total Order Price', summary.orderPrice)}
+        </GridContainer>;
+    }
 
     getSaleTab = () => {
         let orders = this.props.gym.report.orders;
@@ -106,7 +138,7 @@ class MonthlyReport extends React.Component {
                     type="Pie"
                     options={chartOptions}
                 /></GridItem>
-        </GridContainer >;
+        </GridContainer>;
     };
 
     getScheduleCountByCustomerTab = () => {
@@ -145,6 +177,9 @@ class MonthlyReport extends React.Component {
                 headerColor="primary"
                 onSwitch={this.tapTab}
                 tabs={[{
+                    tabName: "Summary",
+                    tabContent: this.getSummaryTab(),
+                }, {
                     tabName: "Sale",
                     tabContent: this.getSaleTab(),
                 }, {

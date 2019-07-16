@@ -8,6 +8,11 @@ const initState = {
         orders: [],
         scheduleCountByCoach: [],
         scheduleCountByCustomer: [],
+        summary: {
+            orderCount: 0,
+            scheduleCount: 0,
+            orderPrice: 0,
+        },
     },
     customers: [],
     customerPage: {
@@ -281,6 +286,20 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false,
                 errorMsg: 'Load gym schedule failed',
             });
+
+        case ActionTypes.LOAD_GYM_SUMMARY:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.LOAD_GYM_SUMMARY_SUCCESS:
+            {
+                let report = { ...state.report };
+                report.summary = action.payload.data;
+                return Object.assign({}, state, { loading: false, report });
+            }
+        case ActionTypes.LOAD_GYM_SUMMARY_FAIL:
+            return Object.assign({}, state, {
+                loading: false,
+                errorMsg: 'Load gym summary failed',
+            });;
 
         case ActionTypes.LOAD_GYM_ORDERS:
             return Object.assign({}, state, { loading: true });

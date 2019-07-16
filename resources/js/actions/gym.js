@@ -198,7 +198,6 @@ export function loadCustomerOrders(userId, params) {
     };
 }
 
-
 /********REPORT*********/
 export function loadGymOrders(gymId, params) {
     return {
@@ -211,6 +210,21 @@ export function loadGymOrders(gymId, params) {
         }
     };
 }
+
+export function loadGymSummary(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_GYM_SUMMARY,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/summary',
+                params
+            }
+        }
+    };
+}
+
+
+
 export function loadGymScheduleCount(gymId, params) {
     return {
         type: ActionTypes.LOAD_GYM_SCHEDULE_COUNT,

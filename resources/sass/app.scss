@@ -86,3 +86,23 @@
 .MuiButton-textPrimary {
   color: #9c27b0 !important;
 }
+
+.gym-summary-row {
+  margin-bottom: 8px !important;
+  .gym-summary-label {
+    float: right;
+    margin-right: 20px;
+  }
+  .gym-summary-value {
+    float: left;
+    margin-left: 20px;
+    color: #666;
+  }
+}
+
+.tab-badge {
+  > span {
+    top: -2px;
+    right: -5px;
+  }
+}
