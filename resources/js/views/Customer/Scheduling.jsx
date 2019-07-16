@@ -154,7 +154,7 @@ class Scheduling extends React.Component {
         }
         let hasSelectedTime = this.props.gym.customerPage.pendingSchedule;
 
-        return <GridContainer container justify="center">
+        return <GridContainer container>
             <GridItem container xs={12} sm={12} md={2} classes={{grid:'coach-grid'}} >
                 {coachesSlots.map((c, i) =>
                     <GridItem key={c.id} xs={3} sm={3} md={12}>

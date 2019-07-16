@@ -91,7 +91,6 @@ class Customer extends React.Component {
     tapTab = (tabIndex) => {
         switch (tabIndex) {
             case 0:
-                this.props.actions.loadAvailableSlotByDate(this.props.selectedGym.id, { date: this.state.date })
                 break;
             case 1:
                 this.props.actions.loadCustomerOrders(this.customerId, { gym: this.props.selectedGym.id });

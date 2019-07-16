@@ -49,14 +49,14 @@
 }
 
 .coach-container {
+  margin-top: 18px;
   display: flex;
-  align-items: center;
-  margin: 18px;
   .coach-avatar {
     margin-right: 6px;
   }
   .coach-name {
     flex: 1;
+    line-height: 40px;
   }
 
   &.active {
