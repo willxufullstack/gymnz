@@ -137,7 +137,10 @@ class GymController extends Controller
         $workingHours = range($gym->setting['workingHours']['min'], $gym->setting['workingHours']['max'] - 1);
 
         // build available hours according to working hours
-        $coaches = Coach::with('user')->where('gym_id', '=', $id)->get();
+        $coaches = Coach::with('user')->where([
+            'gym_id' => $id,
+            'status' => 1
+        ])->get();
         // get schedules
         $schedules = Schedule::where([
             'gym_id' => $id,
