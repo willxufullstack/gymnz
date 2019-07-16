@@ -3,42 +3,18 @@ import connect from "react-redux/es/connect/connect";
 import { bindActionCreators } from "redux";
 import * as Actions from "../../actions";
 import PropTypes from "prop-types";
-// react plugin for creating charts
-import ChartistGraph from "react-chartist";
 // @material-ui/core
 import withStyles from "@material-ui/core/styles/withStyles";
 import Paper from '@material-ui/core/Paper';
-import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
-import Store from "@material-ui/icons/Store";
-import Warning from "@material-ui/icons/Warning";
-import DateRange from "@material-ui/icons/DateRange";
-import LocalOffer from "@material-ui/icons/LocalOffer";
-import Update from "@material-ui/icons/Update";
-import ArrowUpward from "@material-ui/icons/ArrowUpward";
-import AccessTime from "@material-ui/icons/AccessTime";
-import Accessibility from "@material-ui/icons/Accessibility";
-import BugReport from "@material-ui/icons/BugReport";
-import Code from "@material-ui/icons/Code";
-import Cloud from "@material-ui/icons/Cloud";
+import Add from "@material-ui/icons/Add"
+
 // core components
 import GridItem from "-components/Grid/GridItem.jsx";
 import GridContainer from "-components/Grid/GridContainer.jsx";
-import Table from "-components/Table/Table.jsx";
-import Tasks from "-components/Tasks/Tasks.jsx";
-import CustomTabs from "-components/CustomTabs/CustomTabs.jsx";
-import Danger from "-components/Typography/Danger.jsx";
-import Card from "-components/Card/Card.jsx";
-import CardHeader from "-components/Card/CardHeader.jsx";
-import CardIcon from "-components/Card/CardIcon.jsx";
-import CardBody from "-components/Card/CardBody.jsx";
-import CardFooter from "-components/Card/CardFooter.jsx";
 import Badge from "@material-ui/core/Badge";
 
-
-import { bugs, website, server } from "-variables/general.jsx";
 import Button from "-components/CustomButtons/Button.jsx";
-import Add from "@material-ui/icons/Add"
 import * as utils from '-utils';
 import * as config from '-config';
 import dayjs from 'dayjs'
@@ -49,15 +25,10 @@ import {
 
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue';
 import classnames from 'classnames';
+import Confirmation from "-components/CustomDialogues/Confirmation";
 
 import "../../../sass/gymdayview.scss"
 import 'dayjs/locale/zh-cn';
-
-import {
-  dailySalesChart,
-  emailsSubscriptionChart,
-  completedTasksChart
-} from "-variables/charts.jsx";
 
 import dashboardStyle from "-assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
 import { List, ListItem } from "@material-ui/core";
@@ -67,7 +38,8 @@ class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedDate: new Date()
+      selectedDate: new Date(),
+      scheduleActionConfirmationParams: null,
     }
   }
 
@@ -81,9 +53,8 @@ class Dashboard extends React.Component {
 
   componentWillMount() {
     this.props.actions.loadCoach(this.props.selectedGym.id)
-    this.props.actions.LoadGymSchedule(this.props.selectedGym.id, {
-      date: dayjs(this.state.selectedDate).format('YYYY-MM-DD')
-    });
+    this.reloadSchedule();
+
   }
 
   componentWillUnmount() {
@@ -91,9 +62,44 @@ class Dashboard extends React.Component {
     this.props.actions.cancelNewOrder();
   }
 
+  reloadSchedule = () => {
+    this.props.actions.LoadGymSchedule(this.props.selectedGym.id, {
+      date: dayjs(this.state.selectedDate).format('YYYY-MM-DD')
+    });
+  }
+
+  onTapCancelSchedule = (schedule) => () => {
+    this.setState({
+      scheduleActionConfirmationParams: {
+        onCancel: () => { this.setState({ scheduleActionConfirmationParams: null }) },
+        onConfirm: () => {
+          this.setState({ scheduleActionConfirmationParams: null })
+          this.props.actions.deleteSchedule(schedule.gym_id, schedule.id)
+            .then(this.reloadSchedule)
+        },
+        message: 'Are you sure to cancel the schdule ?',
+      }
+    });
+  };
+
+  onTapCompleteSchedule = (schedule) => () => {
+    this.setState({
+      scheduleActionConfirmationParams: {
+        onCancel: () => { this.setState({ scheduleActionConfirmationParams: null }) },
+        onConfirm: () => {
+          this.setState({ scheduleActionConfirmationParams: null })
+          this.props.actions.completeSchedule(schedule.gym_id, schedule.id)
+            .then(this.reloadSchedule);
+        },
+        message: 'Are you sure to complete the schdule ?',
+      }
+    });
+  };
+
   tapNewOrder = () => {
     this.props.actions.showNewOrder();
   };
+
 
   newOrderDialog = () => {
     const fields = {
@@ -158,11 +164,17 @@ class Dashboard extends React.Component {
     let schedules = this.props.gym.schedules.filter(s => s.coach.id === c.id);
     let sealed = {};
     let desc = {};
+    let actions = {};
     schedules.forEach(s => {
       let suffix = '';
+
+      actions[s.end] = [<span key='cancel' className="schedule-action" onClick={this.onTapCancelSchedule(s)}>CANCEL</span>];
       if (s.status === 2) {
         suffix = ' done';
+      } else {
+        actions[s.end].push(<span key='complete' className="schedule-action complete" onClick={this.onTapCompleteSchedule(s)}>DONE</span>);
       }
+
       utils.range(s.start, s.end).forEach(i => {
         sealed[i] = '-x' + suffix;
       })
@@ -185,7 +197,10 @@ class Dashboard extends React.Component {
               borderCls = 'dot';
             }
             let scheduleSlotCls = sealed[t] ? 'schedule-slot' + sealed[t] : 'schedule-slot';
-            return <ListItem key={t} className={classnames('time-slot', borderCls, scheduleSlotCls)}>{desc[t]}</ListItem>
+            return <ListItem key={t} className={classnames('time-slot', borderCls, scheduleSlotCls)}>
+              <span className="schedule-desc">{desc[t]}</span>
+              {actions[t]}
+            </ListItem>
           })}
         </List>
       </GridItem>);
@@ -226,10 +241,11 @@ class Dashboard extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
     return this.props.gym.showNewOrder ? this.newOrderDialog() : (<div>
+      {this.state.scheduleActionConfirmationParams && <Confirmation {...this.state.scheduleActionConfirmationParams}/>}
       {this.getGymDayOverView()}
       <Button justIcon round color="primary" className="add-order" onClick={this.tapNewOrder}><Add /></Button>
+      }
     </div>
     );
   }
