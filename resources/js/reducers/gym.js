@@ -130,6 +130,19 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
+        case ActionTypes.BATCH_CREATE_CUSTOMER_DATA:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.BATCH_CREATE_CUSTOMER_DATA_SUCCESS:
+            return Object.assign({}, state, {
+                successMsg: 'data saved',
+                loading: false,
+            });
+        case ActionTypes.BATCH_CREATE_CUSTOMER_DATA_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Save data failed, please try again',
+                loading: false
+            });
+
         case ActionTypes.LOAD_GYM_AVAILABLE_SLOT:
             return Object.assign({}, state, { loading: true });
         case ActionTypes.LOAD_GYM_AVAILABLE_SLOT_SUCCESS:

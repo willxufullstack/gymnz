@@ -198,6 +198,19 @@ export function loadCustomerOrders(userId, params) {
     };
 }
 
+export function batchCreateCustomerBodyData(userId, batch) {
+    return {
+        type: ActionTypes.BATCH_CREATE_CUSTOMER_DATA,
+        payload: {
+            request: {
+                method: 'post',
+                url: '/user/' + userId + '/bodydata',
+                data: { batch }
+            }
+        }
+    };
+}
+
 /********REPORT*********/
 export function loadGymOrders(gymId, params) {
     return {
@@ -222,8 +235,6 @@ export function loadGymSummary(gymId, params) {
         }
     };
 }
-
-
 
 export function loadGymScheduleCount(gymId, params) {
     return {

@@ -7,6 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Tabs from "-components/CustomTabs/CustomTabs.jsx";
 import Table from "-components/Table/Table.jsx";
 import Scheduling from "./Scheduling";
+import CustomerDataSection from "./CustomerDataSection";
 import Badge from "@material-ui/core/Badge";
 import * as utils from '-utils';
 import 'dayjs/locale/zh-cn'
@@ -81,7 +82,7 @@ class Customer extends React.Component {
     };
 
     getDataTab = () => {
-
+        return <CustomerDataSection actions={this.props.actions} customerId={this.customerId}/>
     };
 
     getPhotoTab = () => {
@@ -124,8 +125,10 @@ class Customer extends React.Component {
                     }, {
                         tabName: unfinishedTabHeader,
                         tabContent: this.getUnfinishedTab(),
-                    }
-                    ]}
+                    },{
+                        tabName: "Data",
+                        tabContent: this.getDataTab(),
+                    }]}
                 />
             </Paper>
         </React.Fragment>);

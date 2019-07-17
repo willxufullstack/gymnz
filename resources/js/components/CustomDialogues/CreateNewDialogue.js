@@ -50,7 +50,7 @@ class CreateNewDialogue extends React.Component {
         let data = {};
         Object.keys(this.state).forEach(k => {
             data[k] = this.state[k];
-            if(data[k].label) {
+            if (data[k].label) {
                 data[k] = data[k].value;
             }
         });
@@ -67,16 +67,16 @@ class CreateNewDialogue extends React.Component {
     getLabel = (field) => {
         return field.label ? field.label : field.name.charAt(0).toUpperCase() + field.name.slice(1);
     };
-    
+
     getInputType = field => {
-        if(!field.type) {
+        if (!field.type) {
             return 'text';
         }
-        if(field.type === 'phone') {
+        if (field.type === 'phone') {
             return 'number';
         }
         return field.type;
-    }
+    };
 
     isValid = (field) => {
         let validateFunc = (v) => true;
@@ -91,6 +91,9 @@ class CreateNewDialogue extends React.Component {
                 case 'number':
                     validateFunc = v => v.length && /^\d+$/.test(v);
                     break;
+                case 'decimal':
+                    validateFunc = v => v.length && /^[\d\.]+$/.test(v);
+                    break;
                 case 'phone':
                     validateFunc = v => v.length && /^[1]([3-9])[0-9]{9}$/.test(v);
                     break;
@@ -100,7 +103,7 @@ class CreateNewDialogue extends React.Component {
                 default:
                     validateFunc = (v) => {
                         let value = v;
-                        if(v.value) {
+                        if (v.value) {
                             value = v.value;
                         }
                         return !!value;
@@ -108,7 +111,7 @@ class CreateNewDialogue extends React.Component {
             }
         }
         return validateFunc(this.state[field.name]);
-    }
+    };
 
     render() {
         const { classes } = this.props;
@@ -124,17 +127,17 @@ class CreateNewDialogue extends React.Component {
                             {this.props.inputFields.map((field) => {
                                 // selection list
                                 if (field.options) {
-                                    return <GridItem gridClass={field.hide && 'hide'} key={field.name} xs={12} sm={12} md={12}> 
-                                    <Select
-                                        className='form-selection'
-                                        options={field.options}
-                                        onChange={(opt) => {
-                                            this.setState({[field.name]: opt});
-                                            this.isValid(field);
-                                        }}
-                                        placeholder={this.getLabel(field)}
-                                        value={this.state[field.name]}
-                                    />
+                                    return <GridItem gridClass={field.hide && 'hide'} key={field.name} xs={12} sm={12} md={12}>
+                                        <Select
+                                            className='form-selection'
+                                            options={field.options}
+                                            onChange={(opt) => {
+                                                this.setState({ [field.name]: opt });
+                                                this.isValid(field);
+                                            }}
+                                            placeholder={this.getLabel(field)}
+                                            value={this.state[field.name]}
+                                        />
                                     </GridItem>;
                                 }
                                 return (
