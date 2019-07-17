@@ -166,7 +166,21 @@ class Dashboard extends React.Component {
   }
 
   onTapTimeSlot = (coach, start) => {
-    // TODO validate whether the time is available
+    let isOverlap = (schedule, start) => {
+      const end = start + 3;
+      if (end >= schedule.start && end < schedule.end) {
+        return true;
+      }
+      if (start >= schedule.start && start <= schedule.end) {
+        return true;
+      }
+      return false;
+    }
+    // skip when the time slot overlap with existing schedules
+    if (this.props.gym.schedules.filter(s => isOverlap(s, start)).length) {
+      return;
+    }
+
     const hideDialog = () => this.setState({ showCustomerSelection: null });
     this.setState({
       showCustomerSelection: {
@@ -183,7 +197,7 @@ class Dashboard extends React.Component {
             date: dayjs(this.state.selectedDate).format('YYYY-MM-DD')
           };
           this.props.actions.createSchedule(params.gym, params)
-            .then( () => {
+            .then(() => {
               hideDialog();
               this.reloadSchedule();
             })
