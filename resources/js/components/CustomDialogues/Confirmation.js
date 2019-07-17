@@ -12,7 +12,7 @@ class Confirmation extends React.Component {
     }
     render() {
         const { title, message, cancelText, confirmText, onCancel, onConfirm } = this.props;
-        return (<Dialog open={true}>
+        return (<Dialog open={true} onClose={onCancel}>
             <DialogTitle>
                 {title || 'Confirmation'}
             </DialogTitle>

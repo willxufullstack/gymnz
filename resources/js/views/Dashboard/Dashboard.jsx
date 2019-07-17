@@ -13,6 +13,7 @@ import Add from "@material-ui/icons/Add"
 import GridItem from "-components/Grid/GridItem.jsx";
 import GridContainer from "-components/Grid/GridContainer.jsx";
 import Badge from "@material-ui/core/Badge";
+import CustomerSelectionDialogue from '-components/CustomDialogues/CustomerSelectionDialogue';
 
 import Button from "-components/CustomButtons/Button.jsx";
 import * as utils from '-utils';
@@ -40,6 +41,7 @@ class Dashboard extends React.Component {
     this.state = {
       selectedDate: new Date(),
       scheduleActionConfirmationParams: null,
+      showCustomerSelection: null,
     }
   }
 
@@ -52,9 +54,9 @@ class Dashboard extends React.Component {
   }
 
   componentWillMount() {
-    this.props.actions.loadCoach(this.props.selectedGym.id)
+    this.props.actions.loadCoach(this.props.selectedGym.id);
+    this.props.actions.loadCustomer(this.props.selectedGym.id);
     this.reloadSchedule();
-
   }
 
   componentWillUnmount() {
@@ -68,7 +70,8 @@ class Dashboard extends React.Component {
     });
   }
 
-  onTapCancelSchedule = (schedule) => () => {
+  onTapCancelSchedule = (schedule) => (e) => {
+    e.stopPropagation();
     this.setState({
       scheduleActionConfirmationParams: {
         onCancel: () => { this.setState({ scheduleActionConfirmationParams: null }) },
@@ -82,7 +85,8 @@ class Dashboard extends React.Component {
     });
   };
 
-  onTapCompleteSchedule = (schedule) => () => {
+  onTapCompleteSchedule = (schedule) => (e) => {
+    e.stopPropagation();
     this.setState({
       scheduleActionConfirmationParams: {
         onCancel: () => { this.setState({ scheduleActionConfirmationParams: null }) },
@@ -160,6 +164,35 @@ class Dashboard extends React.Component {
       </List>
     </GridItem>);
   }
+
+  onTapTimeSlot = (coach, start) => {
+    // TODO validate whether the time is available
+    const hideDialog = () => this.setState({ showCustomerSelection: null });
+    this.setState({
+      showCustomerSelection: {
+        customers: this.props.gym.customers,
+        onCancel: hideDialog,
+        title: `${coach.user.name} ${utils.getTimeStr(start)}`,
+        onSelect: (c) => {
+          let params = {
+            customer: c.id,
+            gym: this.props.selectedGym.id,
+            coach: coach.id,
+            start: start,
+            end: start + 3,
+            date: dayjs(this.state.selectedDate).format('YYYY-MM-DD')
+          };
+          this.props.actions.createSchedule(params.gym, params)
+            .then( () => {
+              hideDialog();
+              this.reloadSchedule();
+            })
+        }
+      }
+    });
+  }
+
+
   getCoachDayColumn = (c) => {
     let schedules = this.props.gym.schedules.filter(s => s.coach.id === c.id);
     let sealed = {};
@@ -197,7 +230,7 @@ class Dashboard extends React.Component {
               borderCls = 'dot';
             }
             let scheduleSlotCls = sealed[t] ? 'schedule-slot' + sealed[t] : 'schedule-slot';
-            return <ListItem key={t} className={classnames('time-slot', borderCls, scheduleSlotCls)}>
+            return <ListItem onClick={() => { this.onTapTimeSlot(c, t) }} key={t} className={classnames('time-slot', borderCls, scheduleSlotCls)}>
               <span className="schedule-desc">{desc[t]}</span>
               {actions[t]}
             </ListItem>
@@ -242,10 +275,10 @@ class Dashboard extends React.Component {
 
   render() {
     return this.props.gym.showNewOrder ? this.newOrderDialog() : (<div>
-      {this.state.scheduleActionConfirmationParams && <Confirmation {...this.state.scheduleActionConfirmationParams}/>}
+      {this.state.showCustomerSelection && <CustomerSelectionDialogue {...this.state.showCustomerSelection} />}
+      {this.state.scheduleActionConfirmationParams && <Confirmation {...this.state.scheduleActionConfirmationParams} />}
       {this.getGymDayOverView()}
       <Button justIcon round color="primary" className="add-order" onClick={this.tapNewOrder}><Add /></Button>
-      }
     </div>
     );
   }
