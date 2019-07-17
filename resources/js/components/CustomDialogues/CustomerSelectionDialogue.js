@@ -8,10 +8,28 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Button from '-components/CustomButtons/Button';
 import { withStyles } from '@material-ui/styles';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import CustomInput from "-components/CustomInput/CustomInput.jsx";
+import { pinyin } from "-utils";
+import Typography from '@material-ui/core/Typography';
 
 const styles = {
+    dialogTitle: {
+        paddingTop: 0,
+        paddingBottom: 0,
+    },
+    title: {
+        background: '#9c27b0',
+        color: 'white',
+        padding: '12px 24px'
+    },
+    searchBox: {
+        marginTop: 0
+    },
+    searchBoxInput: {
+        color: '#9c27b0',
+    },
     customerList: {
-        maxHeight: 360,
+        height: 320,
     },
     customerName: {
         color: '#666'
@@ -26,7 +44,8 @@ class CustomerSelectionDialogue extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedCustomer: null
+            selectedCustomer: null,
+            input: ''
         }
     }
 
@@ -47,18 +66,45 @@ class CustomerSelectionDialogue extends React.Component {
             <ListItem key={customer.id} onClick={this.onTapCustomer(customer)} button>
                 <ListItemText className={classes.customerName} primary={customer.name} />
             </ListItem>;
-    }
+    };
+
+    filteredCustomer = () => {
+        if (!this.state.input) {
+            return this.props.customers;
+        }
+        return this.props.customers.filter(c => pinyin.getInitChars(c.name).indexOf(this.state.input.toLowerCase()) >= 0);
+    };
+
+    onSearchKeyChanged = (e) => {
+        this.setState({ 
+            selectedCustomer: null,
+            input: e.currentTarget.value 
+        });
+    };
 
     render() {
-        const { title, customers, onCancel, classes } = this.props;
+        const { title, onCancel, classes } = this.props;
 
         return (<Dialog open={true} onClose={onCancel} fullWidth={true}>
-            <DialogTitle>
-                {title}
+            <Typography className={classes.title}>{title}</Typography>
+            <DialogTitle className={classes.dialogTitle}>
+                <CustomInput
+                    id={'Search'}
+                    formControlProps={{
+                        fullWidth: true,
+                        className: classes.searchBox,
+                    }}
+                    inputProps={{
+                        value: this.state.input,
+                        onChange: this.onSearchKeyChanged,
+                        placeholder: 'Search',
+                        className: classes.searchBoxInput
+                    }}
+                />
             </DialogTitle>
             <DialogContent>
                 <List className={classes.customerList}>
-                    {customers.map(customer => this.getCustomerRow(customer))}
+                    {this.filteredCustomer().map(customer => this.getCustomerRow(customer))}
                 </List>
             </DialogContent>
         </Dialog>);
