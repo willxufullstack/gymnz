@@ -23,7 +23,8 @@ const initState = {
         schedules: {
             booked: [],
             finished: [],
-        }
+        },
+        bodyData: []
     },
 
     // dialogue
@@ -76,6 +77,21 @@ const gym = (state = initState, action = NonAction) => {
                 errorMsg: 'Load coach list failed, please refresh the page',
                 loading: false
             });
+
+        case ActionTypes.LOAD_GROUPED_CUSTOMER_BODY_DATA:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.LOAD_GROUPED_CUSTOMER_BODY_DATA_SUCCESS:
+            {
+                let customerPage = { ...state.customerPage }
+                customerPage.bodyData = action.payload.data
+                return Object.assign({}, state, { loading: false, customerPage });
+            }
+        case ActionTypes.LOAD_GROUPED_CUSTOMER_BODY_DATA_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Load customer body data failed, please refresh the page',
+                loading: false
+            });
+
 
         case ActionTypes.DELETE_COACH:
             return Object.assign({}, state, { loading: true });

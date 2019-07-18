@@ -10,14 +10,41 @@ use Auth;
 
 class BodyDataController extends Controller
 {
+
+    private function groupDataByOption($orderedRows)
+    {
+        $dict = [];
+        foreach ($orderedRows as $row) {
+            if (!array_key_exists($row['option'], $dict)) {
+                $dict[$row['option']] = [
+                    'option' => $row['option'],
+                    'unit' => $row['unit'],
+                    'data' => []
+                ];
+            }
+            array_push($dict[$row['option']]['data'], [
+                'date' => $row['date'],
+                'value' => $row['value']
+            ]);
+        }
+        return array_values($dict);
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, $userId)
     {
-        //
+        $ret = BodyData::where('user_id', $userId)->orderBy('date', 'ASC')->get();
+
+        // group
+        if ($request->has('group')) {
+            $ret = $this->groupDataByOption($ret);
+        }
+
+        return response()->json($ret, 200);
     }
 
     /**
@@ -42,7 +69,7 @@ class BodyDataController extends Controller
         $by = Auth::User()->id;
         $user = User::find($userId);
         $ret = [];
-        foreach($request->input('batch') as $item) {
+        foreach ($request->input('batch') as $item) {
             $bd = new BodyData();
             $bd->created_by = $by;
             $bd->value = $item['value'];

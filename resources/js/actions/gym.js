@@ -211,6 +211,18 @@ export function batchCreateCustomerBodyData(userId, batch) {
     };
 }
 
+export function loadGroupedCustomerBodyData(userId) {
+    return {
+        type: ActionTypes.LOAD_GROUPED_CUSTOMER_BODY_DATA,
+        payload: {
+            request: {
+                url: '/user/' + userId + '/bodydata',
+                params: { group: 1 }
+            }
+        }
+    };
+}
+
 /********REPORT*********/
 export function loadGymOrders(gymId, params) {
     return {

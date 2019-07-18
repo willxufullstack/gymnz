@@ -6,9 +6,9 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import typographyStyle from "-assets/jss/material-dashboard-react/components/typographyStyle.jsx";
 
 function Primary({ ...props }) {
-  const { classes, children } = props;
+  const { className, classes, children } = props;
   return (
-    <div className={classes.defaultFontStyle + " " + classes.primaryText}>
+    <div className={(className || "") + " " + classes.defaultFontStyle + " " + classes.primaryText}>
       {children}
     </div>
   );

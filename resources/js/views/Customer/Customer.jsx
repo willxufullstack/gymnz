@@ -82,7 +82,7 @@ class Customer extends React.Component {
     };
 
     getDataTab = () => {
-        return <CustomerDataSection actions={this.props.actions} customerId={this.customerId}/>
+        return <CustomerDataSection data={this.props.gym.customerPage.bodyData} actions={this.props.actions} customerId={this.customerId}/>
     };
 
     getPhotoTab = () => {
