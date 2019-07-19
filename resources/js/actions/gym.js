@@ -223,6 +223,19 @@ export function loadGroupedCustomerBodyData(userId) {
     };
 }
 
+export function createCustomerPhoto(user, url) {
+    return {
+        type: ActionTypes.CREATE_CUSTOMER_PHOTO,
+        payload: {
+            request: {
+                method: 'post',
+                url: '/user/' + user + '/photo',
+                data: { url, user }
+            }
+        }
+    }
+}
+
 /********REPORT*********/
 export function loadGymOrders(gymId, params) {
     return {

@@ -1,0 +1,1 @@
+export const ImgPrefix = "http://static.o2-fit.com/";

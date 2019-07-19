@@ -8,6 +8,7 @@ import Tabs from "-components/CustomTabs/CustomTabs.jsx";
 import Table from "-components/Table/Table.jsx";
 import Scheduling from "./Scheduling";
 import CustomerDataSection from "./CustomerDataSection";
+import CustomerPhotoSection from "./CustomerPhotoSection"
 import Badge from "@material-ui/core/Badge";
 import * as utils from '-utils';
 import 'dayjs/locale/zh-cn'
@@ -82,11 +83,11 @@ class Customer extends React.Component {
     };
 
     getDataTab = () => {
-        return <CustomerDataSection data={this.props.gym.customerPage.bodyData} actions={this.props.actions} customerId={this.customerId}/>
+        return <CustomerDataSection data={this.props.gym.customerPage.bodyData} actions={this.props.actions} customerId={this.customerId}/>;
     };
 
     getPhotoTab = () => {
-
+        return <CustomerPhotoSection {...this.props} actions={this.props.actions} customerId={this.customerId}/>;
     };
 
     tapTab = (tabIndex) => {
@@ -128,6 +129,9 @@ class Customer extends React.Component {
                     },{
                         tabName: "Data",
                         tabContent: this.getDataTab(),
+                    },{
+                        tabName: "Photo",
+                        tabContent: this.getPhotoTab(),
                     }]}
                 />
             </Paper>
@@ -139,6 +143,7 @@ const mapStoreToProps = (store) => {
     return {
         selectedGym: store.setting.selectedGym,
         gym: store.gym,
+        setting: store.setting,
     };
 };
 

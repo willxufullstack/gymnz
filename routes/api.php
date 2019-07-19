@@ -26,9 +26,12 @@ Route::group([
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
+    Route::get('/token/upload', 'PhotoController@getUploadToken');
+
     Route::get('coach', 'CoachController@getCoachInfoByUserId');
 
     Route::get('gym/{gym}/customer', 'GymController@getCustomerList');
@@ -38,6 +41,7 @@ Route::group([
     Route::get('user/{user}/coursebalance', 'OrderController@getCustomerCourseBalance');
     Route::get('user/{user}/order', 'OrderController@getCustomerOrders');
     Route::resource('user.bodydata', 'BodyDataController');
+    Route::resource('user.photo', 'PhotoController');
 
     Route::resource('org', 'OrganizationController');
     Route::resource('gym', 'GymController');

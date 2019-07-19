@@ -6,6 +6,7 @@ const SELECTED_GYM_KEY = 'gymnz_selected_gym';
 const initState = {
     userInfo: { name: '', email: '' },
     // load from previous setting when init
+    uploadToken: { token: '', fileName: '' },
     selectedGym: localStorage && JSON.parse(localStorage.getItem(SELECTED_GYM_KEY)) ? JSON.parse(localStorage.getItem(SELECTED_GYM_KEY)) : {},
     loading: false,
     errorMsg: '',
@@ -39,6 +40,29 @@ const setting = (state = initState, action = NON_ACTION) => {
                 errorMsg: 'Update gym setting failed',
                 loading: false
             });
+
+        case ActionTypes.LOAD_UPLOAD_TOKEN:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.LOAD_UPLOAD_TOKEN_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                uploadToken: action.payload.data
+            });
+        case ActionTypes.LOAD_UPLOAD_TOKEN_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'upload token load failed',
+                loading: false
+            });
+
+        case ActionTypes.SHOW_ERR_MSG:
+            return Object.assign({}, state, {
+                errorMsg: action.value,
+            });
+        case ActionTypes.SHOW_SUCCESS_MSG:
+            return Object.assign({}, state, {
+                successMsg: action.value,
+            });
+
         case ActionTypes.CLOSE_ERR_MSG:
             return Object.assign({}, state, {
                 errorMsg: '',

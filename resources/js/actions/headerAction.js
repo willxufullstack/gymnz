@@ -17,3 +17,28 @@ export function loadLoggedInCoachInfo() {
         }
     }
 }
+
+export function refreshUploadToken() {
+    return  {
+        type: ActionTypes.LOAD_UPLOAD_TOKEN,
+        payload: {
+            request:{
+                url:'/token/upload'
+            }
+        }
+    }
+}
+
+export function showError(value) {
+    return {
+        type: ActionTypes.SHOW_ERR_MSG,
+        value
+    };
+}
+
+export function showSuccess(value) {
+    return {
+        type: ActionTypes.SHOW_SUCCESS_MSG,
+        value
+    };
+}

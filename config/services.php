@@ -44,4 +44,9 @@ return [
         ],
     ],
 
+    'qn' => [
+        'key' => env('QNACCESSKEY', 'null'),
+        'secret' => env('QNSECRETKEY', 'null'),
+        'bucket' => env('QNBUKET', 'null'),
+    ],
 ];

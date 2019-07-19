@@ -15,6 +15,7 @@ module.exports = {
             '-utils': __dirname + '/resources/js/utils',
             '-color': __dirname + '/resources/js/color',
             '-config': __dirname + '/resources/js/config',
+            '-const': __dirname + '/resources/js/const',
         }
     }
 };
