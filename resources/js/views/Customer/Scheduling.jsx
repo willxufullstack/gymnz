@@ -125,7 +125,7 @@ class Scheduling extends React.Component {
     componentDidMount() {
         this.refreshAvailableSlots();
         this.props.actions.loadCustomerBalance(this.state.customerId, { gym: this.props.selectedGym.id });
-        this.props.actions.LoadCustomerSchedule(this.props.selectedGym.id, { customer: this.customerId })
+        this.props.actions.LoadCustomerSchedule(this.props.selectedGym.id, { customer: this.state.customerId })
     }
 
     static getDerivedStateFromProps(props, state) {
