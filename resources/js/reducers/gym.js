@@ -173,6 +173,19 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
+        case ActionTypes.DELETE_CUSTOMER_PHOTO:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.DELETE_CUSTOMER_PHOTO_SUCCESS:
+            return Object.assign({}, state, {
+                successMsg: 'Photo deleted',
+                loading: false,
+            });
+        case ActionTypes.DELETE_CUSTOMER_PHOTO_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Save photo failed, please try again',
+                loading: false
+            });
+
         case ActionTypes.LOAD_GYM_AVAILABLE_SLOT:
             return Object.assign({}, state, { loading: true });
         case ActionTypes.LOAD_GYM_AVAILABLE_SLOT_SUCCESS:

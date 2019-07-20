@@ -236,6 +236,18 @@ export function createCustomerPhoto(user, url) {
     }
 }
 
+export function deleteCustomerPhoto(user, id) {
+    return {
+        type: ActionTypes.DELETE_CUSTOMER_PHOTO,
+        payload: {
+            request: {
+                method: 'delete',
+                url: '/user/' + user + '/photo/' + id,
+            }
+        }
+    }
+}
+
 export function loadCustomerPhotos(user) {
     return {
         type: ActionTypes.LOAD_CUSTOMER_PHOTOS,

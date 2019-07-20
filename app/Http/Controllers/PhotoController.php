@@ -96,9 +96,17 @@ class PhotoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($userId, $id)
     {
-        //
+        $photo = Photo::where(['id' => $id, 'user_id' => $userId])->first();
+        if (empty($photo)) {
+            return response()->json(array('message' => 'can not find the photo ' . $id), 500);
+        }
+        $success = $photo->delete();
+        if ($success) {
+            return response()->json($photo, 200);
+        }
+        return response()->json(array('message' => 'fail'), 500);
     }
 
     public function getUploadToken(Request $request){
