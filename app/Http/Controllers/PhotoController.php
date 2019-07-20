@@ -17,7 +17,7 @@ class PhotoController extends Controller
      */
     public function index(Request $request, $userId)
     {
-        $photos = Photo::where('user_id', $userId);
+        $photos = Photo::where('user_id', $userId)->get();
         if($photos){
             return response()->json($photos, 200);
         }

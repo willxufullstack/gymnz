@@ -236,6 +236,17 @@ export function createCustomerPhoto(user, url) {
     }
 }
 
+export function loadCustomerPhotos(user) {
+    return {
+        type: ActionTypes.LOAD_CUSTOMER_PHOTOS,
+        payload: {
+            request: {
+                url: '/user/' + user + '/photo',
+            }
+        }
+    }
+}
+
 /********REPORT*********/
 export function loadGymOrders(gymId, params) {
     return {

@@ -24,7 +24,8 @@ const initState = {
             booked: [],
             finished: [],
         },
-        bodyData: []
+        bodyData: [],
+        photos: []
     },
 
     // dialogue
@@ -215,6 +216,21 @@ const gym = (state = initState, action = NonAction) => {
         case ActionTypes.LOAD_CUSTOMER_ORDERS_FAIL:
             return Object.assign({}, state, {
                 errorMsg: 'Load customer orders failed',
+            });
+
+
+        case ActionTypes.LOAD_CUSTOMER_PHOTOS:
+            // do nothing
+            return state;
+        case ActionTypes.LOAD_CUSTOMER_PHOTOS_SUCCESS:
+            {
+                let customerPage = { ...state.customerPage }
+                customerPage.photos = action.payload.data;
+                return Object.assign({}, state, { customerPage });
+            }
+        case ActionTypes.LOAD_CUSTOMER_PHOTOS_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Load customer photos failed',
             });
 
         case ActionTypes.UPDATE_PENDING_SCHEDULE:

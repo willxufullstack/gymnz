@@ -79,3 +79,25 @@ export function compressImg(source_img_obj, quality) {
     var newImageData = cvs.toDataURL(mime_type, quality / 100);
     return b64toBlob(newImageData, "image/jpeg");
 }
+
+export function imgThumbnail(url, width, height) {
+    return `${url}?imageView2/1/w/${width}/h/${height}/format/jpg`;
+}
+
+export function wrapImgToGalleryItem(url, caption, width, height) {
+    if (!width) {
+        width = 200;
+    }
+    if (!height) {
+        height = width;
+    }
+    return {
+        src: url,
+        thumbnail: imgThumbnail(url, width, height),
+        thumbnailWidth: width,
+        thumbnailHeight: height,
+        isSelected: false,
+        caption: '',
+        thumbnailCaption: caption,
+    }
+}

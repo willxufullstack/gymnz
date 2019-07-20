@@ -4,6 +4,7 @@ import { compressImg } from "-utils";
 import { ImgPrefix } from "-const";
 import * as qiniu from 'qiniu-js'
 import { withStyles } from "@material-ui/core";
+import Add from "@material-ui/icons/Add";
 
 const styles = {
     input: {
@@ -55,7 +56,7 @@ class QNUploader extends React.Component {
                     ref="fileUploader"
                     onChange={this.onChange}
                 />
-                <Button color="primary" onClick={() => { this.refs.fileUploader.click() }} >Upload</Button>
+                <Button color={this.props.color} onClick={() => { this.refs.fileUploader.click() }}><Add/>{this.props.title || 'Add'}</Button>
             </div>
         );
     }
