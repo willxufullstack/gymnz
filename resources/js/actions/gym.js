@@ -223,6 +223,17 @@ export function loadGroupedCustomerBodyData(userId) {
     };
 }
 
+export function loadCustomerBodyDataOptions() {
+    return {
+        type: ActionTypes.LOAD_BODY_DATA_OPTIONS,
+        payload: {
+            request: {
+                url: '/bodydata/predefined',
+            }
+        }
+    };
+}
+
 export function createCustomerPhoto(user, url) {
     return {
         type: ActionTypes.CREATE_CUSTOMER_PHOTO,

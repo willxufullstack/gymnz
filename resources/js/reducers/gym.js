@@ -25,7 +25,8 @@ const initState = {
             finished: [],
         },
         bodyData: [],
-        photos: []
+        photos: [],
+        bodyDataOptions: []
     },
 
     // dialogue
@@ -173,17 +174,20 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
-        case ActionTypes.DELETE_CUSTOMER_PHOTO:
-            return Object.assign({}, state, { loading: true });
-        case ActionTypes.DELETE_CUSTOMER_PHOTO_SUCCESS:
+
+        case ActionTypes.LOAD_BODY_DATA_OPTIONS:
+            return state;
+        case ActionTypes.LOAD_BODY_DATA_OPTIONS_SUCCESS:
+            {
+                let customerPage = { ...state.customerPage }
+                customerPage.bodyDataOptions = action.payload.data;
+                return Object.assign({}, state, {
+                    customerPage
+                });
+            }
+        case ActionTypes.LOAD_BODY_DATA_OPTIONS_FAIL:
             return Object.assign({}, state, {
-                successMsg: 'Photo deleted',
-                loading: false,
-            });
-        case ActionTypes.DELETE_CUSTOMER_PHOTO_FAIL:
-            return Object.assign({}, state, {
-                errorMsg: 'Save photo failed, please try again',
-                loading: false
+                errorMsg: 'Load predefined body data options failed',
             });
 
         case ActionTypes.LOAD_GYM_AVAILABLE_SLOT:

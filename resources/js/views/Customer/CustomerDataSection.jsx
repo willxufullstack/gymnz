@@ -8,17 +8,6 @@ import Muted from "-components/Typography/Muted.jsx";
 import Add from "@material-ui/icons/Add";
 import { Card, CardContent, withStyles, Typography } from "@material-ui/core";
 
-const options = [
-    {
-        option: 'Weight',
-        unit: 'kg'
-    },
-    {
-        option: 'Chest',
-        unit: 'cm'
-    }
-]
-
 const styles = {
     chartCard: {
         paddingTop: 0
@@ -62,9 +51,9 @@ class CustomerDataSection extends React.Component {
 
     getInputField = (tar) => {
         if (!tar) {
-            return options.map(this.optionToInputField);
+            return this.props.options.map(this.optionToInputField);
         }
-        return options.filter(opt => opt.option === tar).map(this.optionToInputField);
+        return this.props.options.filter(opt => opt.option === tar).map(this.optionToInputField);
     };
 
     save = (items, opts, date = null) => {
@@ -106,7 +95,7 @@ class CustomerDataSection extends React.Component {
         let params = {
             title: 'Data',
             onSave: (data) => {
-                this.save(data, options);
+                this.save(data, this.props.options);
             },
             onCancel: () => { this.setState({addDialogueField: null}) },
             inputFields: this.state.addDialogueField

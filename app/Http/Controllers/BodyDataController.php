@@ -127,4 +127,24 @@ class BodyDataController extends Controller
     {
         //
     }
+
+
+    public function getPredefinedOptions()
+    {
+        $opts = [
+            [
+                'option' => 'Weight',
+                'unit' => 'kg'
+            ],
+            [
+                'option' => 'Chest',
+                'unit' => 'cm'
+            ],
+            [
+                'option' => 'Thigh Left',
+                'unit' => 'cm'
+            ]
+        ];
+        return response()->json($opts, 200);
+    }
 }

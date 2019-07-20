@@ -60,6 +60,10 @@ class Customer extends React.Component {
         />;
     };
 
+    componentWillMount(){
+        this.props.actions.loadCustomerBodyDataOptions();
+    }
+
     getUnfinishedTab = () => {
         let booked = this.props.gym.customerPage.schedules.booked;
         if (!booked) {
@@ -83,7 +87,7 @@ class Customer extends React.Component {
     };
 
     getDataTab = () => {
-        return <CustomerDataSection data={this.props.gym.customerPage.bodyData} actions={this.props.actions} customerId={this.customerId}/>;
+        return <CustomerDataSection options={this.props.gym.customerPage.bodyDataOptions} data={this.props.gym.customerPage.bodyData} actions={this.props.actions} customerId={this.customerId}/>;
     };
 
     getPhotoTab = () => {

@@ -31,6 +31,7 @@ Route::group([
     'middleware' => 'auth:api'
 ], function () {
     Route::get('/token/upload', 'PhotoController@getUploadToken');
+    Route::get('/bodydata/predefined', 'BodyDataController@getPredefinedOptions');
 
     Route::get('coach', 'CoachController@getCoachInfoByUserId');
 
