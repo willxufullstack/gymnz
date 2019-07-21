@@ -81,15 +81,15 @@ export function compressImg(source_img_obj, quality) {
     return b64toBlob(newImageData, "image/jpeg");
 }
 
-export function imgThumbnail(url, width, height){
+export function imgThumbnail(url, width, height) {
     return `${url}?imageView2/1/w/${width}/h/${height}/format/jpg`;
 }
 
 export function wrapImgToGalleryItem(url, caption, width, height) {
-    if(!width) {
+    if (!width) {
         width = 200;
     }
-    if(!height) {
+    if (!height) {
         height = width;
     }
     return {
@@ -100,4 +100,10 @@ export function wrapImgToGalleryItem(url, caption, width, height) {
         isSelected: false,
         thumbnailCaption: caption,
     }
+}
+
+export function arrayToOptions(arr) {
+    return arr.map(item => {
+        return { value: item, label: item };
+    });
 }

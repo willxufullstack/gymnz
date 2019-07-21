@@ -45,9 +45,11 @@ Route::group([
     Route::resource('user.photo', 'PhotoController');
 
     Route::resource('org', 'OrganizationController');
+
     Route::resource('gym', 'GymController');
     Route::resource('gym.coach', 'CoachController');
     Route::resource('gym.order', 'OrderController');
+    Route::resource('gym.accounting', 'AccountingController');
 
     Route::resource('gym.schedule', 'ScheduleController');
     Route::get('gym/{gym}/schedule/{schedule}/complete', 'ScheduleController@complete');

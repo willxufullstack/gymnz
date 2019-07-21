@@ -306,3 +306,17 @@ export function loadGymScheduleCount(gymId, params) {
         }
     };
 }
+
+/********Accounting*********/
+export function createAccountingRow(gymId, data) {
+    return {
+        type: ActionTypes.CREATE_ACCOUNTING_ROW,
+        payload: {
+            request: {
+                method: 'post',
+                url: '/gym/' + gymId + '/accounting',
+                data
+            }
+        }
+    }
+}

@@ -11,6 +11,7 @@ import LibraryBooks from "@material-ui/icons/LibraryBooks";
 import OrganizationIcon from '@material-ui/icons/ViewModule';
 import CustomerIcon from '@material-ui/icons/SupervisorAccount';
 import SettingsIcon from '@material-ui/icons/Settings';
+import MoneyIcon from '@material-ui/icons/Money';
 
 // core components/views for Admin layout
 import LinkedDashboard from "-views/Dashboard/Dashboard.jsx";
@@ -27,6 +28,7 @@ import Customers from "-views/Customer/Customers";
 import Customer from "-views/Customer/Customer"
 import GymSettings from "-views/GymSetting/GymSettings";
 import LinkedMonthlyReport from '-views/Report/MonthlyReport';
+import Accounting from '-views/Accounting/Accounting';
 
 const dashboardRoutes = [
     {
@@ -75,6 +77,14 @@ const dashboardRoutes = [
         rtlName: "健身房管理页",
         icon: SettingsIcon,
         component: ()=><GymSettings/>,
+        layout: "/admin"
+    },
+    {
+        path: "/accounting",
+        name: "Accounting",
+        rtlName: "账务",
+        icon: MoneyIcon,
+        component: ()=><Accounting/>,
         layout: "/admin"
     },
     {

@@ -4,6 +4,7 @@ const initState = {
     // data
     coaches: [],
     schedules: [],
+    accounting: [],
     report: {
         orders: [],
         scheduleCountByCoach: [],
@@ -125,6 +126,23 @@ const gym = (state = initState, action = NonAction) => {
                 errorMsg: 'Create coach failed, please try again',
                 loading: false
             });
+
+        case ActionTypes.CREATE_ACCOUNTING_ROW:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.CREATE_ACCOUNTING_ROW_SUCCESS:
+            {
+                let accounting = [...state.accounting];
+                return Object.assign({}, state, {
+                    loading: false,
+                    successMsg: 'accounting record added',
+                    accounting
+                });
+            }
+        case ActionTypes.CREATE_ACCOUNTING_ROW_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Create accounting recording failed',
+                loading: false
+            });
         case ActionTypes.CLOSE_ERR_MSG:
             return Object.assign({}, state, {
                 errorMsg: '',
@@ -173,7 +191,6 @@ const gym = (state = initState, action = NonAction) => {
                 errorMsg: 'Save photo failed, please try again',
                 loading: false
             });
-
 
         case ActionTypes.LOAD_BODY_DATA_OPTIONS:
             return state;
