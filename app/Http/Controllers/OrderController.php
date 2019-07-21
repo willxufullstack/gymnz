@@ -94,6 +94,10 @@ class OrderController extends Controller
         $order->coach()->associate($coach);
         // 6. return
         $order->save();
+
+        //dispatch event for accounting
+        event(new \App\Events\OrderCreateEvent($order));
+
         return response()->json($order, 201);;
     }
 

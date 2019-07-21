@@ -123,6 +123,7 @@ class Accounting extends React.Component {
             { title: 'Amount', field: 'amount' },
             { title: 'Category', field: 'category' },
             { title: 'Detail', field: 'detail' },
+            { title: 'Operator', field: 'op.name' },
         ];
         const data = this.props.gym.accounting;
         const dateSelector = (<MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>

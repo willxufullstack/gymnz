@@ -19,6 +19,9 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
             'App\Listeners\UserCreatedAction',
         ],
+        'App\Events\OrderCreateEvent' => [
+            'App\Listeners\AccountingAction',
+        ],
     ];
 
     /**

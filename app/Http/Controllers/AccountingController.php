@@ -19,7 +19,8 @@ class AccountingController extends Controller
             return response()->json(array('message' => 'missing time range'), 500);
         }
 
-        return Accounting::where('gym_id', $gymId)
+        return Accounting::with('op')
+            ->where('gym_id', $gymId)
             ->where('created_at', '>=', $request->input('start'))
             ->where('created_at', '<=', $request->input('end'))
             ->get();

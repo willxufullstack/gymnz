@@ -21,4 +21,9 @@ class Accounting extends Model
     {
         return $this->belongsTo('App\Gym');
     }
+
+    public function op()
+    {
+        return $this->belongsTo('App\User', 'created_by', 'id');
+    }
 }
