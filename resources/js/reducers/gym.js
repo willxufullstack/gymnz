@@ -94,8 +94,6 @@ const gym = (state = initState, action = NonAction) => {
                 errorMsg: 'Load customer body data failed, please refresh the page',
                 loading: false
             });
-
-
         case ActionTypes.DELETE_COACH:
             return Object.assign({}, state, { loading: true });
         case ActionTypes.DELETE_COACH_SUCCESS:
@@ -124,6 +122,19 @@ const gym = (state = initState, action = NonAction) => {
         case ActionTypes.CREATE_COACH_FAIL:
             return Object.assign({}, state, {
                 errorMsg: 'Create coach failed, please try again',
+                loading: false
+            });
+
+        case ActionTypes.LOAD_GYM_ACCOUNTING:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.LOAD_GYM_ACCOUNTING_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                accounting: action.payload.data
+            });
+        case ActionTypes.LOAD_GYM_ACCOUNTING_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'load accounting data failed',
                 loading: false
             });
 

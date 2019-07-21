@@ -320,3 +320,15 @@ export function createAccountingRow(gymId, data) {
         }
     }
 }
+
+export function loadGymAccounting(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_GYM_ACCOUNTING,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/accounting',
+                params
+            }
+        }
+    }
+}
