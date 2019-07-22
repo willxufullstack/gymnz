@@ -3,6 +3,7 @@ import React from 'react';
 import Dashboard from "@material-ui/icons/Dashboard";
 import CoachIcon from "@material-ui/icons/Person";
 import LibraryBooks from "@material-ui/icons/LibraryBooks";
+import MonetizationOn from "@material-ui/icons/MonetizationOn"
 // import BubbleChart from "@material-ui/icons/BubbleChart";
 // import LocationOn from "@material-ui/icons/LocationOn";
 // import Notifications from "@material-ui/icons/Notifications";
@@ -29,6 +30,7 @@ import Customer from "-views/Customer/Customer"
 import GymSettings from "-views/GymSetting/GymSettings";
 import LinkedMonthlyReport from '-views/Report/MonthlyReport';
 import Accounting from '-views/Accounting/Accounting';
+import Reimbursement from '-views/Accounting/Reimbursement';
 
 const dashboardRoutes = [
     {
@@ -85,6 +87,14 @@ const dashboardRoutes = [
         rtlName: "账务",
         icon: MoneyIcon,
         component: ()=><Accounting/>,
+        layout: "/admin"
+    },
+    {
+        path: "/reimbursement",
+        name: "Reimbursement",
+        rtlName: "报销",
+        icon: MonetizationOn,
+        component: ()=><Reimbursement />,
         layout: "/admin"
     },
     {

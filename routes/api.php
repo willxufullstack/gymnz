@@ -54,6 +54,8 @@ Route::group([
 
     Route::resource('gym.accounting', 'AccountingController');
 
+    Route::resource('gym.reimbursement', 'ReimbursementController');
+
     Route::resource('gym.schedule', 'ScheduleController');
     Route::get('gym/{gym}/schedule/{schedule}/complete', 'ScheduleController@complete');
 });

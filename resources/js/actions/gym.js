@@ -321,6 +321,19 @@ export function createAccountingRow(gymId, data) {
     }
 }
 
+export function createReimbursement(gymId, data) {
+    return {
+        type: ActionTypes.CREATE_REIMBURSEMENT,
+        payload: {
+            request: {
+                method: 'post',
+                url: '/gym/' + gymId + '/reimbursement',
+                data
+            }
+        }
+    }
+}
+
 export function loadGymAccounting(gymId, params) {
     return {
         type: ActionTypes.LOAD_GYM_ACCOUNTING,

@@ -185,7 +185,7 @@ class CreateNewDialogue extends React.Component {
     };
 
     getDialogue = () => {
-        return <Dialog open={true} onClose={this.cancel} aria-labelledby="form-dialog-title">
+        return <Dialog fullWidth={true} open={true} onClose={this.cancel} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title">{this.props.title}</DialogTitle>
             <DialogContent>
                 <DialogContentText>

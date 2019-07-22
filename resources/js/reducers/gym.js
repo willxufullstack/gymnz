@@ -5,6 +5,7 @@ const initState = {
     coaches: [],
     schedules: [],
     accounting: [],
+    reimbursement: [],
     report: {
         orders: [],
         scheduleCountByCoach: [],
@@ -190,6 +191,19 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
+        case ActionTypes.CREATE_REIMBURSEMENT:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.CREATE_REIMBURSEMENT_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                reimbursement: [...state.reimbursement, action.payload.data],
+                successMsg: 'Create reimbursement successed',
+            });
+        case ActionTypes.CREATE_REIMBURSEMENT_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Create reimbursement failed, please try again',
+                loading: false
+            });
 
         case ActionTypes.BATCH_CREATE_CUSTOMER_DATA:
             return Object.assign({}, state, { loading: true });
