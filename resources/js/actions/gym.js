@@ -321,6 +321,18 @@ export function createAccountingRow(gymId, data) {
     }
 }
 
+export function loadGymAccounting(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_GYM_ACCOUNTING,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/accounting',
+                params
+            }
+        }
+    }
+}
+
 export function createReimbursement(gymId, data) {
     return {
         type: ActionTypes.CREATE_REIMBURSEMENT,
@@ -334,12 +346,12 @@ export function createReimbursement(gymId, data) {
     }
 }
 
-export function loadGymAccounting(gymId, params) {
+export function loadGymReimbursement(gymId, params) {
     return {
-        type: ActionTypes.LOAD_GYM_ACCOUNTING,
+        type: ActionTypes.LOAD_GYM_REIMBURSEMENT,
         payload: {
             request: {
-                url: '/gym/' + gymId + '/accounting',
+                url: '/gym/' + gymId + '/reimbursement',
                 params
             }
         }

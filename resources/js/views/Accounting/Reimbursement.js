@@ -17,8 +17,20 @@ import DayjsUtils from "@date-io/dayjs";
 
 
 const styles = {
-
+    datePicker: {
+        width: 62,
+        position: 'relative',
+        top: 5,
+        marginRight: 200,
+    },
+    actionBtn: {
+        float: 'right'
+    },
+    search: {
+        borderBottomColor: '#9c27b0'
+    }
 }
+
 
 class Reimbursement extends React.Component {
     constructor(props) {
@@ -63,10 +75,43 @@ class Reimbursement extends React.Component {
         return <CreateNewDialogue {...fields} />
     };
 
+    handleDateChange = (date) => {
+        this.setState({ date }, () => {
+            this.props.actions.loadGymReimbursement(this.props.selectedGym.id, utils.getMonthStartEnd(this.state.date));
+        });
+    };
+
+    getTable = () => {
+        const columns = [
+            { title: 'Amount', field: 'amount' },
+            { title: 'Category', field: 'category' },
+            { title: 'Detail', field: 'detail' },
+            { title: 'Operator', field: 'op.name' },
+            { title: 'Time', field: 'created_at' },
+        ];
+        const data = this.props.gym.reimbursements;
+        const dateSelector = (<MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>
+            <DatePicker className={this.props.classes.datePicker} format="MM/YYYY" openTo="month" views={["year", "month"]} value={this.state.date} onChange={this.handleDateChange} />
+        </MuiPickersUtilsProvider>);
+        const btns = (<React.Fragment>
+            {dateSelector}
+            <Button color='transparentPrimary' size='sm' onClick={() => this.setState({ showNewReimbursement: true })}><Add />Reimbursement</Button>
+        </React.Fragment>);
+        return <div><MaterialTable
+            title={btns}
+            columns={columns}
+            data={data}
+        /></div>;
+    };
+
+    componentWillMount() {
+        this.props.actions.loadGymReimbursement(this.props.selectedGym.id, utils.getMonthStartEnd(this.state.date));
+    };
+
     render() {
         return (<React.Fragment>
             {this.state.showNewReimbursement && this.getNewReimbursementDialog()}
-            <Button onClick={() => this.setState({ showNewReimbursement: true })}><Add />Reimbursement</Button>
+            {this.getTable()}
         </React.Fragment>)
     }
 }

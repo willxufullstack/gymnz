@@ -5,7 +5,7 @@ const initState = {
     coaches: [],
     schedules: [],
     accounting: [],
-    reimbursement: [],
+    reimbursements: [],
     report: {
         orders: [],
         scheduleCountByCoach: [],
@@ -139,6 +139,19 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
+        case ActionTypes.LOAD_GYM_REIMBURSEMENT:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.LOAD_GYM_REIMBURSEMENT_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                reimbursements: action.payload.data
+            });
+        case ActionTypes.LOAD_GYM_REIMBURSEMENT_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'load reimbursement data failed',
+                loading: false
+            });
+
         case ActionTypes.CREATE_ACCOUNTING_ROW:
             return Object.assign({}, state, { loading: true });
         case ActionTypes.CREATE_ACCOUNTING_ROW_SUCCESS:
@@ -196,7 +209,7 @@ const gym = (state = initState, action = NonAction) => {
         case ActionTypes.CREATE_REIMBURSEMENT_SUCCESS:
             return Object.assign({}, state, {
                 loading: false,
-                reimbursement: [...state.reimbursement, action.payload.data],
+                reimbursements: [...state.reimbursement, action.payload.data],
                 successMsg: 'Create reimbursement successed',
             });
         case ActionTypes.CREATE_REIMBURSEMENT_FAIL:

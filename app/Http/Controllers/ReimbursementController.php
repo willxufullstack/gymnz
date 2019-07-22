@@ -13,9 +13,18 @@ class ReimbursementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, $gymId)
     {
-        //
+        if (!$request->has('start') || !$request->has('end')) {
+            return response()->json(array('message' => 'missing time range'), 500);
+        }
+
+        return Reimbursement::with('op')
+            ->where('gym_id', $gymId)
+            ->where('created_at', '>=', $request->input('start'))
+            ->where('created_at', '<=', $request->input('end'))
+            ->orderBy('created_at', 'DESC')
+            ->get();
     }
 
     /**
