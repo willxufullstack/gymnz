@@ -48,7 +48,7 @@ class Customer extends React.Component {
     };
 
     refundOrder = (data, order) => {
-        this.props.actions.refundOrder(order)
+        this.props.actions.refundOrder(order, data)
             .then(() => {
                 this.setState({ refundDialogue: false });
                 this.props.actions.loadCustomerOrders(this.customerId, { gym: this.props.selectedGym.id });

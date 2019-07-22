@@ -2,11 +2,11 @@
 
 namespace App\Listeners;
 
-use App\Events\OrderCreateEvent;
+use App\Events\OrderEvent;
 use App\Accounting;
 
 
-class AccountingAction
+class OrderAccountingAction
 {
     /**
      * Create the event listener.
@@ -21,10 +21,10 @@ class AccountingAction
     /**
      * Handle the event.
      *
-     * @param  OrderCreateEvent  $event
+     * @param  OrderEvent  $event
      * @return void
      */
-    public function handle(OrderCreateEvent $event)
+    public function handle(OrderEvent $event)
     {
         $order = $event->order;
         if ($order->price <= 0) {
@@ -32,12 +32,17 @@ class AccountingAction
         }
         // generate detail
         $cate = '订单收入';
-        $detail = '#'.$order->id . ' ' . $order->customer->name . ' ' . $order->price . '/' . $order->course_amount;
+     
+        if($event->action == 'refund') {
+            $cate = '退款支出';
+        }
+
+        $detail = $event->message.' #'.$order->id . ' ' . $order->customer->name . ' ' . $order->price . '/' . $order->course_amount;
         Accounting::create([
             'category' => $cate,
             'detail' => $detail,
-            'amount' => $order->price,
-            'created_by' => $order->created_by,
+            'amount' => $event->amount,
+            'created_by' => $event->operator,
             'gym_id' => $order->gym_id,
         ]);
     }

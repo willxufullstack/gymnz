@@ -23,6 +23,7 @@ class AccountingController extends Controller
             ->where('gym_id', $gymId)
             ->where('created_at', '>=', $request->input('start'))
             ->where('created_at', '<=', $request->input('end'))
+            ->orderBy('created_at', 'DESC')
             ->get();
     }
 

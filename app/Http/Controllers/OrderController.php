@@ -96,7 +96,7 @@ class OrderController extends Controller
         $order->save();
 
         //dispatch event for accounting
-        event(new \App\Events\OrderCreateEvent($order));
+        event(new \App\Events\OrderEvent($order, $userId));
 
         return response()->json($order, 201);;
     }
@@ -157,6 +157,7 @@ class OrderController extends Controller
         }
         $order->status = 2;
         $order->save();
+        event(new \App\Events\OrderEvent($order, Auth::User()->id, 'refund', -$request->input('amount'), $request->input('reason')));
         return  response()->json($order, 200);
     }
 
