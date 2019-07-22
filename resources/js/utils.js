@@ -107,3 +107,14 @@ export function arrayToOptions(arr) {
         return { value: item, label: item };
     });
 }
+
+export function getOrderStatus(status) {
+    switch (status) {
+        case 1:
+            return 'Normal';
+        case 2:
+            return 'Refunded';
+        default:
+            return 'Unknown';
+    };
+}

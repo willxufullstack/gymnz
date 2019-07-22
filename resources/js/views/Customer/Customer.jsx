@@ -14,13 +14,15 @@ import * as utils from '-utils';
 import 'dayjs/locale/zh-cn'
 import Button from "-components/CustomButtons/Button.jsx";
 import Confirmation from "-components/CustomDialogues/Confirmation";
+import CreateNewDialogue from "../../components/CustomDialogues/CreateNewDialogue";
 
 class Customer extends React.Component {
     constructor(props) {
         super(props);
         this.customerId = parseInt(this.props.match.params.id);
         this.state = {
-            cancelSchedule: null
+            cancelSchedule: null,
+            refundDialogue: false,
         }
     }
 
@@ -41,6 +43,42 @@ class Customer extends React.Component {
         this.props.actions.completeSchedule(schedule.gym_id, schedule.id);
     };
 
+    tapRefund = (order) => {
+        this.setState({ refundDialogue: order });
+    };
+
+    refundOrder = (data, order) => {
+        this.props.actions.refundOrder(order)
+            .then(() => {
+                this.setState({ refundDialogue: false });
+                this.props.actions.loadCustomerOrders(this.customerId, { gym: this.props.selectedGym.id });
+            });
+    };
+
+    getRefundDialogue = (order) => {
+        let params = {
+            dialogue: true,
+            title: 'Refund',
+            onSave: (data) => this.refundOrder(data, order),
+            onCancel: () => { this.setState({ refundDialogue: false }) },
+            subtitle: 'Please fill the detail information for the refund',
+            inputFields: [
+                {
+                    name: 'amount',
+                    label: 'Amount',
+                    type: 'number'
+                },
+                {
+                    name: 'reason',
+                    label: 'Reason',
+                },
+            ]
+        };
+
+        return <CreateNewDialogue {...params} />;
+    }
+
+
     getBookTab = () => {
         return <Scheduling {...this.props} customerId={this.customerId} />
     };
@@ -50,8 +88,18 @@ class Customer extends React.Component {
         if (!orders) {
             return <p>No Orders</p>;
         }
-        let header = ['Price', 'Booked/Total', 'Coach', 'Created'];
-        let tableData = orders.map(r => [r.price + '', r.booked_amount + ' / ' + r.course_amount, r.coach.user.name, r.created_at]);
+        let header = ['Price', 'Booked/Total', 'Coach', 'Created', 'Status', 'Action'];
+        let tableData = orders.map(r => {
+            const btn = <Button onClick={() => this.tapRefund(r)} size='sm' color='transparentGray'>REFUND</Button>;
+            return [
+                r.price + '',
+                r.booked_amount + ' / ' + r.course_amount,
+                r.coach.user.name,
+                r.created_at,
+                utils.getOrderStatus(r.status),
+                r.status === 1 ? btn : '--',
+            ];
+        });
 
         return <Table classes={{ tableResponsive: 'no-margin-top' }}
             tableHeaderColor='primary'
@@ -60,7 +108,7 @@ class Customer extends React.Component {
         />;
     };
 
-    componentWillMount(){
+    componentWillMount() {
         this.props.actions.loadCustomerBodyDataOptions();
     }
 
@@ -87,11 +135,11 @@ class Customer extends React.Component {
     };
 
     getDataTab = () => {
-        return <CustomerDataSection options={this.props.gym.customerPage.bodyDataOptions} data={this.props.gym.customerPage.bodyData} actions={this.props.actions} customerId={this.customerId}/>;
+        return <CustomerDataSection options={this.props.gym.customerPage.bodyDataOptions} data={this.props.gym.customerPage.bodyData} actions={this.props.actions} customerId={this.customerId} />;
     };
 
     getPhotoTab = () => {
-        return <CustomerPhotoSection {...this.props} actions={this.props.actions} customerId={this.customerId}/>;
+        return <CustomerPhotoSection {...this.props} actions={this.props.actions} customerId={this.customerId} />;
     };
 
     tapTab = (tabIndex) => {
@@ -116,6 +164,7 @@ class Customer extends React.Component {
         }
         return (<React.Fragment>
             {this.state.cancelSchedule && <Confirmation {...confirmationParams} />}
+            {this.state.refundDialogue && this.getRefundDialogue(this.state.refundDialogue)}
             <Paper square>
                 <Tabs
                     title={booked + '/' + total}
@@ -130,10 +179,10 @@ class Customer extends React.Component {
                     }, {
                         tabName: unfinishedTabHeader,
                         tabContent: this.getUnfinishedTab(),
-                    },{
+                    }, {
                         tabName: "Data",
                         tabContent: this.getDataTab(),
-                    },{
+                    }, {
                         tabName: "Photo",
                         tabContent: this.getPhotoTab(),
                     }]}

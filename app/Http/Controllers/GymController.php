@@ -120,7 +120,7 @@ class GymController extends Controller
             ->unique('id')
             ->toArray();
         if (is_array($customers)) {
-            return response()->json($customers, 200);
+            return response()->json(array_values($customers), 200);
         }
         return response()->json(array('message' => 'fail'), 500);
     }

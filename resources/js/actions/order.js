@@ -12,3 +12,15 @@ export function createOrder(data) {
         }
     }
 }
+
+export function refundOrder(data) {
+    return {
+        type: ActionTypes.REFUND_ORDER,
+        payload: {
+            request:{
+                method: 'post',
+                url:'/gym/' + data.gym_id + '/order/' + data.id + '/refund',
+            }
+        }
+    }
+}

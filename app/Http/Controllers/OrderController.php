@@ -26,7 +26,7 @@ class OrderController extends Controller
             return response()->json(array('message' => 'missing time range'), 500);
         }
 
-        $orders = Order::with(['customer','coach.user'])
+        $orders = Order::with(['customer', 'coach.user'])
             ->where('gym_id', '=', $gymId)
             ->where('created_at', '>=', $request->input('start'))
             ->where('created_at', '<=', $request->input('end'))
@@ -146,6 +146,19 @@ class OrderController extends Controller
         //
     }
 
+    public function refund(Request $request, $gymId, $orderId)
+    {
+        $order = Order::where([
+            'gym_id' => $gymId,
+            'id' => $orderId,
+        ])->first();
+        if(!$order){
+            return response()->json(array('message' => 'cannot find the order'), 404);
+        }
+        $order->status = 2;
+        $order->save();
+        return  response()->json($order, 200);
+    }
 
     public function getCustomerOrders(Request $request, $customerId)
     {
@@ -161,11 +174,13 @@ class OrderController extends Controller
         return response()->json(array('message' => $ret), 500);
     }
 
-
     public function getCustomerCourseBalance(Request $request, $customerId)
     {
         $query = Order::with('coach.user')
-            ->where('customer_id', '=', $customerId);
+            ->where([
+                'customer_id' => $customerId,
+                'status' => 1,
+            ]);
         if ($request->input('gym')) {
             $query = $query->where('gym_id', '=', $request->input('gym'));
         }

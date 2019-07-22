@@ -12,6 +12,11 @@ import CardHeader from "-components/Card/CardHeader.jsx";
 import CardBody from "-components/Card/CardBody.jsx";
 import CardFooter from "-components/Card/CardFooter.jsx";
 import PropTypes from "prop-types";
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const styles = {
     cardCategoryWhite: {
@@ -113,7 +118,7 @@ class CreateNewDialogue extends React.Component {
         return validateFunc(this.state[field.name]);
     };
 
-    render() {
+    getCard = () => {
         const { classes } = this.props;
         return (<GridContainer alignItems="center" justify={"center"}>
             <GridItem xs={12} sm={12} md={8}>
@@ -160,7 +165,6 @@ class CreateNewDialogue extends React.Component {
                                     </GridItem>
                                 );
                             })}
-
                         </GridContainer>
                     </CardBody>
                     <CardFooter>
@@ -178,6 +182,67 @@ class CreateNewDialogue extends React.Component {
                 </Card>
             </GridItem>
         </GridContainer>);
+    };
+
+    getDialogue = () => {
+        return <Dialog open={true} onClose={this.cancel} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">{this.props.title}</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    {this.props.subtitle || ''}
+                </DialogContentText>
+                {this.props.inputFields.map((field) => {
+                    // selection list
+                    if (field.options) {
+                        return <GridItem gridClass={field.hide && 'hide'} key={field.name} xs={12} sm={12} md={12}>
+                            <Select
+                                className='form-selection'
+                                options={field.options}
+                                onChange={(opt) => {
+                                    this.setState({ [field.name]: opt });
+                                    this.isValid(field);
+                                }}
+                                placeholder={this.getLabel(field)}
+                                value={this.state[field.name]}
+                            />
+                        </GridItem>;
+                    }
+                    return (
+                        <GridItem gridClass={field.hide && 'hide'} key={field.name} xs={12} sm={12} md={12}>
+                            <CustomInput
+                                labelText={this.getLabel(field)}
+                                id={field.name.replace(/ /, '-')}
+                                formControlProps={{
+                                    fullWidth: true
+                                }}
+                                error={this.state[field.name] ? !this.isValid(field) : undefined}
+                                success={this.state[field.name] ? this.isValid(field) : undefined}
+                                inputProps={{
+                                    type: this.getInputType(field),
+                                    value: this.state[field.name],
+                                    onChange: this.onChange(field.name),
+                                    placeholder: field.placeholder || ''
+                                }}
+                            />
+                        </GridItem>
+                    );
+                })
+                }
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={this.cancel} color="transparentGray">Cancel</Button>
+                <Button disabled={
+                    !this.props.inputFields.reduce((preValue, curValue) => {
+                        return !!preValue && this.isValid(curValue);
+                    }, true)
+                }
+                    onClick={this.save} color="primary">OK</Button>
+            </DialogActions>
+        </Dialog>;
+    };
+
+    render() {
+        return this.props.dialogue ? this.getDialogue() : this.getCard();
     }
 }
 

@@ -177,6 +177,20 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
+        case ActionTypes.REFUND_ORDER:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.REFUND_ORDER_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                successMsg: 'Refund order successed',
+            });
+        case ActionTypes.REFUND_ORDER_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Refund order failed, please try again',
+                loading: false
+            });
+
+
         case ActionTypes.BATCH_CREATE_CUSTOMER_DATA:
             return Object.assign({}, state, { loading: true });
         case ActionTypes.BATCH_CREATE_CUSTOMER_DATA_SUCCESS:
