@@ -368,3 +368,15 @@ export function payReimbursement(gymId, reimbursementId) {
         }
     }
 }
+
+/********Salary*********/
+export function loadGymSalarySetting(gymId) {
+    return {
+        type: ActionTypes.LOAD_GYM_SALARY_SETTING,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/salarysetting',
+            }
+        }
+    }
+}

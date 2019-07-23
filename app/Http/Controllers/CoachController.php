@@ -77,9 +77,10 @@ class CoachController extends Controller
         $gym = Gym::find($gym_id);
         $coach->gym()->associate($gym);
 
-        $coach->save();
+        $success = $coach->save();
 
-        if ($coach) {
+        if ($success) {
+            event(new \App\Events\CoachAddEvent($coach));
             return response()->json($coach, 200);
         } else {
             return response()->json(array('message' => 'fail'), 500);

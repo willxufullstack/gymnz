@@ -6,6 +6,7 @@ const initState = {
     schedules: [],
     accounting: [],
     reimbursements: [],
+    salarySettings: [],
     report: {
         orders: [],
         scheduleCountByCoach: [],
@@ -125,6 +126,20 @@ const gym = (state = initState, action = NonAction) => {
                 errorMsg: 'Create coach failed, please try again',
                 loading: false
             });
+
+        case ActionTypes.LOAD_GYM_SALARY_SETTING:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.LOAD_GYM_SALARY_SETTING_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                salarySettings: action.payload.data
+            });
+        case ActionTypes.LOAD_GYM_SALARY_SETTING_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'load salary settings data failed',
+                loading: false
+            });
+
 
         case ActionTypes.LOAD_GYM_ACCOUNTING:
             return Object.assign({}, state, { loading: true });

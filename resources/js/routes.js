@@ -13,6 +13,7 @@ import OrganizationIcon from '@material-ui/icons/ViewModule';
 import CustomerIcon from '@material-ui/icons/SupervisorAccount';
 import SettingsIcon from '@material-ui/icons/Settings';
 import MoneyIcon from '@material-ui/icons/Money';
+import PaymentIcon from '@material-ui/icons/Payment';
 
 // core components/views for Admin layout
 import LinkedDashboard from "-views/Dashboard/Dashboard.jsx";
@@ -31,6 +32,7 @@ import GymSettings from "-views/GymSetting/GymSettings";
 import LinkedMonthlyReport from '-views/Report/MonthlyReport';
 import Accounting from '-views/Accounting/Accounting';
 import Reimbursement from '-views/Accounting/Reimbursement';
+import LinkedSalary from './views/Salary/Salary';
 
 const dashboardRoutes = [
     {
@@ -87,6 +89,14 @@ const dashboardRoutes = [
         rtlName: "账务",
         icon: MoneyIcon,
         component: ()=><Accounting/>,
+        layout: "/admin"
+    },
+    {
+        path: "/salary",
+        name: "Salary",
+        rtlName: "工资",
+        icon: PaymentIcon,
+        component: ()=><LinkedSalary/>,
         layout: "/admin"
     },
     {
