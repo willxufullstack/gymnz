@@ -23,6 +23,7 @@ class ReimbursementController extends Controller
             ->where('gym_id', $gymId)
             ->where('created_at', '>=', $request->input('start'))
             ->where('created_at', '<=', $request->input('end'))
+            ->where('status', 1)
             ->orderBy('created_at', 'DESC')
             ->get();
     }
@@ -94,5 +95,28 @@ class ReimbursementController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function pay(Request $request, $gymId, $reimburseId)
+    {
+        $reimbursement = Reimbursement::with('op')
+            ->where([
+                'gym_id' => $gymId,
+                'id' => $reimburseId,
+                'status' => 1
+            ])->first();
+
+        if (empty($reimbursement)) {
+            return response()->json(['message' => 'cannot find the reimbursement'], 404);
+        };
+
+        $reimbursement->status = 2;
+        $reimbursement->approved_by = Auth::User()->id;
+
+        event(new \App\Events\PayReimbursementEvent($reimbursement));
+
+        $reimbursement->save();
+
+        return response()->json($reimbursement, 200);
     }
 }

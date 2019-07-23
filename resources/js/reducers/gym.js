@@ -204,12 +204,26 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
+        case ActionTypes.PAY_REIMBURSEMENT:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.PAY_REIMBURSEMENT_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                reimbursements: state.reimbursements.filter(r => r.id !== action.payload.data.id),
+                successMsg: 'Reimbursement payment successed',
+            });
+        case ActionTypes.PAY_REIMBURSEMENT_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Pay reimbursement failed, please try again',
+                loading: false
+            });
+
         case ActionTypes.CREATE_REIMBURSEMENT:
             return Object.assign({}, state, { loading: true });
         case ActionTypes.CREATE_REIMBURSEMENT_SUCCESS:
             return Object.assign({}, state, {
                 loading: false,
-                reimbursements: [...state.reimbursement, action.payload.data],
+                reimbursements: [action.payload.data, ...state.reimbursements],
                 successMsg: 'Create reimbursement successed',
             });
         case ActionTypes.CREATE_REIMBURSEMENT_FAIL:
@@ -217,6 +231,7 @@ const gym = (state = initState, action = NonAction) => {
                 errorMsg: 'Create reimbursement failed, please try again',
                 loading: false
             });
+
 
         case ActionTypes.BATCH_CREATE_CUSTOMER_DATA:
             return Object.assign({}, state, { loading: true });

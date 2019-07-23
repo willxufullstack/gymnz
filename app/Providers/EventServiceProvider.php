@@ -22,6 +22,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\OrderEvent' => [
             'App\Listeners\OrderAccountingAction',
         ],
+        'App\Events\PayReimbursementEvent' => [
+            'App\Listeners\PayReimbursementAction',
+        ],
     ];
 
     /**

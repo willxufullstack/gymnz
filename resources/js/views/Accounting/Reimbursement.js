@@ -6,6 +6,7 @@ import { withStyles } from "@material-ui/core";
 import Button from "-components/CustomButtons/Button.jsx";
 import Add from "@material-ui/icons/Add";
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue';
+import Confirmation from '-components/CustomDialogues/Confirmation';
 import * as consts from '-const';
 import * as utils from '-utils';
 import MaterialTable from 'material-table';
@@ -38,6 +39,7 @@ class Reimbursement extends React.Component {
         this.state = {
             date: new Date(),
             showNewReimbursement: false,
+            showPayConfirmation: false
         };
     }
 
@@ -81,6 +83,25 @@ class Reimbursement extends React.Component {
         });
     };
 
+    tapPay = (reimbursement) => {
+        this.setState({ showPayConfirmation: reimbursement });
+    };
+
+    pay = () => {
+        this.props.actions.payReimbursement(this.props.selectedGym.id, this.state.showPayConfirmation.id)
+        .then(()=>{
+            this.setState({ showPayConfirmation: false });
+        });
+    };
+
+    getPayConfirmation = () => {
+        return <Confirmation
+            message='Have you finished the payment?'
+            onConfirm={this.pay}
+            onCancel={() => { this.setState({ showPayConfirmation: false }) }}
+        />;
+    };
+
     getTable = () => {
         const columns = [
             { title: 'Amount', field: 'amount' },
@@ -88,6 +109,7 @@ class Reimbursement extends React.Component {
             { title: 'Detail', field: 'detail' },
             { title: 'Operator', field: 'op.name' },
             { title: 'Time', field: 'created_at' },
+            { title: 'Action', render: rowData => <Button onClick={() => this.tapPay(rowData)} color='transparentPrimary'>Pay</Button> }
         ];
         const data = this.props.gym.reimbursements;
         const dateSelector = (<MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>
@@ -110,6 +132,7 @@ class Reimbursement extends React.Component {
 
     render() {
         return (<React.Fragment>
+            {this.state.showPayConfirmation && this.getPayConfirmation()}
             {this.state.showNewReimbursement && this.getNewReimbursementDialog()}
             {this.getTable()}
         </React.Fragment>)

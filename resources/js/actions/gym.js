@@ -357,3 +357,14 @@ export function loadGymReimbursement(gymId, params) {
         }
     }
 }
+
+export function payReimbursement(gymId, reimbursementId) {
+    return {
+        type: ActionTypes.PAY_REIMBURSEMENT,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/reimbursement/' + reimbursementId + '/pay',
+            }
+        }
+    }
+}

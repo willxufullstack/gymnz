@@ -27,9 +27,6 @@ class OrderAccountingAction
     public function handle(OrderEvent $event)
     {
         $order = $event->order;
-        if ($order->price <= 0) {
-            return;
-        }
         // generate detail
         $cate = '订单收入';
      

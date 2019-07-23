@@ -33,7 +33,7 @@ class CreateReimbursement extends Migration
 
             $table->unsignedBigInteger('created_by');
 
-            $table->smallInteger('status')->default(0);
+            $table->smallInteger('status')->default(1);
             $table->timestamps();
         });
     }
