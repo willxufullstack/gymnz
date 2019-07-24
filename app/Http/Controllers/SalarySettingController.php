@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\SalarySetting;
+use Auth;
 
 class SalarySettingController extends Controller
 {
@@ -69,9 +70,17 @@ class SalarySettingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $gymId, $id)
     {
-        //
+        $row = SalarySetting::with('coach.user')
+            ->where('id', $id)
+            ->where('gym_id', $gymId)
+            ->first();
+
+        $newData = $request->only('base', 'course_fixed', 'course_percentage', 'sale_percentage', 'tax');
+        $newData['created_by'] = Auth::User()->id;
+        $row->update($newData);
+        return $row;
     }
 
     /**

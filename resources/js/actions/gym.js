@@ -380,3 +380,16 @@ export function loadGymSalarySetting(gymId) {
         }
     }
 }
+
+export function updateGymSalarySetting(gymId, data) {
+    return {
+        type: ActionTypes.UPDATE_GYM_SALARY_SETTING,
+        payload: {
+            request: {
+                method: 'patch',
+                url: '/gym/' + gymId + '/salarysetting/' + data.id,
+                data
+            }
+        }
+    }
+}

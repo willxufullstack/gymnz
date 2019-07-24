@@ -140,6 +140,19 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
+        case ActionTypes.UPDATE_GYM_SALARY_SETTING:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.UPDATE_GYM_SALARY_SETTING_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                salarySettings: state.salarySettings.map(s => s.id === action.payload.data.id ? action.payload.data : s)
+            });
+        case ActionTypes.UPDATE_GYM_SALARY_SETTING_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'upload salary settings data failed',
+                loading: false
+            });
+
 
         case ActionTypes.LOAD_GYM_ACCOUNTING:
             return Object.assign({}, state, { loading: true });

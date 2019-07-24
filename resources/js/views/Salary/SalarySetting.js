@@ -28,17 +28,26 @@ class SalarySetting extends React.Component {
 
     getTable = () => {
         const columns = [
-            { title: 'Name', field: 'coach.user.name' },
-            { title: 'Base', field: 'base' },
-            { title: 'Course(Fixed)', field: 'course_fixed' },
-            { title: 'Course(%)', field: 'course_percentage' },
-            { title: 'Sale(%)', field: 'sale_percentage' },
+            { title: 'Name', field: 'coach.user.name', editable: 'never' },
+            { title: 'Base', field: 'base', type: 'numeric' },
+            { title: 'Course(Fixed)', field: 'course_fixed', type: 'numeric' },
+            { title: 'Course(%)', field: 'course_percentage', type: 'numeric' },
+            { title: 'Sale(%)', field: 'sale_percentage', type: 'numeric' },
         ];
         const data = this.props.salarySettings;
         return <div><MaterialTable
             title={'Salary Setting'}
             columns={columns}
             data={data}
+            editable={{
+                onRowUpdate: (newData, oldData) =>
+                    new Promise((resolve, reject) => {
+                        // call update 
+                        // WARNING: https://github.com/mbrn/material-table/issues/615
+                        this.props.actions.updateGymSalarySetting(this.props.selectedGym.id, newData)
+                            .then(resolve);
+                    }),
+            }}
             options={
                 {
                     search: false,
