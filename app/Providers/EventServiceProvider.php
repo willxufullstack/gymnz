@@ -28,6 +28,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\CoachAddEvent' => [
             'App\Listeners\SalarySettingAddAction',
         ],
+        'App\Events\PaySalaryEvent' => [
+            'App\Listeners\SalaryPaymentAccountingAction',
+        ],
     ];
 
     /**

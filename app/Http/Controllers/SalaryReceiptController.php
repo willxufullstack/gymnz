@@ -117,4 +117,24 @@ class SalaryReceiptController extends Controller
     {
         //
     }
+
+    public function pay(Request $request, $gymId, $id)
+    {
+        $receipt = SalaryReceipt::with('coach.user')
+            ->where('id', $id)
+            ->where('gym_id', $gymId)
+            ->where('status', 1)
+            ->first();
+        if (empty($receipt)) {
+            return response()->json(array('message' => 'cannot find the salary receipt'), 404);
+        }
+
+        $receipt->status = 2;
+        $receipt->created_by = Auth::User()->id;
+        $receipt->save();
+
+        event(new \App\Events\PaySalaryEvent($receipt));
+
+        return response()->json($receipt, 200);
+    }
 }

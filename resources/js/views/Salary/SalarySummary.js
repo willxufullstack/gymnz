@@ -50,7 +50,9 @@ class SalarySummary extends React.Component {
         // TODO
         this.props.actions.paySalary(this.props.selectedGym.id, this.state.showPayConfirmation.id)
             .then(() => {
-                this.setState({ showPayConfirmation: false });
+                this.setState({ showPayConfirmation: false }, () => {
+                    this.props.actions.loadGymSalary(this.props.selectedGym.id, { month: dayjs(this.state.date).format('YYYY-MM') });
+                });
             });
     };
 
@@ -69,7 +71,7 @@ class SalarySummary extends React.Component {
             { title: 'Base', field: 'base' },
             { title: 'Tax', field: 'tax', render: rowData => `-${rowData.tax}` },
             { title: 'Course', field: 'course_count', render: rowData => `${rowData.course_fixed} * ${rowData.course_count}` },
-            { title: 'Action', render: rowData => rowData.status === 2 ? '' : <Button onClick={() => this.tapPay(rowData)} color='transparentPrimary'>Pay</Button> }
+            { title: 'Action', render: rowData => rowData.status === 2 ? '--' : <Button onClick={() => this.tapPay(rowData)} color='transparentPrimary'>Pay</Button> }
         ];
         const data = this.props.gym.salaryReceipts;
         const dateSelector = (<MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>

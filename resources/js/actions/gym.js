@@ -383,6 +383,18 @@ export function loadGymSalary(gymId, params) {
     }
 }
 
+export function paySalary(gymId, receiptId, data={}) {
+    return {
+        type: ActionTypes.PAY_SALARY,
+        payload: {
+            request: {
+                method: 'post',
+                url: '/gym/' + gymId + '/salaryreceipt/' + receiptId + '/pay',
+                data
+            }
+        }
+    }
+}
 
 export function loadGymSalarySetting(gymId) {
     return {

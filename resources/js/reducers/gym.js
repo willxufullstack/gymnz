@@ -128,6 +128,19 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
+        case ActionTypes.PAY_SALARY:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.PAY_SALARY_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                successMsg: 'salary payment has been proceed',
+            });
+        case ActionTypes.PAY_SALARY_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'pay salary failed',
+                loading: false
+            });
+
         case ActionTypes.LOAD_GYM_SALARY:
             return Object.assign({}, state, { loading: true });
         case ActionTypes.LOAD_GYM_SALARY_SUCCESS:
