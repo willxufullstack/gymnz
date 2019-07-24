@@ -61,4 +61,5 @@ Route::group([
     Route::get('gym/{gym}/schedule/{schedule}/complete', 'ScheduleController@complete');
 
     Route::resource('gym.salarysetting', 'SalarySettingController');
+    Route::resource('gym.salaryreceipt', 'SalaryReceiptController');
 });

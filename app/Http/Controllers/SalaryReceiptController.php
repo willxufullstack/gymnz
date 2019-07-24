@@ -1,0 +1,120 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\SalaryReceipt;
+use App\SalarySetting;
+use Auth;
+
+class SalaryReceiptController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request, $gymId)
+    {
+        if (!$request->has('month')) {
+            return response()->json(array('message' => 'missing time range'), 500);
+        }
+
+        $query = SalaryReceipt::with('coach.user')
+            ->where('month', $request->input('month'))
+            ->where('gym_id', $gymId)
+            ->where('status', '>=', 1);
+
+        $receipts = $query->get();
+
+        if (count($receipts) == 0) {
+
+            // 1. inital from salary setting
+            $settings = SalarySetting::where('gym_id', $gymId)->get();
+            foreach ($settings as $setting) {
+                $receipt = $setting->toSalaryReceipt();
+                $receipt->month = $request->input('month');
+                $receipt->created_by = Auth::User()->id;
+                $receipts[] = $receipt;
+            }
+        }
+
+        foreach ($receipts as $r) {
+            // '1' indicates it has not been archieved
+            if ($r->status == 1) {
+                $r->syncWithSetting();
+                $r->updateTotal();
+                $r->save();
+            }
+        }
+
+
+        return $query->get();
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}

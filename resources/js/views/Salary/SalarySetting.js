@@ -1,10 +1,5 @@
 import React from "react";
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as Actions from '../../actions'
-import { withStyles } from "@material-ui/core";
 import MaterialTable from 'material-table';
-
 
 const styles = {
     datePicker: {

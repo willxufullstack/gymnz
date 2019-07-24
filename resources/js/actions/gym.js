@@ -370,6 +370,20 @@ export function payReimbursement(gymId, reimbursementId) {
 }
 
 /********Salary*********/
+
+export function loadGymSalary(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_GYM_SALARY,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/salaryreceipt',
+                params
+            }
+        }
+    }
+}
+
+
 export function loadGymSalarySetting(gymId) {
     return {
         type: ActionTypes.LOAD_GYM_SALARY_SETTING,

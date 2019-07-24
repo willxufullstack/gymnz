@@ -6,6 +6,7 @@ import * as Actions from "../../actions";
 import Paper from '@material-ui/core/Paper';
 import Tabs from "-components/CustomTabs/CustomTabs.jsx";
 import SalarySetting from "./SalarySetting";
+import SalarySummary from "./SalarySummary";
 
 class Salary extends React.Component {
 
@@ -28,6 +29,10 @@ class Salary extends React.Component {
         return <SalarySetting actions={this.props.actions} selectedGym={this.props.selectedGym} salarySettings={this.props.gym.salarySettings} />;
     };
 
+    getSummaryTab = () => {
+        return <SalarySummary {...this.props} />;
+    };
+
     tapTab = (tabIndex) => {
         this.setState({ selectedTabIndex: tabIndex }, () => {
             this.refresh();
@@ -45,6 +50,9 @@ class Salary extends React.Component {
                 headerColor="primary"
                 onSwitch={this.tapTab}
                 tabs={[{
+                    tabName: "Summary",
+                    tabContent: this.getSummaryTab(),
+                }, {
                     tabName: "Setting",
                     tabContent: this.getSettingTab(),
                 }]}
