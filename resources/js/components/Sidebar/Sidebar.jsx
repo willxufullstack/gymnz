@@ -10,12 +10,11 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Icon from "@material-ui/core/Icon";
-// core components
-import AdminNavbarLinks from "-components/Navbars/AdminNavbarLinks.jsx";
-import RTLNavbarLinks from "-components/Navbars/RTLNavbarLinks.jsx";
-
 import sidebarStyle from "-assets/jss/material-dashboard-react/components/sidebarStyle.jsx";
 import SimpleMenu from "-components/SimpleMenu/SimpleMenu";
+import Button from "-components/CustomButtons/Button";
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import ArrowBack from '@material-ui/icons/ArrowBack';
 
 const Sidebar = ({ ...props }) => {
   // verifies if routeName is the one active (in browser input)
@@ -85,7 +84,7 @@ const Sidebar = ({ ...props }) => {
       }
     });
     return (<div className={classes.logo}>
-      <SimpleMenu displayText={props.setting.selectedGym.name} items={menuItems} />
+      <SimpleMenu icon={<ExpandMore/>} displayText={props.setting.selectedGym.name} items={menuItems} />
     </div>);
   };
   return (
@@ -106,10 +105,6 @@ const Sidebar = ({ ...props }) => {
           }}
         >
           {getBrand()}
-          <div className={classes.sidebarWrapper}>
-            {props.rtlActive ? <RTLNavbarLinks /> : <AdminNavbarLinks />}
-            {links}
-          </div>
           {image !== undefined ? (
             <div
               className={classes.background}
@@ -131,6 +126,9 @@ const Sidebar = ({ ...props }) => {
         >
           {getBrand()}
           <div className={classes.sidebarWrapper}>{links}</div>
+          <Button style={{
+            zIndex: 100
+          }} color='transparentGray' onClick={LogoutFunc}><ArrowBack/>logout</Button>
           {image !== undefined ? (
             <div
               className={classes.background}

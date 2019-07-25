@@ -8,11 +8,9 @@ import "perfect-scrollbar/css/perfect-scrollbar.css";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 // core components
-import Navbar from "-components/Navbars/Navbar.jsx";
 import Sidebar from "-components/Sidebar/Sidebar.jsx";
 import routes from "../routes.js";
 import image from "-assets/img/sidebar-2.jpg";
-import logo from "-assets/img/reactlogo.png";
 import { bindActionCreators } from "redux";
 import * as Actions from "../actions";
 import connect from "react-redux/es/connect/connect";
@@ -103,7 +101,6 @@ class Admin extends React.Component {
                 <Sidebar
                     routes={routes}
                     logoText={this.props.setting.selectedGym.name}
-                    logo={logo}
                     image={this.state.image}
                     handleDrawerToggle={this.handleDrawerToggle}
                     open={this.state.mobileOpen}
@@ -111,11 +108,6 @@ class Admin extends React.Component {
                     {...rest}
                 />
                 <div className={classes.mainPanel} ref="mainPanel">
-                    <Navbar
-                        routes={routes}
-                        handleDrawerToggle={this.handleDrawerToggle}
-                        {...rest}
-                    />
                     <div className={classes.content}>
                         {(this.props.gym.loading || this.props.setting.loading) && <LoadingLayer />}
                         <Snackbar
@@ -133,7 +125,7 @@ class Admin extends React.Component {
                             icon={AddAlert}
                             autoHideDuration={6000}
                             message={this.props.gym.successMsg || this.props.setting.successMsg}
-                            open={!! (this.props.gym.successMsg || this.props.setting.successMsg)}
+                            open={!!(this.props.gym.successMsg || this.props.setting.successMsg)}
                             closeNotification={() => this.props.actions.closeSuccessMsg()}
                             onClose={() => this.props.actions.closeSuccessMsg()}
                             close

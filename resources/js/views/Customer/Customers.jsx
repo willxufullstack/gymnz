@@ -32,15 +32,16 @@ class Customers extends React.Component {
 
         return (<div className='customers-page' >
             <MaterialTable
+                title='Customers'
                 columns={columns}
                 data={this.props.gym.customers}
                 onRowClick={this.onRowClick}
-                options = {{
+                options={{
                     pageSize: 10,
                     pageSizeOptions: []
                 }}
             />
-          </div>);
+        </div>);
     }
 }
 

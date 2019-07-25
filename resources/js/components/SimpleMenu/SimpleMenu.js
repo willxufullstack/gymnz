@@ -4,7 +4,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
-function SimpleMenu({...props}) {
+function SimpleMenu({ ...props }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     function handleClick(event) {
@@ -31,6 +31,7 @@ function SimpleMenu({...props}) {
                         }}
                     >
                         {props.displayText || ''}
+                        {props.icon || ''}
                     </Button>
 
                     <Menu id="simple-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
