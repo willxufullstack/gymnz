@@ -4,7 +4,7 @@ import * as Actions from "../../actions";
 import React from "react";
 import Card from "-components/Card/Card.jsx";
 import CardBody from "-components/Card/CardBody.jsx";
-import Table from "-components/Table/Table.jsx";
+import MaterialTable from 'material-table';
 
 import "../../../sass/customer.scss"
 
@@ -17,24 +17,30 @@ class Customers extends React.Component {
         return this.props.gym.customers.map(c => [c.name, c.email, c.sex ? 'M' : 'F']);
     };
 
-    onRowClick = (row) => {
-        let customerId = this.props.gym.customers[row].id;
-        this.props.history.push({pathname: `customer/${customerId}`});
+    onRowClick = (_, row) => {
+        let customerId = row.id;
+        this.props.history.push({ pathname: `customer/${customerId}` });
     };
 
     render() {
         const header = ['Name', 'Email', 'Sex'];
-        return (<div className='customers-page'>
-                <Card>
-                    <CardBody>
-                        <Table classes={{ tableResponsive: 'no-margin-top' }}
-                            tableHeaderColor="primary"
-                            tableHead={header}
-                            onRowClick={this.onRowClick}
-                            tableData={this.getCustomerListData()}
-                        />
-                    </CardBody>
-                </Card></div>);
+        const columns = [
+            { title: 'Name', field: 'name' },
+            { title: 'Phone', render: row => row.email.split('@')[0] },
+            { title: 'Sex', field: 'sex', render: row => row.sex ? 'M' : 'F' }
+        ]
+
+        return (<div className='customers-page' >
+            <MaterialTable
+                columns={columns}
+                data={this.props.gym.customers}
+                onRowClick={this.onRowClick}
+                options = {{
+                    pageSize: 10,
+                    pageSizeOptions: []
+                }}
+            />
+          </div>);
     }
 }
 
