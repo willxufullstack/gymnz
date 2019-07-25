@@ -102,9 +102,23 @@ class SalaryReceiptController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $gymId, $id)
     {
-        //
+        $receipt = SalaryReceipt::with('coach.user')
+            ->where('id', $id)
+            ->where('gym_id', $gymId)
+            ->where('status', 1)
+            ->first();
+        if (empty($receipt)) {
+            return response()->json(array('message' => 'cannot find the salary receipt'), 404);
+        }
+        $updateFields = $request->only('adjustment', 'adjustment_reason');
+        $receipt->created_by = Auth::User()->id;
+        $receipt->update($updateFields);
+        $receipt->updateTotal();
+        $receipt->save();
+
+        return response()->json($receipt, 200);
     }
 
     /**

@@ -7,6 +7,7 @@ import Button from "-components/CustomButtons/Button.jsx";
 import Add from "@material-ui/icons/Add";
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue';
 import Confirmation from '-components/CustomDialogues/Confirmation';
+import Pay from '@material-ui/icons/PlayCircleOutline';
 import * as consts from '-const';
 import * as utils from '-utils';
 import MaterialTable from 'material-table';
@@ -109,7 +110,7 @@ class Reimbursement extends React.Component {
             { title: 'Detail', field: 'detail' },
             { title: 'Operator', field: 'op.name' },
             { title: 'Time', field: 'created_at' },
-            { title: 'Action', render: rowData => <Button onClick={() => this.tapPay(rowData)} color='transparentPrimary'>Pay</Button> }
+            { title: '', render: rowData => <Button onClick={() => this.tapPay(rowData)} color='transparentPrimary'><Pay/>Pay</Button> }
         ];
         const data = this.props.gym.reimbursements;
         const dateSelector = (<MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>

@@ -396,6 +396,19 @@ export function paySalary(gymId, receiptId, data={}) {
     }
 }
 
+export function updateSalaryReceipt(gymId, data) {
+    return {
+        type: ActionTypes.UPDATE_SALARY_RECEIPT,
+        payload: {
+            request: {
+                method: 'patch',
+                url: '/gym/' + gymId + '/salaryreceipt/' + data.id,
+                data
+            }
+        }
+    }
+}
+
 export function loadGymSalarySetting(gymId) {
     return {
         type: ActionTypes.LOAD_GYM_SALARY_SETTING,

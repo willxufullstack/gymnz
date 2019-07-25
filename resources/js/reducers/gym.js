@@ -141,6 +141,20 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
+        case ActionTypes.UPDATE_SALARY_RECEIPT:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.UPDATE_SALARY_RECEIPT_SUCCESS:
+            return Object.assign({}, state, {
+                salaryReceipts: state.salaryReceipts.map(r => r.id === action.payload.data.id ? action.payload.data : r),
+                loading: false,
+                successMsg: 'adjustment has been proceed',
+            });
+        case ActionTypes.UPDATE_SALARY_RECEIPT_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'adjustment save failed',
+                loading: false
+            });
+
         case ActionTypes.LOAD_GYM_SALARY:
             return Object.assign({}, state, { loading: true });
         case ActionTypes.LOAD_GYM_SALARY_SUCCESS:
