@@ -1,38 +1,15 @@
 import React from 'react';
-// @material-ui/icons
 import Dashboard from "@material-ui/icons/Dashboard";
-import CoachIcon from "@material-ui/icons/Person";
 import LibraryBooks from "@material-ui/icons/LibraryBooks";
-import MonetizationOn from "@material-ui/icons/MonetizationOn"
-// import BubbleChart from "@material-ui/icons/BubbleChart";
-// import LocationOn from "@material-ui/icons/LocationOn";
-// import Notifications from "@material-ui/icons/Notifications";
-// import Unarchive from "@material-ui/icons/Unarchive";
-// import Language from "@material-ui/icons/Language";
-import OrganizationIcon from '@material-ui/icons/ViewModule';
 import CustomerIcon from '@material-ui/icons/SupervisorAccount';
 import SettingsIcon from '@material-ui/icons/Settings';
 import MoneyIcon from '@material-ui/icons/Money';
-import PaymentIcon from '@material-ui/icons/Payment';
-
-// core components/views for Admin layout
 import LinkedDashboard from "-views/Dashboard/Dashboard.jsx";
-// import UserProfile from "-views/UserProfile/UserProfile.jsx";
-// import TableList from "-views/TableList/TableList.jsx";
-// import Typography from "-views/Typography/Typography.jsx";
-// import Icons from "-views/Icons/Icons.jsx";
-// import Maps from "-views/Maps/Maps.jsx";
-// import NotificationsPage from "-views/Notifications/Notifications.jsx";
-// import UpgradeToPro from "-views/UpgradeToPro/UpgradeToPro.jsx";
-import Organization from "-views/Organization/Organization.jsx";
-import LinkedCoach from "-views/Coach/Coach";
 import Customers from "-views/Customer/Customers";
 import Customer from "-views/Customer/Customer"
 import GymSettings from "-views/GymSetting/GymSettings";
 import LinkedMonthlyReport from '-views/Report/MonthlyReport';
-import Accounting from '-views/Accounting/Accounting';
-import Reimbursement from '-views/Accounting/Reimbursement';
-import LinkedSalary from './views/Salary/Salary';
+import AccountingPage from '-views/Accounting/AccountingPage';
 
 const dashboardRoutes = [
     {
@@ -52,22 +29,6 @@ const dashboardRoutes = [
         layout: "/admin"
     },
     {
-        path: "/coach",
-        name: "Coach",
-        rtlName: "教练管理页",
-        icon: CoachIcon,
-        component:  () => <LinkedCoach/>,
-        layout: "/admin"
-    },
-    {
-        path: "/org",
-        name: "Organization",
-        rtlName: "分公司",
-        icon: OrganizationIcon,
-        component: () => <Organization/>,
-        layout: "/admin"
-    },
-    {
         path: "/report/monthly",
         name: "Report",
         rtlName: "",
@@ -76,35 +37,11 @@ const dashboardRoutes = [
         layout: "/admin"
     },
     {
-        path: "/setting",
-        name: "Setting",
-        rtlName: "健身房管理页",
-        icon: SettingsIcon,
-        component: ()=><GymSettings/>,
-        layout: "/admin"
-    },
-    {
         path: "/accounting",
-        name: "Accounting",
-        rtlName: "账务",
+        name: "Finance",
+        rtlName: "财务",
         icon: MoneyIcon,
-        component: ()=><Accounting/>,
-        layout: "/admin"
-    },
-    {
-        path: "/salary",
-        name: "Salary",
-        rtlName: "工资",
-        icon: PaymentIcon,
-        component: ()=><LinkedSalary/>,
-        layout: "/admin"
-    },
-    {
-        path: "/reimbursement",
-        name: "Reimbursement",
-        rtlName: "报销",
-        icon: MonetizationOn,
-        component: ()=><Reimbursement />,
+        component: ()=><AccountingPage/>,
         layout: "/admin"
     },
     {
@@ -115,6 +52,14 @@ const dashboardRoutes = [
         icon: '',
         // props is to pass the url
         component: props => <Customer {...props}/>,
+        layout: "/admin"
+    },
+    {
+        path: "/setting",
+        name: "Manage",
+        rtlName: "健身房管理页",
+        icon: SettingsIcon,
+        component: ()=><GymSettings/>,
         layout: "/admin"
     },
     // {

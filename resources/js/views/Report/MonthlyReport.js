@@ -4,7 +4,6 @@ import { bindActionCreators } from "redux";
 import * as Actions from "../../actions";
 // react plugin for creating charts
 import ChartistGraph from "react-chartist";
-import Paper from '@material-ui/core/Paper';
 import Tabs from "-components/CustomTabs/CustomTabs.jsx";
 import Table from "-components/Table/Table.jsx";
 import * as utils from "-utils";
@@ -171,8 +170,7 @@ class MonthlyReport extends React.Component {
             <DatePicker format="MM/YYYY" className="report-month-selector" openTo="month" views={["year", "month"]} value={this.state.date} onChange={this.handleDateChange} />
         </MuiPickersUtilsProvider>);
 
-        return (<Paper square>
-            <Tabs
+        return (<Tabs
                 title={dateSelector}
                 headerColor="primary"
                 onSwitch={this.tapTab}
@@ -189,8 +187,7 @@ class MonthlyReport extends React.Component {
                     tabName: "Customer",
                     tabContent: this.getScheduleCountByCustomerTab(),
                 }]}
-            />
-        </Paper>);
+            />);
     }
 }
 

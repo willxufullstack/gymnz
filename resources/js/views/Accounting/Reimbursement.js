@@ -1,7 +1,4 @@
 import React from "react";
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as Actions from '../../actions'
 import { withStyles } from "@material-ui/core";
 import Button from "-components/CustomButtons/Button.jsx";
 import Add from "@material-ui/icons/Add";
@@ -140,22 +137,4 @@ class Reimbursement extends React.Component {
     }
 }
 
-const mapStoreToProps = (store) => {
-    return {
-        gym: store.gym,
-        selectedGym: store.setting.selectedGym
-    };
-};
-
-function mapDispatchToProps(dispatch) {
-    return {
-        actions: bindActionCreators(Actions, dispatch)
-    };
-}
-
-const LinkedReimbursement = connect(
-    mapStoreToProps,
-    mapDispatchToProps
-)(Reimbursement);
-
-export default withStyles(styles)(LinkedReimbursement);
+export default withStyles(styles)(Reimbursement);

@@ -12,10 +12,6 @@ import Card from "-components/Card/Card.jsx";
 import CardHeader from "-components/Card/CardHeader.jsx";
 import CardIcon from "-components/Card/CardIcon.jsx";
 import CardFooter from "-components/Card/CardFooter.jsx";
-import dashboardStyle from "-assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as Actions from '../../actions/gym';
 import "../../../sass/coach.scss"
 import CardBody from "-components/Card/CardBody";
 import classNames from "classnames"
@@ -94,22 +90,22 @@ class Coach extends React.Component {
                             {
                                 this.props.gym.coaches.map((item) => {
                                     return (
-                                        <GridItem key={item.id} xs={12} sm={6} md={6} lg={4}>
+                                        <GridItem key={item.id} xs={12} sm={6} md={3} lg={3}>
                                             <Card>
-                                                <CardHeader color="primary" stats icon>
-                                                    <CardIcon color="primary" style={{ width: '100%' }}>
-                                                        <h4>{item.user.email}</h4>
+                                                <CardHeader color="rose" icon>
+                                                    <CardIcon color="rose" style={{ width: '100%' }}>
+                                                        <h4>{item.user.email.split('@')[0]}</h4>
                                                     </CardIcon>
                                                 </CardHeader>
                                                 <CardBody>
                                                     <h3>{item.user.name}</h3>
                                                 </CardBody>
                                                 <CardFooter stats style={{ marginTop: 0 }}>
-                                                    <div>
+                                                    {/* <div>
                                                         {item.user.sex ? 'Male' : 'Female'}
-                                                    </div>
+                                                    </div> */}
                                                     <div>
-                                                        <Button onClick={this.showDeleteCoachConfirmation(item)}>Delete</Button>
+                                                        <Button size='sm' color='transparentGray' onClick={this.showDeleteCoachConfirmation(item)}>Delete</Button>
                                                     </div>
                                                 </CardFooter>
                                             </Card>
@@ -118,7 +114,7 @@ class Coach extends React.Component {
                                 })
                             }
                             {/*here add new coach*/}
-                            <Button justIcon round className="new-coach-btn" onClick={this.showNewCoach}><Add /></Button>
+                            <Button color='transparentGray' justIcon round className="new-coach-btn" onClick={this.showNewCoach}><Add /></Button>
                         </GridContainer>}
                     {/* create coach dialogue */}
                     {
@@ -138,26 +134,5 @@ class Coach extends React.Component {
     }
 }
 
-Coach.propTypes = {
-    classes: PropTypes.object.isRequired
-};
 
-const mapStoreToProps = (store) => {
-    return {
-        gym: store.gym,
-        selectedGym: store.setting.selectedGym
-    };
-};
-
-function mapDispatchToProps(dispatch) {
-    return {
-        actions: bindActionCreators(Actions, dispatch)
-    };
-}
-
-const LinkedCoach = connect(
-    mapStoreToProps,
-    mapDispatchToProps
-)(Coach);
-
-export default withStyles(dashboardStyle)(LinkedCoach);
+export default Coach;

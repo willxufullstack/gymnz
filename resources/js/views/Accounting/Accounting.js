@@ -155,22 +155,4 @@ class Accounting extends React.Component {
     }
 }
 
-const mapStoreToProps = (store) => {
-    return {
-        gym: store.gym,
-        selectedGym: store.setting.selectedGym
-    };
-};
-
-function mapDispatchToProps(dispatch) {
-    return {
-        actions: bindActionCreators(Actions, dispatch)
-    };
-}
-
-const LinkedAccounting = connect(
-    mapStoreToProps,
-    mapDispatchToProps
-)(Accounting);
-
-export default withStyles(styles)(LinkedAccounting);
+export default withStyles(styles)(Accounting);

@@ -28,6 +28,7 @@ class SalarySetting extends React.Component {
             { title: 'Course(Fixed)', field: 'course_fixed', type: 'numeric' },
             { title: 'Course(%)', field: 'course_percentage', type: 'numeric' },
             { title: 'Sale(%)', field: 'sale_percentage', type: 'numeric' },
+            { title: 'Tax', field: 'tax', type: 'numeric' },
         ];
         const data = this.props.salarySettings;
         return <div><MaterialTable

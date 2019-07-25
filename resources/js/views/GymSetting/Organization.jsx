@@ -1,8 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
-// @material-ui/core
-import withStyles from "@material-ui/core/styles/withStyles";
-// @material-ui/icons
 import Button from "-components/CustomButtons/Button.jsx";
 import Add from "@material-ui/icons/Add"
 import List from '@material-ui/core/List';
@@ -15,10 +11,6 @@ import Card from "-components/Card/Card.jsx";
 import CardHeader from "-components/Card/CardHeader.jsx";
 import CardIcon from "-components/Card/CardIcon.jsx";
 import CardFooter from "-components/Card/CardFooter.jsx";
-import dashboardStyle from "-assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import * as Actions from '../../actions/organization';
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue';
 import "../../../sass/org.scss"
 import CardBody from "-components/Card/CardBody";
@@ -42,7 +34,7 @@ class Organization extends React.Component {
     };
 
     showAddGym = (org) => () => {
-        this.setState({activeOrg: org}, () => {
+        this.setState({ activeOrg: org }, () => {
             this.props.actions.showNewGym();
         });
     };
@@ -55,9 +47,9 @@ class Organization extends React.Component {
         this.setState({ showDeleteConfirmation: false });
     };
     deleteOrg = () => {
-        this.setState({ showDeleteConfirmation: false });  
+        this.setState({ showDeleteConfirmation: false });
         this.props.actions.deleteOrg(this.state.activeOrg.id);
-        
+
     };
 
     componentWillMount = () => {
@@ -65,7 +57,7 @@ class Organization extends React.Component {
         this.props.actions.loadGym();
     };
 
-    getDialogue = () =>{
+    getDialogue = () => {
         const orgFields = {
             onCancel: this.props.actions.cancelNewOrg,
             onSave: this.props.actions.createOrg,
@@ -89,11 +81,11 @@ class Organization extends React.Component {
                 name: 'description',
             }]
         };
-        if(this.props.organization.showNewOrg) {
-            return <CreateNewDialogue {...orgFields}/>
+        if (this.props.organization.showNewOrg) {
+            return <CreateNewDialogue {...orgFields} />
         }
-        if(this.props.organization.showNewGym) {
-            return <CreateNewDialogue {...gymFields}/>
+        if (this.props.organization.showNewGym) {
+            return <CreateNewDialogue {...gymFields} />
         }
     };
 
@@ -103,13 +95,13 @@ class Organization extends React.Component {
             onCancel: this.hideDeleteOrgConfirmation,
             onConfirm: this.deleteOrg
         };
-        const {classes} = this.props;
+        const { classes } = this.props;
 
         return (
             <React.Fragment>
                 {this.state.showDeleteConfirmation && <Confirmation {...deleteOrgParams} />}
-                {this.props.organization.loading && <LoadingLayer/>}
-                <div className={classNames({'loading': this.props.organization.loading})}>
+                {this.props.organization.loading && <LoadingLayer />}
+                <div className={classNames({ 'loading': this.props.organization.loading })}>
                     {this.getDialogue()}
                     {/* organization list page */}
                     {
@@ -119,13 +111,12 @@ class Organization extends React.Component {
                             {
                                 this.props.organization.org.map((item) => {
                                     return (
-                                        <GridItem key={item.id} xs={12} sm={6} md={6} lg={4}>
+                                        <GridItem key={item.id} xs={12} sm={6} md={4} lg={4}>
                                             <Card>
-                                                <CardHeader color="primary" stats icon>
-                                                    <CardIcon color="primary" style={{width: '100%'}}>
+                                                <CardHeader color="info" icon>
+                                                    <CardIcon color="info" style={{ width: '100%' }}>
                                                         <h4>{item.name}</h4>
                                                     </CardIcon>
-                                                    {/*<h3 className={classes.cardTitle}>{item.description}</h3>*/}
                                                 </CardHeader>
                                                 <CardBody>
                                                     {this.props.organization.gym.filter(gym => gym.org_id === item.id).length ?
@@ -134,22 +125,20 @@ class Organization extends React.Component {
                                                                 .filter(gym => gym.org_id === item.id)
                                                                 .map(item => {
                                                                     return <ListItem key={item.id} button>
-                                                                        <ListItemText primary={item.name}/>
+                                                                        <ListItemText primary={item.name} />
                                                                     </ListItem>;
                                                                 })}
                                                         </List>
                                                         :
                                                         <h4>No gym found</h4>
                                                     }
-                                                </CardBody>
-                                                <CardFooter stats style={{marginTop: 0}}>
-                                                    <div className={classes.stats}>
-                                                    </div>
-                                                    <Button size="sm" onClick={this.showAddGym(item)}>
-                                                        Add Gym
+                                                    <Button size="sm" color='transparentPrimary' onClick={this.showAddGym(item)}>
+                                                        <Add /> Add More Gym
                                                     </Button>
-                                                    <Button size="sm" onClick={this.showDeleteOrgConfirmation(item)}>
-                                                        Delete Org
+                                                </CardBody>
+                                                <CardFooter stats style={{ marginTop: 0 }}>
+                                                    <Button size="sm" color='transparentGray' onClick={this.showDeleteOrgConfirmation(item)}>
+                                                        Delete
                                                     </Button>
                                                 </CardFooter>
                                             </Card>
@@ -158,7 +147,7 @@ class Organization extends React.Component {
                                 })
                             }
                             {/*here add new organization*/}
-                            <Button justIcon round className="new-org-btn" onClick={this.showAddOrg}><Add/></Button>
+                            <Button justIcon round color='transparentGray' className="new-org-btn" onClick={this.showAddOrg}><Add /></Button>
                         </GridContainer>
                     }
                 </div>
@@ -176,25 +165,4 @@ class Organization extends React.Component {
     }
 }
 
-Organization.propTypes = {
-    classes: PropTypes.object.isRequired
-};
-
-const mapStoreToProps = (store) => {
-    return {
-        organization: store.organization
-    };
-};
-
-function mapDispatchToProps(dispatch) {
-    return {
-        actions: bindActionCreators(Actions, dispatch)
-    };
-}
-
-const LinkedOrganization = connect(
-    mapStoreToProps,
-    mapDispatchToProps
-)(Organization);
-
-export default withStyles(dashboardStyle)(LinkedOrganization);
+export default Organization;

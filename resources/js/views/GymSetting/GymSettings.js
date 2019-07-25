@@ -1,22 +1,25 @@
 import React from 'react'
 import Card from "-components/Card/Card";
-import CardHeader from "-components/Card/CardHeader";
 import CardBody from "-components/Card/CardBody";
 import GridItem from "-components/Grid/GridItem";
 import GridContainer from "-components/Grid/GridContainer";
 import InputRange from 'react-input-range';
 import "react-input-range/lib/css/index.css"
 import "../../../sass/settings.scss"
-import {bindActionCreators} from "redux";
-import * as Actions from "../../actions/organization";
+import { bindActionCreators } from "redux";
+import * as Actions from "../../actions";
 import connect from "react-redux/es/connect/connect";
 import CardFooter from "-components/Card/CardFooter";
 import Button from "-components/CustomButtons/Button";
+import Tabs from "-components/CustomTabs/CustomTabs.jsx";
+import Coach from "./Coach";
+import Organization from './Organization';
 
 class GymSettings extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            selectedTabIndex: 0,
             selectedGymId: props.selectedGymId || 0,
             workingHours: {
                 max: props.setting && props.setting.workingHours && props.setting.workingHours.max ? props.setting.workingHours.max : 28,
@@ -25,12 +28,16 @@ class GymSettings extends React.Component {
         }
     }
 
+    tapTab = (tabIndex) => {
+        this.setState({ selectedTabIndex: tabIndex });
+    };
+
     save = () => {
         this.props.actions.updateGym(
             this.state.selectedGymId,
             {
                 setting: {
-                    workingHours: {...this.state.workingHours}
+                    workingHours: { ...this.state.workingHours }
                 }
             }
         )
@@ -54,27 +61,23 @@ class GymSettings extends React.Component {
         }
         return null;
     }
-
-    render() {
+    getSettingTab = () => {
         return (<Card>
-            <CardHeader color="primary">
-                <h4>Settings</h4>
-            </CardHeader>
             <CardBody>
                 <GridContainer>
                     <GridItem xs={12} sm={12} md={8}>
                         <h5>Available Time</h5>
-                        <br/>
+                        <br />
                         <InputRange
                             formatLabel={value => this.getTimeLabel(value)}
                             draggableTrack
                             step={1}
                             maxValue={96}
                             minValue={28}
-                            onChange={value => this.setState({workingHours: value})}
+                            onChange={value => this.setState({ workingHours: value })}
                             onChangeComplete={value => console.log(value)}
-                            value={this.state.workingHours}/>
-                        <br/>
+                            value={this.state.workingHours} />
+                        <br />
 
                     </GridItem>
                 </GridContainer>
@@ -85,12 +88,33 @@ class GymSettings extends React.Component {
             </CardFooter>
         </Card>);
     }
+
+    render() {
+        return <Tabs
+            title={'Manage'}
+            headerColor="primary"
+            onSwitch={this.tapTab}
+            tabs={[{
+                tabName: 'Coach',
+                tabContent: <Coach {...this.props} />
+            }, {
+                tabName: "Setting",
+                tabContent: this.getSettingTab(),
+            }, {
+                tabName: "Organization",
+                tabContent: <Organization {...this.props} />
+            }]}
+        />
+    }
 }
 
 const mapStoreToProps = (store) => {
     return {
+        gym: store.gym,
         setting: store.setting.selectedGym.setting,
-        selectedGymId: store.setting.selectedGym.id
+        organization: store.organization,
+        selectedGymId: store.setting.selectedGym.id, // TODO this can be removed
+        selectedGym: store.setting.selectedGym
     };
 };
 

@@ -31,7 +31,7 @@ class UserCreatedAction
         $user = $event->user;
         // create default org
         $orgData = [
-            'name' => 'set organization name',
+            'name' => 'Default Branch',
             'description' => 'set organization description',
             'create_by' => $user->id,
         ];
