@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,20 +14,28 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
+
 <body>
-<form id="logout-form" action="{{ route('logout') }}" method="POST">
-    @csrf
-</form>
-<div id="app">
-</div>
+    <form id="logout-form" action="{{ route('logout') }}" method="POST">
+        @csrf
+    </form>
+    <div id="app">
+    </div>
 </body>
 <!-- Scripts -->
 <script>
-    var LogoutFunc = function () {
+    const SELECTED_GYM_KEY = 'gymnz_selected_gym';
+    var LogoutFunc = function() {
+        // should also clean local storage
+        if (localStorage) {
+            localStorage.removeItem(SELECTED_GYM_KEY);
+        }
         document.getElementById('logout-form').submit();
     };
-    var token = "{{Auth::user() ? JWTAuth::fromUser(Auth::user()) : "" }}";
-    var username = "{{ Auth::user() ? Auth::user()->name : "GUEST" }}";
+    var token = "{{Auth::user() ? JWTAuth::fromUser(Auth::user()) : "
+    " }}";
+    var username = "{{ Auth::user() ? Auth::user()->name : "
+    GUEST " }}";
 </script>
 <script src="{{ asset('js/app.js') }}" defer></script>
 </html>

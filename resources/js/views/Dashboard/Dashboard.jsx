@@ -52,11 +52,22 @@ class Dashboard extends React.Component {
       })
     });
   }
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.selectedGym.id && nextProps.selectedGym.id !== this.props.selectedGym.id) {
+      this.props.actions.loadCoach(nextProps.selectedGym.id);
+      this.props.actions.loadCustomer(nextProps.selectedGym.id);
+      this.reloadSchedule();
+    }
+    return true;
+    // return nextProps.gym !== this.props.gym || this.state.showDeleteConfirmation !== nextState.showDeleteCoachConfirmation;
+  }
 
   componentWillMount() {
-    this.props.actions.loadCoach(this.props.selectedGym.id);
-    this.props.actions.loadCustomer(this.props.selectedGym.id);
-    this.reloadSchedule();
+    if (this.props.selectedGym.id) {
+      this.props.actions.loadCoach(this.props.selectedGym.id);
+      this.props.actions.loadCustomer(this.props.selectedGym.id);
+      this.reloadSchedule();
+    }
   }
 
   componentWillUnmount() {

@@ -1,7 +1,5 @@
 import * as ActionTypes from '../actions/actionTypes';
 
-const SELECTED_GYM_KEY = 'gymnz_selected_gym';
-
 
 const initState = {
     userInfo: { name: '', email: '' },
