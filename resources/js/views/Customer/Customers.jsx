@@ -1,11 +1,8 @@
 import connect from "react-redux/es/connect/connect";
 import { bindActionCreators } from "redux";
 import * as Actions from "../../actions";
-import React from "react";
-import Card from "-components/Card/Card.jsx";
-import CardBody from "-components/Card/CardBody.jsx";
+import React from "react";;
 import MaterialTable from 'material-table';
-
 import "../../../sass/customer.scss"
 
 class Customers extends React.Component {

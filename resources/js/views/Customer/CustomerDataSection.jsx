@@ -6,7 +6,9 @@ import dayjs from "dayjs";
 import ChartistGraph from "react-chartist";
 import Muted from "-components/Typography/Muted.jsx";
 import Add from "@material-ui/icons/Add";
-import { Card, CardContent, withStyles, Typography } from "@material-ui/core";
+import Edit from "@material-ui/icons/Edit";
+import MaterialTable from 'material-table';
+import { Card, CardContent, withStyles, Typography, Dialog } from "@material-ui/core";
 
 const styles = {
     chartCard: {
@@ -36,7 +38,8 @@ class CustomerDataSection extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            addDialogueField: false
+            addDialogueField: false,
+            editingOption: null
         };
     }
 
@@ -68,7 +71,7 @@ class CustomerDataSection extends React.Component {
         });
         this.props.actions.batchCreateCustomerBodyData(this.props.customerId, data)
             .then(() => {
-                this.setState({addDialogueField: null});
+                this.setState({ addDialogueField: null });
                 this.props.actions.loadGroupedCustomerBodyData(this.props.customerId);
             });
     };
@@ -97,10 +100,50 @@ class CustomerDataSection extends React.Component {
             onSave: (data) => {
                 this.save(data, this.props.options);
             },
-            onCancel: () => { this.setState({addDialogueField: null}) },
+            onCancel: () => { this.setState({ addDialogueField: null }) },
             inputFields: this.state.addDialogueField
         };
         return <CreateNewDialogue {...params} />;
+    };
+
+    getEditDialogue = () => {
+        let dataSet = this.props.data.find(r => r.option === this.state.editingOption);
+        let { data } = dataSet;
+        const columns = [
+            { title: 'Date', field: 'date', editable: 'never' },
+            { title: 'Value', field: 'value', type: 'numeric' },
+        ];
+        return <Dialog fullWidth open={true} onClose={() => this.setState({ editingOption: false })} >
+            <MaterialTable
+                title={dataSet.option + ' / ' + dataSet.unit}
+                data={data}
+                columns={columns}
+                editable={{
+                    isDeletable: (rowData) => true,
+                    onRowUpdate: (newData, oldData) =>
+                        new Promise((resolve, reject) => {
+                            this.props.actions.updateCustomerBodyData(this.props.customerId, newData.id, newData)
+                                .then(() => {
+                                    this.props.actions.loadGroupedCustomerBodyData(this.props.customerId);
+                                    resolve();
+                                })
+                        }),
+                    onRowDelete: (oldData) =>
+                        new Promise((resolve, reject) => {
+                            this.props.actions.deleteCustomerBodyData(this.props.customerId, oldData.id)
+                                .then(() => {
+                                    this.props.actions.loadGroupedCustomerBodyData(this.props.customerId);
+                                    resolve();
+                                })
+                        }),
+                }}
+                options={{
+                    search: false,
+                    actionsColumnIndex: -1,
+                }}
+            />
+        </Dialog>;
+
     };
 
 
@@ -110,7 +153,8 @@ class CustomerDataSection extends React.Component {
             return this.getCreateDialogue();
         }
         return <React.Fragment>
-            {this.props.data && this.props.data.length > 0 ?
+            {this.state.editingOption && this.getEditDialogue()}
+            {this.props.data &&
                 this.props.data.map(data =>
                     <Card key={data.option} classes={{ root: classes.chartCard }}>
                         <CardContent>
@@ -119,14 +163,13 @@ class CustomerDataSection extends React.Component {
                                     <Typography variant='h6' className={classes.chartOption}>{data.option}</Typography>
                                     <Muted className={classes.chartUnit}>{data.unit}</Muted>
                                 </div>
+                                <Button color='transparentGray' size='sm' onClick={() => this.setState({ editingOption: data.option })}><Edit /> Edit </Button>
                                 <Button color='transparentPrimary' size='sm' onClick={() => this.setState({ addDialogueField: this.getInputField(data.option) })}><Add /> ADD </Button>
                             </div>
                             {this.getLineChart(data.data)}
                         </CardContent>
-                    </Card>)
-                :
-                <Button color='primary' onClick={() => this.setState({ addDialogueField: this.getInputField() })}><Add /> ADD</Button>
-            }
+                    </Card>)}
+            <Button style={{ marginTop: 16 }} color='transparentPrimary' fullWidth={true} onClick={() => this.setState({ addDialogueField: this.getInputField() })}><Add /> ADD FULL DATA</Button>
         </React.Fragment>;
 
     }

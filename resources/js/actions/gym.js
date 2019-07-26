@@ -211,6 +211,31 @@ export function batchCreateCustomerBodyData(userId, batch) {
     };
 }
 
+export function updateCustomerBodyData(userId, id, data) {
+    return {
+        type: ActionTypes.UPDATE_CUSTOMER_DATA,
+        payload: {
+            request: {
+                method: 'patch',
+                url: '/user/' + userId + '/bodydata/' + id,
+                data
+            }
+        }
+    };
+}
+
+export function deleteCustomerBodyData(userId, id) {
+    return {
+        type: ActionTypes.DELETE_CUSTOMER_DATA,
+        payload: {
+            request: {
+                method: 'delete',
+                url: '/user/' + userId + '/bodydata/' + id,
+            }
+        }
+    };
+}
+
 export function loadGroupedCustomerBodyData(userId) {
     return {
         type: ActionTypes.LOAD_GROUPED_CUSTOMER_BODY_DATA,

@@ -315,6 +315,23 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
+        case ActionTypes.UPDATE_CUSTOMER_DATA:
+        case ActionTypes.UPDATE_CUSTOMER_DATA_SUCCESS:
+            // do nothing
+            return state;
+        case ActionTypes.UPDATE_CUSTOMER_DATA_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Update data failed, please try again',
+            });
+
+        case ActionTypes.DELETE_CUSTOMER_DATA:
+        case ActionTypes.DELETE_CUSTOMER_DATA_SUCCESS:
+            // do nothing
+            return state;
+        case ActionTypes.DELETE_CUSTOMER_DATA_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Delete data failed, please try again',
+            });
 
         case ActionTypes.CREATE_CUSTOMER_PHOTO:
             return Object.assign({}, state, { loading: true });

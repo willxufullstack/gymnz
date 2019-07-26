@@ -23,6 +23,7 @@ class BodyDataController extends Controller
                 ];
             }
             array_push($dict[$row['option']]['data'], [
+                'id' => $row['id'],
                 'date' => $row['date'],
                 'value' => $row['value']
             ]);
@@ -112,9 +113,21 @@ class BodyDataController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $userId, $id)
     {
-        //
+        $data = $request->only('date', 'value');
+        $row = BodyData::where([
+            'user_id' => $userId,
+            'id' => $id,
+            'date' =>  $data['date']
+        ])->first();
+        if (empty($row)) {
+            return response()->json(array('message' => 'cannot find the body data'), 404);
+        }
+        $row->value = $data['value'];
+        $row->created_by = Auth::User()->id;
+        $row->save();
+        return $row;
     }
 
     /**
@@ -123,9 +136,17 @@ class BodyDataController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $userId, $id)
     {
-        //
+        $row = BodyData::where([
+            'user_id' => $userId,
+            'id' => $id,
+        ])->first();
+        if (empty($row)) {
+            return response()->json(array('message' => 'cannot find the body data'), 404);
+        }
+        $row->delete();
+        return $row;
     }
 
 
