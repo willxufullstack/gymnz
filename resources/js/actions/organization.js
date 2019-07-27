@@ -45,6 +45,18 @@ export function deleteOrg(orgId) {
         }
     }
 }
+export function updateOrg(orgId, data) {
+    return {
+        type: ActionTypes.UPDATE_ORG,
+        payload: {
+            request:{
+                method: 'patch',
+                url:`/org/${orgId}`,
+                data
+            }
+        }
+    }
+}
 /********GYM*********/
 export function cancelNewGym() {
     return {

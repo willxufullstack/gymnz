@@ -20,6 +20,10 @@ export const DELETE_ORG = 'DELETE_ORG';
 export const DELETE_ORG_SUCCESS = 'DELETE_ORG_SUCCESS';
 export const DELETE_ORG_FAIL = 'DELETE_ORG_FAIL';
 
+export const UPDATE_ORG = 'UPDATE_ORG';
+export const UPDATE_ORG_SUCCESS = 'UPDATE_ORG_SUCCESS';
+export const UPDATE_ORG_FAIL = 'UPDATE_ORG_FAIL';
+
 /**********GYM************/
 export const LOAD_GYM = 'LOAD_GYM';
 export const LOAD_GYM_SUCCESS = 'LOAD_GYM_SUCCESS';

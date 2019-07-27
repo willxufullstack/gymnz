@@ -12,7 +12,7 @@ import Edit from '@material-ui/icons/Edit';
 import Tabs from "-components/CustomTabs/CustomTabs.jsx";
 import Coach from "./Coach";
 import Organization from './Organization';
-import { Typography, Button, IconButton } from '@material-ui/core';
+import { Typography, IconButton } from '@material-ui/core';
 import Primary from '-components/Typography/Primary';
 import CreateNewDialogue from "-components/CustomDialogues/CreateNewDialogue";
 

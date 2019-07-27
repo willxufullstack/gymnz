@@ -1,7 +1,9 @@
 import React from "react";
 import Button from "-components/CustomButtons/Button.jsx";
 import Add from "@material-ui/icons/Add"
+import CircleAddOutline from "@material-ui/icons/AddCircleOutline";
 import List from '@material-ui/core/List';
+import Edit from '@material-ui/icons/Edit';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 // core components
@@ -18,12 +20,14 @@ import LoadingLayer from "-components/LoadingLayer/LoadingLayer"
 import classNames from "classnames"
 import Snackbar from "-components/Snackbar/Snackbar";
 import AddAlert from "@material-ui/icons/AddAlert";
+import { IconButton } from '@material-ui/core';
 import Confirmation from "-components/CustomDialogues/Confirmation";
 
 class Organization extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            editOrgNameDialogue: false,
             showDeleteConfirmation: false,
             activeOrg: {}
         };
@@ -52,9 +56,30 @@ class Organization extends React.Component {
 
     };
 
+    getEditOrgNameDialogue = () => {
+        return <CreateNewDialogue
+            onCancel={() => { this.setState({ editOrgNameDialogue: false }) }}
+            onSave={(data) => {
+                this.props.actions.updateOrg(this.state.editOrgNameDialogue.id, data)
+                    .then(() => {
+                        this.props.actions.loadOrg().then(this.props.actions.loadGym);
+                        this.setState({ editOrgNameDialogue: false });
+                    })
+            }}
+            inputFields={[
+                {
+                    name: 'name',
+                    label: 'Name',
+                    value: this.state.editOrgNameDialogue.name
+                }
+            ]}
+            dialogue={true}
+            title="Edit Name"
+        />
+    };
+
     componentWillMount = () => {
-        this.props.actions.loadOrg();
-        this.props.actions.loadGym();
+        this.props.actions.loadOrg().then(this.props.actions.loadGym);
     };
 
     getDialogue = () => {
@@ -62,6 +87,7 @@ class Organization extends React.Component {
             onCancel: this.props.actions.cancelNewOrg,
             onSave: this.props.actions.createOrg,
             title: 'Create Organization',
+            dialogue: true,
             inputFields: [{
                 name: 'name',
             }, {
@@ -75,6 +101,7 @@ class Organization extends React.Component {
                 data.org_id = this.state.activeOrg.id;
                 this.props.actions.createGym(data);
             },
+            dialogue: true,
             inputFields: [{
                 name: 'name',
             }, {
@@ -86,6 +113,9 @@ class Organization extends React.Component {
         }
         if (this.props.organization.showNewGym) {
             return <CreateNewDialogue {...gymFields} />
+        }
+        if (this.state.editOrgNameDialogue) {
+            return this.getEditOrgNameDialogue();
         }
     };
 
@@ -104,52 +134,48 @@ class Organization extends React.Component {
                 <div className={classNames({ 'loading': this.props.organization.loading })}>
                     {this.getDialogue()}
                     {/* organization list page */}
-                    {
-                        !this.props.organization.showNewOrg &&
-                        !this.props.organization.showNewGym &&
-                        <GridContainer>
-                            {
-                                this.props.organization.org.map((item) => {
-                                    return (
-                                        <GridItem key={item.id} xs={12} sm={6} md={4} lg={4}>
-                                            <Card>
-                                                <CardHeader color="info" icon>
-                                                    <CardIcon color="info" style={{ width: '100%' }}>
-                                                        <h4>{item.name}</h4>
-                                                    </CardIcon>
-                                                </CardHeader>
-                                                <CardBody>
-                                                    {this.props.organization.gym.filter(gym => gym.org_id === item.id).length ?
-                                                        <List component="nav">
-                                                            {this.props.organization.gym
-                                                                .filter(gym => gym.org_id === item.id)
-                                                                .map(item => {
-                                                                    return <ListItem key={item.id} button>
-                                                                        <ListItemText primary={item.name} />
-                                                                    </ListItem>;
-                                                                })}
-                                                        </List>
-                                                        :
-                                                        <h4>No gym found</h4>
-                                                    }
-                                                    <Button size="sm" color='transparentPrimary' onClick={this.showAddGym(item)}>
-                                                        <Add /> Add More Gym
+                    <GridContainer>
+                        {
+                            this.props.organization.org.map((item) => {
+                                return (
+                                    <GridItem key={item.id} xs={12} sm={6} md={4} lg={4}>
+                                        <Card>
+                                            <CardHeader color="info" icon>
+                                                <CardIcon color="info" style={{ width: '100%' }}>
+                                                    <h4>{item.name} <IconButton onClick={() => this.setState({ editOrgNameDialogue: item })} ><Edit fontSize="small" /></IconButton></h4>
+                                                </CardIcon>
+                                            </CardHeader>
+                                            <CardBody>
+                                                {this.props.organization.gym.filter(gym => gym.org_id === item.id).length ?
+                                                    <List component="nav">
+                                                        {this.props.organization.gym
+                                                            .filter(gym => gym.org_id === item.id)
+                                                            .map(item => {
+                                                                return <ListItem key={item.id} button>
+                                                                    <ListItemText primary={item.name} />
+                                                                </ListItem>;
+                                                            })}
+                                                    </List>
+                                                    :
+                                                    <h4>No gym found</h4>
+                                                }
+                                                <Button size="sm" color='transparentPrimary' onClick={this.showAddGym(item)}>
+                                                    <CircleAddOutline /> Create New Gym
+                                                </Button>
+                                            </CardBody>
+                                            <CardFooter stats style={{ marginTop: 0 }}>
+                                                <Button fullWidth size="sm" color='transparentGray' onClick={this.showDeleteOrgConfirmation(item)}>
+                                                    Delete Organization
                                                     </Button>
-                                                </CardBody>
-                                                <CardFooter stats style={{ marginTop: 0 }}>
-                                                    <Button size="sm" color='transparentGray' onClick={this.showDeleteOrgConfirmation(item)}>
-                                                        Delete
-                                                    </Button>
-                                                </CardFooter>
-                                            </Card>
-                                        </GridItem>
-                                    )
-                                })
-                            }
-                            {/*here add new organization*/}
-                            <Button justIcon round color='transparentGray' className="new-org-btn" onClick={this.showAddOrg}><Add /></Button>
-                        </GridContainer>
-                    }
+                                            </CardFooter>
+                                        </Card>
+                                    </GridItem>
+                                )
+                            })
+                        }
+                        {/*here add new organization*/}
+                        <Button justIcon round color='transparentGray' className="new-org-btn" onClick={this.showAddOrg}><Add /></Button>
+                    </GridContainer>
                 </div>
                 <Snackbar
                     place="tc"

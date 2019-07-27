@@ -97,7 +97,15 @@ class OrganizationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $org = Organization::find($id);
+        if (empty($org)) {
+            return response()->json(array('message' => 'fail'), 500);
+        }
+        $success = $org->update($request->all());
+        if ($success) {
+            return response()->json($org, 200);
+        }
+        return response()->json(array('message' => 'fail'), 500);
     }
 
     /**
@@ -110,7 +118,7 @@ class OrganizationController extends Controller
     {
         $org = Organization::find($id);
         if(!$org){
-            return response()->json(array('message' => 'org is not exist'), 500);
+            return response()->json(array('message' => 'org does not exist'), 500);
         }
 
         $gyms = Organization::find($id)->gyms()->count();

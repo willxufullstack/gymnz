@@ -17,23 +17,23 @@ const initState = {
 
 };
 
-const NonAction = {type: "NO_ACTION"};
+const NonAction = { type: "NO_ACTION" };
 
-const organization = (state = initState, action=NonAction) => {
+const organization = (state = initState, action = NonAction) => {
     switch (action.type) {
 
         case ActionTypes.SHOW_NEW_ORG:
-            return Object.assign({}, state, {showNewOrg: true});
+            return Object.assign({}, state, { showNewOrg: true });
         case ActionTypes.CANCEL_NEW_ORG:
-            return Object.assign({}, state, {showNewOrg: false});
+            return Object.assign({}, state, { showNewOrg: false });
 
         case ActionTypes.SHOW_NEW_GYM:
-            return Object.assign({}, state, {showNewGym: true});
+            return Object.assign({}, state, { showNewGym: true });
         case ActionTypes.CANCEL_NEW_GYM:
-            return Object.assign({}, state, {showNewGym: false});
+            return Object.assign({}, state, { showNewGym: false });
 
         case ActionTypes.LOAD_ORG:
-            return Object.assign({}, state, {loading: true});
+            return Object.assign({}, state, { loading: true });
         case ActionTypes.LOAD_ORG_SUCCESS:
             return Object.assign({}, state, {
                 loading: false,
@@ -46,7 +46,7 @@ const organization = (state = initState, action=NonAction) => {
             });
 
         case ActionTypes.LOAD_GYM:
-            return Object.assign({}, state, {loading: true});
+            return Object.assign({}, state, { loading: true });
         case ActionTypes.LOAD_GYM_SUCCESS:
             return Object.assign({}, state, {
                 loading: false,
@@ -59,7 +59,7 @@ const organization = (state = initState, action=NonAction) => {
             });
 
         case ActionTypes.CREATE_GYM:
-            return Object.assign({}, state, {loading: true});
+            return Object.assign({}, state, { loading: true });
         case ActionTypes.CREATE_GYM_SUCCESS:
             return Object.assign({}, state, {
                 loading: false,
@@ -73,7 +73,7 @@ const organization = (state = initState, action=NonAction) => {
             });
 
         case ActionTypes.CREATE_ORG:
-            return Object.assign({}, state, {loading: true});
+            return Object.assign({}, state, { loading: true });
         case ActionTypes.CREATE_ORG_SUCCESS:
             return Object.assign({}, state, {
                 showNewOrg: false,
@@ -86,12 +86,24 @@ const organization = (state = initState, action=NonAction) => {
                 errorMsg: 'Create organization failed, please try again',
             });
 
+        case ActionTypes.UPDATE_ORG:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.UPDATE_ORG_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+            });
+        case ActionTypes.UPDATE_ORG_FAIL:
+            return Object.assign({}, state, {
+                loading: false,
+                errorMsg: 'Update organization failed, please try again',
+            });
+
         case ActionTypes.DELETE_ORG:
-            return Object.assign({}, state, {loading:true});
-        case ActionTypes.DELETE_ORG_SUCCESS:         
-            return Object.assign({}, state,{
-                loading:false,
-                org: state.org.filter(o => o.id !== action.payload.data.id )
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.DELETE_ORG_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                org: state.org.filter(o => o.id !== action.payload.data.id)
             });
         case ActionTypes.DELETE_ORG_FAIL:
             return Object.assign({}, state, {

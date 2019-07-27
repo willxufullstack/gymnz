@@ -1,7 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
-// @material-ui/core
-import withStyles from "@material-ui/core/styles/withStyles";
 // @material-ui/icons
 import Button from "-components/CustomButtons/Button.jsx";
 import Add from "@material-ui/icons/Add"
@@ -104,9 +101,7 @@ class Coach extends React.Component {
                                                     {/* <div>
                                                         {item.user.sex ? 'Male' : 'Female'}
                                                     </div> */}
-                                                    <div>
-                                                        <Button size='sm' color='transparentGray' onClick={this.showDeleteCoachConfirmation(item)}>Delete</Button>
-                                                    </div>
+                                                    <Button fullWidth size='sm' color='transparentGray' onClick={this.showDeleteCoachConfirmation(item)}>Delete Coach</Button>
                                                 </CardFooter>
                                             </Card>
                                         </GridItem>
