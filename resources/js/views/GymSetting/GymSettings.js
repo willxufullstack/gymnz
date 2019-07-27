@@ -1,6 +1,4 @@
 import React from 'react'
-import Card from "-components/Card/Card";
-import CardBody from "-components/Card/CardBody";
 import GridItem from "-components/Grid/GridItem";
 import GridContainer from "-components/Grid/GridContainer";
 import InputRange from 'react-input-range';
@@ -9,16 +7,20 @@ import "../../../sass/settings.scss"
 import { bindActionCreators } from "redux";
 import * as Actions from "../../actions";
 import connect from "react-redux/es/connect/connect";
-import CardFooter from "-components/Card/CardFooter";
-import Button from "-components/CustomButtons/Button";
+import Label from '@material-ui/icons/Dehaze';
+import Edit from '@material-ui/icons/Edit';
 import Tabs from "-components/CustomTabs/CustomTabs.jsx";
 import Coach from "./Coach";
 import Organization from './Organization';
+import { Typography, Button, IconButton } from '@material-ui/core';
+import Primary from '-components/Typography/Primary';
+import CreateNewDialogue from "-components/CustomDialogues/CreateNewDialogue";
 
 class GymSettings extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            editGymNameDialogue: false,
             selectedTabIndex: 0,
             selectedGymId: props.selectedGymId || 0,
             workingHours: {
@@ -32,15 +34,34 @@ class GymSettings extends React.Component {
         this.setState({ selectedTabIndex: tabIndex });
     };
 
-    save = () => {
+    saveWorkingHours = (value) => {
         this.props.actions.updateGym(
             this.state.selectedGymId,
             {
                 setting: {
-                    workingHours: { ...this.state.workingHours }
+                    workingHours: value
                 }
             }
         )
+    };
+
+    getEditGymNameDialogue = () => {
+        return <CreateNewDialogue
+            onCancel={() => { this.setState({ editGymNameDialogue: false }) }}
+            onSave={(data) => {
+                this.props.actions.updateGym(this.state.selectedGymId, data)
+                    .then(() => { this.setState({ editGymNameDialogue: false }) })
+            }}
+            inputFields={[
+                {
+                    name: 'name',
+                    label: 'Name',
+                    value: this.props.selectedGym.name
+                }
+            ]}
+            dialogue={true}
+            title="Edit Gym Name"
+        />
     };
 
     getTimeLabel = (v) => {
@@ -62,31 +83,27 @@ class GymSettings extends React.Component {
         return null;
     }
     getSettingTab = () => {
-        return (<Card>
-            <CardBody>
-                <GridContainer>
-                    <GridItem xs={12} sm={12} md={8}>
-                        <h5>Available Time</h5>
-                        <br />
-                        <InputRange
-                            formatLabel={value => this.getTimeLabel(value)}
-                            draggableTrack
-                            step={1}
-                            maxValue={96}
-                            minValue={28}
-                            onChange={value => this.setState({ workingHours: value })}
-                            onChangeComplete={value => console.log(value)}
-                            value={this.state.workingHours} />
-                        <br />
-
-                    </GridItem>
-                </GridContainer>
-            </CardBody>
-            <CardFooter>
-                <Button>Cancel</Button>
-                <Button color="primary" onClick={this.save}>Save</Button>
-            </CardFooter>
-        </Card>);
+        return (
+            <GridContainer>
+                {this.state.editGymNameDialogue && this.getEditGymNameDialogue()}
+                <GridItem xs={12} sm={12} md={6} classes={{ grid: 'setting-option-block' }}>
+                    <Typography variant='subtitle1' paragraph><Label fontSize='small' />Available Time</Typography>
+                    <InputRange
+                        formatLabel={value => this.getTimeLabel(value)}
+                        draggableTrack
+                        step={1}
+                        maxValue={96}
+                        minValue={28}
+                        onChange={value => this.setState({ workingHours: value })}
+                        onChangeComplete={this.saveWorkingHours}
+                        value={this.state.workingHours} />
+                </GridItem>
+                <GridItem xs={12} sm={12} md={6} classes={{ grid: 'setting-option-block' }}>
+                    <Typography variant='subtitle1' paragraph ><Label fontSize='small' />Name</Typography>
+                    <Primary className='setting-gym-name'>{this.props.selectedGym.name}<IconButton onClick={() => this.setState({ editGymNameDialogue: true })} ><Edit fontSize="large" /></IconButton></Primary>
+                </GridItem>
+            </GridContainer>
+        );
     }
 
     render() {
@@ -98,7 +115,7 @@ class GymSettings extends React.Component {
                 tabName: 'Coach',
                 tabContent: <Coach {...this.props} />
             }, {
-                tabName: "Setting",
+                tabName: "Gym",
                 tabContent: this.getSettingTab(),
             }, {
                 tabName: "Organization",

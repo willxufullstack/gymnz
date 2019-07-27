@@ -1,4 +1,5 @@
 @import "variables";
+
 .input-range__track--active,
 .input-range__slider {
   background: #ab47bc;
@@ -12,4 +13,22 @@
 .input-range__label--min,
 .input-range__label--max {
   display: none;
+}
+.MuiGrid-item.setting-option-block {
+  padding: 30px 60px !important;
+  svg {
+    position: relative;
+    top: -2px;
+    margin-right: 6px;
+    font-size: 16px;
+  }
+  .setting-gym-name {
+    font-weight: 600;
+    top: 8px;
+    position: relative;
+  }
+
+  .input-range {
+    top: 12px;
+  }
 }

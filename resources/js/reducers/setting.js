@@ -25,18 +25,15 @@ const setting = (state = initState, action = NON_ACTION) => {
             return Object.assign({}, state, { selectedGym: action.value });
 
         case ActionTypes.UPDATE_GYM:
-            return Object.assign({}, state, { loading: true });
+            return state;
         case ActionTypes.UPDATE_GYM_SUCCESS:
             localStorage.setItem(SELECTED_GYM_KEY, JSON.stringify(action.payload.data))
             return Object.assign({}, state, {
-                loading: false,
-                successMsg: 'Update gym setting success',
                 selectedGym: action.payload.data
             });
         case ActionTypes.UPDATE_GYM_FAIL:
             return Object.assign({}, state, {
                 errorMsg: 'Update gym setting failed',
-                loading: false
             });
 
         case ActionTypes.LOAD_UPLOAD_TOKEN:
