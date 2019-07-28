@@ -91,7 +91,7 @@ class Coach extends React.Component {
                                             <Card>
                                                 <CardHeader color="rose" icon>
                                                     <CardIcon color="rose" style={{ width: '100%' }}>
-                                                        <h4>{item.user.email.split('@')[0]}</h4>
+                                                        <h4>{item.user.email}</h4>
                                                     </CardIcon>
                                                 </CardHeader>
                                                 <CardBody>

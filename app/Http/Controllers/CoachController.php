@@ -15,8 +15,6 @@ use Illuminate\Http\Request;
  */
 class CoachController extends Controller
 {
-    const EMAIL_SUFFIX = '@o2-fit.com';
-
     /**
      * @param $gym_id gym id
      * @return \Illuminate\Http\JsonResponse
@@ -55,7 +53,7 @@ class CoachController extends Controller
         $coachData = $request->only('name', 'phone', 'password', 'sex');
 
         // convert phone to email
-        $customerEmail = $coachData['phone'] . self::EMAIL_SUFFIX;
+        $customerEmail = $coachData['phone'];
 
         // 1.create coach row
         $coach = new Coach([

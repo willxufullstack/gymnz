@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 class OrderController extends Controller
 {
     const DEFAULT_PASSWORD = '12345678';
-    const EMAIL_SUFFIX = '@o2-fit.com';
     /**
      * Display a listing of the resource.
      *
@@ -63,7 +62,7 @@ class OrderController extends Controller
         $userId = Auth::User()->id;
         $customerData = $request->only('name', 'phone', 'sex');
         // convert phone to email
-        $customerEmail = $customerData['phone'] . self::EMAIL_SUFFIX;
+        $customerEmail = $customerData['phone'];
 
         $gym = Gym::find($request->input('gym'));
         $coach = Coach::find($request->input('coach'));

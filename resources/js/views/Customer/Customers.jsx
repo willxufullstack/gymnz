@@ -23,7 +23,7 @@ class Customers extends React.Component {
         const header = ['Name', 'Email', 'Sex'];
         const columns = [
             { title: 'Name', field: 'name' },
-            { title: 'Phone', render: row => row.email.split('@')[0] },
+            { title: 'Phone', field: 'email' },
             { title: 'Sex', field: 'sex', render: row => row.sex ? 'M' : 'F' }
         ]
 
