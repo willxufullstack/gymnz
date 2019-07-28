@@ -75,6 +75,18 @@ export function deleteCoach($gymId, $coachId) {
     }
 }
 
+export function resetCoachPwd($gymId, $coachId) {
+    return {
+        type: ActionTypes.RESET_COACH_PWD,
+        payload: {
+            request: {
+                url: '/gym/' + $gymId + '/coach/' + $coachId + '/reset',
+            }
+        }
+    }
+}
+
+
 /********LOAD CUSTOMER*********/
 export function loadCustomer(gymId) {
     return {

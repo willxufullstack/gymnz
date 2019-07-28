@@ -48,6 +48,7 @@ Route::group([
 
     Route::resource('gym', 'GymController');
     Route::resource('gym.coach', 'CoachController');
+    Route::get('gym/{gym}/coach/{coach}/reset', 'CoachController@reset');
 
     Route::resource('gym.order', 'OrderController');
     Route::post('gym/{gym}/order/{order}/refund', 'OrderController@refund');

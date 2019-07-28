@@ -19,6 +19,7 @@ class Coach extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            resetPasswordConfirmation: false,
             showDeleteConfirmation: false,
             deletingCoach: null,
         };
@@ -34,6 +35,15 @@ class Coach extends React.Component {
         this.props.actions.showNewCoach();
     };
 
+    showResetPasswordConfirmation = (coach) => () => {
+        this.setState({ resetPasswordConfirmation: coach });
+    };
+
+    hideResetPasswordConfirmation = () => {
+        this.setState({ resetPasswordConfirmation: false });
+    };
+
+
     showDeleteCoachConfirmation = (deletingCoach) => () => {
         this.setState({ showDeleteConfirmation: true, deletingCoach });
     };
@@ -43,9 +53,19 @@ class Coach extends React.Component {
     };
 
     deleteCoach = () => {
-        this.setState({ showDeleteConfirmation: false });
-        this.props.actions.deleteCoach(this.props.selectedGym.id, this.state.deletingCoach.id);
+        this.props.actions.deleteCoach(this.props.selectedGym.id, this.state.deletingCoach.id)
+            .then(() => {
+                this.setState({ showDeleteConfirmation: false });
+            });
     };
+
+    resetCoachPwd = () => {
+        this.props.actions.resetCoachPwd(this.props.selectedGym.id, this.state.resetPasswordConfirmation.id)
+            .then(() => {
+                this.setState({ resetPasswordConfirmation: false });
+            });
+    };
+
 
     shouldComponentUpdate(nextProps, nextState) {
         if (nextProps.selectedGym.id && nextProps.selectedGym.id !== this.props.selectedGym.id) {
@@ -61,6 +81,14 @@ class Coach extends React.Component {
             onCancel: this.hideDeleteCoachConfirmation,
             onConfirm: this.deleteCoach
         };
+        console.log(this.state.resetPasswordConfirmation.user);
+        const resetPasswordConfirmation = {
+            message: this.state.resetPasswordConfirmation  && 'Do you want to reset ' + this.state.resetPasswordConfirmation.user.name + ' to  00000000?',
+            onCancel: this.hideResetPasswordConfirmation,
+            onConfirm: this.resetCoachPwd
+        }
+
+
         const coachFields = [{
             name: 'name',
             placeholder: 'Name'
@@ -81,13 +109,14 @@ class Coach extends React.Component {
         return (
             <React.Fragment>
                 {this.state.showDeleteConfirmation && <Confirmation {...deleteCoachParams} />}
+                {this.state.resetPasswordConfirmation && <Confirmation {...resetPasswordConfirmation} />}
                 <div className={classNames({ 'loading': this.props.gym.loading })}>
                     {!this.props.gym.showNewCoach &&
                         <GridContainer>
                             {
                                 this.props.gym.coaches.map((item) => {
                                     return (
-                                        <GridItem key={item.id} xs={12} sm={6} md={3} lg={3}>
+                                        <GridItem key={item.id} xs={12} sm={6} md={4} lg={4}>
                                             <Card>
                                                 <CardHeader color="rose" icon>
                                                     <CardIcon color="rose" style={{ width: '100%' }}>
@@ -98,10 +127,8 @@ class Coach extends React.Component {
                                                     <h3>{item.user.name}</h3>
                                                 </CardBody>
                                                 <CardFooter stats style={{ marginTop: 0 }}>
-                                                    {/* <div>
-                                                        {item.user.sex ? 'Male' : 'Female'}
-                                                    </div> */}
-                                                    <Button fullWidth size='sm' color='transparentGray' onClick={this.showDeleteCoachConfirmation(item)}>Delete Coach</Button>
+                                                    <Button size='sm' color='transparentGray' onClick={this.showDeleteCoachConfirmation(item)}>Delete</Button>
+                                                    <Button size='sm' color='transparentPrimary' onClick={this.showResetPasswordConfirmation(item)}>Reset Password</Button>
                                                 </CardFooter>
                                             </Card>
                                         </GridItem>

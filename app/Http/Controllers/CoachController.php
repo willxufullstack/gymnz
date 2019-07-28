@@ -29,7 +29,6 @@ class CoachController extends Controller
             return response()->json($ret, 200);
         }
         return response()->json(array('message' => 'fail'), 500);
-
     }
 
     /**
@@ -125,7 +124,7 @@ class CoachController extends Controller
      */
     public function destroy($gymId, $coachId)
     {
-        $coachItem = Coach::where(['id' => $coachId, 'gym_id' => $gymId, 'status'=> 1])->first();
+        $coachItem = Coach::where(['id' => $coachId, 'gym_id' => $gymId, 'status' => 1])->first();
         if (empty($coachItem)) {
             return response()->json(array('message' => 'can not find coach_id ' . $coachId), 500);
         }
@@ -147,5 +146,21 @@ class CoachController extends Controller
         } else {
             return response()->json(array('message' => 'fail'), 500);
         }
+    }
+
+    public function reset($gymId, $coachId)
+    {
+        $coachItem = Coach::where(['id' => $coachId, 'gym_id' => $gymId, 'status' => 1])->first();
+        if (empty($coachItem)) {
+            return response()->json(array('message' => 'can not find coach_id ' . $coachId), 500);
+        }
+        $usr = $coachItem->user;
+        // reset password
+        $usr->password = Hash::make('00000000');
+        $success = $usr->save();
+        if ($success) {
+            return response()->json($coachItem, 200);
+        }
+        return response()->json(array('message' => 'fail'), 500);
     }
 }

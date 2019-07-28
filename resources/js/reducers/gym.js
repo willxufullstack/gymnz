@@ -113,6 +113,19 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             });
 
+        case ActionTypes.RESET_COACH_PWD:
+            return Object.assign({}, state, { loading: true });
+        case ActionTypes.RESET_COACH_PWD_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                successMsg: 'Coach password has been reset to 00000000',
+            });
+        case ActionTypes.RESET_COACH_PWD_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Reset coach password failed, please try again',
+                loading: false
+            });
+
         case ActionTypes.CREATE_COACH:
             return Object.assign({}, state, { loading: true });
         case ActionTypes.CREATE_COACH_SUCCESS:

@@ -44,5 +44,7 @@ class UserCreatedAction
             'created_by' => $user->id,
         ];
         Gym::create($gymData);
+
+        // should add as the user a coach
     }
 }
