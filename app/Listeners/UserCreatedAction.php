@@ -7,6 +7,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Organization;
 use App\Gym;
+use App\Coach;
 
 class UserCreatedAction
 {
@@ -43,8 +44,14 @@ class UserCreatedAction
             'org_id' => $org->id,
             'created_by' => $user->id,
         ];
-        Gym::create($gymData);
+        $gym = Gym::create($gymData);
 
         // should add as the user a coach
+        Coach::create([
+            'gym_id' => $gym->id,
+            'user_id' => $user->id,
+            'created_by' => $user->id,
+            'status' => 1
+        ]);
     }
 }
