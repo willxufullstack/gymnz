@@ -139,7 +139,7 @@ class CoachController extends Controller
     public function getCoachInfoByUserId()
     {
         $userId = Auth::User()->id;
-        $ret = Coach::with('user')->where("user_id", "=", $userId)->get();
+        $ret = Coach::with('user')->where("user_id", "=", $userId)->first();
 
         if ($ret) {
             return response()->json($ret, 200);
