@@ -41,6 +41,9 @@ class ScheduleController extends Controller
         if ($request->input('customer')) {
             $query->where('customer_id', $request->input('customer'));
         }
+        if ($request->input('coach')) {
+            $query->where('coach_id', $request->input('coach'));
+        }
         if ($request->input('status')) {
             $query->where('status', $request->input('status'));
         }
