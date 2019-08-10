@@ -8,6 +8,9 @@ class Schedule extends Model
 {
     protected $table = 'schedules';
 
+
+    protected $fillable = ['detail'];
+
     /**
      * Get the gym.
      */

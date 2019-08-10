@@ -97,6 +97,7 @@ class ScheduleController extends Controller
         $schedule->date = $scheduleData['date'];
         $schedule->start = $scheduleData['start'];
         $schedule->end = $scheduleData['end'];
+        $schedule->detail = '[]';
         $schedule->status = 1;
 
         $schedule->customer()->associate(User::find($scheduleData['customer']));
@@ -141,9 +142,17 @@ class ScheduleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $gymId, $id)
     {
-        //
+        $schedule = Schedule::where(['id' => $id, 'gym_id' => $gymId])->first();
+        if (empty($schedule)) {
+            return response()->json(array('message' => 'can not find the schedule ' . $id), 500);
+        }
+        $success = $schedule->update($request->only('detail'));
+        if ($success) {
+            return response()->json($schedule, 200);
+        }
+        return response()->json(array('message' => 'fail'), 500);
     }
 
     /**
