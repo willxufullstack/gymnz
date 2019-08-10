@@ -27,7 +27,7 @@ class ScheduleController extends Controller
         // could be [customer_id, coach_id]
         if ($request->input('count')) {
             $group = $request->input('count');
-            $query->select(DB::raw('count(id) as course_amount, '. $group));
+            $query->select(DB::raw('count(id) as course_amount, ' . $group));
         }
 
         $query->where('gym_id', $id);
@@ -97,6 +97,7 @@ class ScheduleController extends Controller
         $schedule->date = $scheduleData['date'];
         $schedule->start = $scheduleData['start'];
         $schedule->end = $scheduleData['end'];
+        $schedule->status = 1;
 
         $schedule->customer()->associate(User::find($scheduleData['customer']));
         $schedule->coach()->associate(Coach::with('user')->find($scheduleData['coach']));
@@ -173,7 +174,9 @@ class ScheduleController extends Controller
 
     public function complete($gymId, $id)
     {
-        $schedule = Schedule::where(['id' => $id, 'gym_id' => $gymId])->first();
+        $schedule = Schedule::with(['coach.user', 'customer'])
+            ->where(['id' => $id, 'gym_id' => $gymId])
+            ->first();
         if (empty($schedule)) {
             return response()->json(array('message' => 'can not find the schedule ' . $id), 500);
         }

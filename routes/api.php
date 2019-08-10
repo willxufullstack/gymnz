@@ -13,6 +13,12 @@ use Illuminate\Http\Request;
 |
 */
 
+// test code
+// Route::group([], function ($router) {
+
+// });
+
+
 Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
@@ -30,6 +36,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
+    Route::resource('/workoutaction', 'WorkoutActionController');
+
     Route::get('/token/upload', 'PhotoController@getUploadToken');
     Route::get('/bodydata/predefined', 'BodyDataController@getPredefinedOptions');
 
