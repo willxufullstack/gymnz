@@ -23,9 +23,7 @@ class WorkoutActionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-
-    }
+    { }
 
     /**
      * Store a newly created resource in storage.
@@ -36,7 +34,23 @@ class WorkoutActionController extends Controller
     public function store(Request $request)
     {
         $data = $request->only('name', 'unit');
-        return WorkoutAction::create($data);
+        $action = new WorkoutAction();
+        $action->name = $data['name'];
+        $action->unit = $data['unit'];
+        if ($request->has('weight')) {
+            $action->weight = ($request->input('weight') || '-');
+        }
+        if ($request->has('repeat_times')) {
+            $action->repeat_times = $request->input('repeat_times') || 0;
+        }
+        if ($request->has('set_times')) {
+            $action->set_times = $request->input('set_times') || 1;
+        }
+        if ($request->has('interval')) {
+            $action->interval = $request->input('interval') || '30s';
+        }
+        $action->save();
+        return response()->json($action, 201);
     }
 
     /**
