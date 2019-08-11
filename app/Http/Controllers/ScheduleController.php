@@ -144,7 +144,7 @@ class ScheduleController extends Controller
      */
     public function update(Request $request, $gymId, $id)
     {
-        $schedule = Schedule::where(['id' => $id, 'gym_id' => $gymId])->first();
+        $schedule = Schedule::with(['coach.user', 'customer'])->where(['id' => $id, 'gym_id' => $gymId])->first();
         if (empty($schedule)) {
             return response()->json(array('message' => 'can not find the schedule ' . $id), 500);
         }
