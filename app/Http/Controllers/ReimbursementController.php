@@ -23,7 +23,7 @@ class ReimbursementController extends Controller
             ->where('gym_id', $gymId)
             ->where('created_at', '>=', $request->input('start'))
             ->where('created_at', '<=', $request->input('end'))
-            ->where('status', 1)
+            ->where('status', '>=', 1)
             ->orderBy('created_at', 'DESC');
 
         if ($request->has('coach')) {
@@ -96,9 +96,28 @@ class ReimbursementController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $gymId, $reimburseId)
     {
-        //
+        $reimbursement = Reimbursement::with('op')
+            ->where([
+                'gym_id' => $gymId,
+                'id' => $reimburseId,
+                'status' => 1
+            ])->first();
+
+        if (empty($reimbursement)) {
+            return response()->json(['message' => 'cannot find the reimbursement'], 404);
+        };
+
+        $reimbursement->status = 0;
+        // approved_by means deteled by here
+        $reimbursement->approved_by = Auth::User()->id;
+
+        //event(new \App\Events\PayReimbursementEvent($reimbursement));
+
+        $reimbursement->save();
+
+        return response()->json($reimbursement, 200);
     }
 
     public function pay(Request $request, $gymId, $reimburseId)
