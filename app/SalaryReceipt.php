@@ -37,6 +37,7 @@ class SalaryReceipt extends Model
         $this->course_fixed = $setting->course_fixed;
         $this->course_percentage = $setting->course_percentage;
         $this->sale_percentage = $setting->sale_percentage;
+        $this->tax = $setting->tax;
     }
 
     public function updateTotal()

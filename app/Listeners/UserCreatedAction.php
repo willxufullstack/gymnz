@@ -47,11 +47,14 @@ class UserCreatedAction
         $gym = Gym::create($gymData);
 
         // should add as the user a coach
-        Coach::create([
+        $coach = Coach::create([
             'gym_id' => $gym->id,
             'user_id' => $user->id,
             'created_by' => $user->id,
             'status' => 1
         ]);
+
+        // post add coach event: create salary setting
+        event(new \App\Events\CoachAddEvent($coach));
     }
 }

@@ -25,6 +25,10 @@ class SalaryReceiptController extends Controller
             ->where('gym_id', $gymId)
             ->where('status', '>=', 1);
 
+        if ($request->has('coach')) {
+            $query = $query->where('coach_id', $request->input('coach'));
+        }
+
         $receipts = $query->get();
 
         if (count($receipts) == 0) {
