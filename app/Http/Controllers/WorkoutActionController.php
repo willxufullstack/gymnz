@@ -38,16 +38,16 @@ class WorkoutActionController extends Controller
         $action->name = $data['name'];
         $action->unit = $data['unit'];
         if ($request->has('weight')) {
-            $action->weight = ($request->input('weight') || '-');
+            $action->weight = ($request->input('weight') ?? '-');
         }
         if ($request->has('repeat_times')) {
-            $action->repeat_times = $request->input('repeat_times') || 0;
+            $action->repeat_times = $request->input('repeat_times') ?? 8;
         }
         if ($request->has('set_times')) {
-            $action->set_times = $request->input('set_times') || 1;
+            $action->set_times = $request->input('set_times') ?? 4;
         }
         if ($request->has('interval')) {
-            $action->interval = $request->input('interval') || '30s';
+            $action->interval = $request->input('interval') ?? '30s';
         }
         $action->save();
         return response()->json($action, 201);
