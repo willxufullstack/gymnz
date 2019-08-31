@@ -25,7 +25,7 @@ const dashboardRoutes = [
     },
     {
         path: "/customers",
-        name: "Customer",
+        name: L.customer,
         rtlName: "",
         icon: CustomerIcon,
         component: props => <Customers {...props}/>,

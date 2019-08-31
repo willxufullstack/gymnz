@@ -4,14 +4,16 @@ import * as Actions from "../../actions";
 import React from "react";;
 import MaterialTable from 'material-table';
 import "../../../sass/customer.scss"
+import i18N from '../../lang'
 
+const L = i18N('Customers')
 class Customers extends React.Component {
     constructor(props) {
         super(props);
     }
 
     getCustomerListData = () => {
-        return this.props.gym.customers.map(c => [c.name, c.email, c.sex ? 'M' : 'F']);
+        return this.props.gym.customers.map(c => [c.name, c.email, c.sex ? L.male : L.female]);
     };
 
     onRowClick = (_, row) => {
@@ -20,22 +22,31 @@ class Customers extends React.Component {
     };
 
     render() {
-        const header = ['Name', 'Email', 'Sex'];
         const columns = [
-            { title: 'Name', field: 'name' },
-            { title: 'Phone', field: 'email' },
-            { title: 'Sex', field: 'sex', render: row => row.sex ? 'M' : 'F' }
+            { title: L.name, field: 'name' },
+            { title: L.phone, field: 'email' },
+            { title: L.sex, field: 'sex', render: row => row.sex ? L.male : L.female }
         ]
 
         return (<div className='customers-page' >
             <MaterialTable
-                title='Customers'
+                title={L.customers}
                 columns={columns}
                 data={this.props.gym.customers}
                 onRowClick={this.onRowClick}
                 options={{
                     pageSize: 10,
                     pageSizeOptions: []
+                }}
+                localization={{
+                    body: {
+                        emptyDataSourceMessage: L.emptyDataSourceMessage
+                    },
+                    toolbar: {
+                        searchTooltip: L.searchTooltip,
+                        searchPlaceholder: L.searchPlaceholder
+                    }
+
                 }}
             />
         </div>);
