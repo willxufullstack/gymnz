@@ -32,15 +32,15 @@ class UserCreatedAction
         $user = $event->user;
         // create default org
         $orgData = [
-            'name' => 'Default Branch',
-            'description' => 'set organization description',
+            'name' => '默认分组',
+            'description' => '设置你的分组描述',
             'create_by' => $user->id,
         ];
         $org = Organization::create($orgData);
 
         $gymData = [
-            'name' => 'your first gym',
-            'description' => 'set gym description',
+            'name' => '我的Gym',
+            'description' => '设置你的健身房描述',
             'org_id' => $org->id,
             'created_by' => $user->id,
         ];
