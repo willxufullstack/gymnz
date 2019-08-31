@@ -9,6 +9,57 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
     <!-- Styles -->
     <style>
+          @-webkit-keyframes linear-bg {
+                0% {
+                    background-position: 0% 50%
+                }
+
+                50% {
+                    background-position: 100% 50%
+                }
+
+                100% {
+                    background-position: 0% 50%
+                }
+            }
+
+            @-moz-keyframes linear-bg {
+                0% {
+                    background-position: 0% 50%
+                }
+
+                50% {
+                    background-position: 100% 50%
+                }
+
+                100% {
+                    background-position: 0% 50%
+                }
+            }
+
+            @keyframes linear-bg {
+                0% {
+                    background-position: 0% 50%
+                }
+
+                50% {
+                    background-position: 100% 50%
+                }
+
+                100% {
+                    background-position: 0% 50%
+                }
+            }
+
+        .linear-dynamic-bg {
+            background: linear-gradient(120deg, #f43b47, #453a94, #874da2);
+            background-size: 300% 300%;
+
+            -webkit-animation: linear-bg 20s ease infinite;
+            -moz-animation: linear-bg 20s ease infinite;
+            animation: linear-bg 20s ease infinite;
+        }
+
         html,
         body {
             background-color: #fff;
@@ -17,6 +68,21 @@
             font-weight: 200;
             height: 100vh;
             margin: 0;
+        }
+
+        .o2-btn {
+            border-radius: 6px;
+            color: white;
+            border: 2px solid white;
+            color: white !important;
+            padding: 6px 18px !important;
+            margin: 0 24px;
+        }
+
+        .o2-btn:hover {
+            color: #8e24aa !important;
+            background: white;
+            font-weight:  600;
         }
 
         .full-height {
@@ -63,7 +129,7 @@
     </style>
 </head>
 
-<body>
+<body class="linear-dynamic-bg">
     <div class="flex-center position-ref full-height">
         <!-- @if (Route::has('login'))
         <div class="top-right links">
@@ -79,21 +145,21 @@
         </div>
         @endif -->
         <div class="content">
-            <div class="title m-b-md">
+            <div class="title m-b-md" style="color:rgba(255, 255,255 ,0.7); font-size: 60px">
                 氧气健身
             </div>
             <div class="links">
                 @if (Route::has('login'))
 
-                    @auth
-                    <a href="{{ url('/home') }}">进入</a>
-                    @else
-                    <a href="{{ route('login') }}">登录</a>
+                @auth
+                <a class="o2-btn" href="{{ url('/home') }}">进入</a>
+                @else
+                <a class="o2-btn" href="{{ route('login') }}">登录</a>
 
-                    @if (Route::has('register'))
-                    <a href="{{ route('register') }}">注册</a>
-                    @endif
-                    @endauth
+                @if (Route::has('register'))
+                <a class="o2-btn" href="{{ route('register') }}">注册</a>
+                @endif
+                @endauth
                 @endif
                 <!-- <a href="https://laravel.com/docs">Docs</a>
             <a href="https://laracasts.com">Laracasts</a> -->
@@ -102,11 +168,7 @@
     </div>
 </body>
 <script>
-    let hasLogin = {
-        {
-            Auth::user() ? 'true' : 'false'
-        }
-    };
+    let hasLogin = {{ Auth::user() ? 'true' : 'false' }};
     if (hasLogin) {
         window.location.href = "/home";
     }
