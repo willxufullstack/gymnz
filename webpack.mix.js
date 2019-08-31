@@ -20,4 +20,5 @@ mix.webpackConfig({
 });
 
 mix.react('resources/js/app.js', 'public/js')
+  .extract(['react', 'redux', '@material-ui/core'])
   .sass('resources/sass/app.scss', 'public/css');

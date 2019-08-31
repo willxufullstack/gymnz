@@ -115,16 +115,21 @@ class BodyDataController extends Controller
      */
     public function update(Request $request, $userId, $id)
     {
-        $data = $request->only('date', 'value');
         $row = BodyData::where([
             'user_id' => $userId,
-            'id' => $id,
-            'date' =>  $data['date']
+            'id' => $id
         ])->first();
         if (empty($row)) {
             return response()->json(array('message' => 'cannot find the body data'), 404);
         }
-        $row->value = $data['value'];
+
+        if ($request->has('date')) {
+            $row->date = $request->input('date');
+        }
+        if ($request->has('value')) {
+            $row->value = (float) $request->input('value');
+        }
+
         $row->created_by = Auth::User()->id;
         $row->save();
         return $row;
