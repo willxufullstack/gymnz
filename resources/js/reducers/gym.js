@@ -1,5 +1,9 @@
 import * as ActionTypes from '../actions/actionTypes';
 
+import i18N from '../lang'
+
+const L = i18N('GymRedux')
+
 const initState = {
     // data
     coaches: [],
@@ -265,11 +269,11 @@ const gym = (state = initState, action = NonAction) => {
             return Object.assign({}, state, {
                 loading: false,
                 showNewOrder: false,
-                successMsg: 'Create order successed',
+                successMsg: L.orderCreateSuccess
             });
         case ActionTypes.CREATE_ORDER_FAIL:
             return Object.assign({}, state, {
-                errorMsg: 'Create order failed, please try again',
+                errorMsg: L.orderCreateFail,
                 loading: false
             });
 
@@ -455,14 +459,14 @@ const gym = (state = initState, action = NonAction) => {
 
                 return Object.assign({}, state, {
                     customerPage,
-                    successMsg: 'Schedule has been canceled',
+                    successMsg: L.scheduleDeleteSuccess,
                     loading: false
                 });
             }
         case ActionTypes.DELETE_SCHEDULE_FAIL:
             return Object.assign({}, state, {
                 loading: false,
-                errorMsg: 'Delete schedule failed',
+                errorMsg: L.scheduleDeleteFail,
             });
 
         case ActionTypes.COMPLETE_SCHEDULE:
@@ -480,14 +484,14 @@ const gym = (state = initState, action = NonAction) => {
 
                 return Object.assign({}, state, {
                     customerPage,
-                    successMsg: 'The schedule is completed',
+                    successMsg: L.scheduleCompleteSuccess,
                     loading: false
                 });
             }
         case ActionTypes.COMPLETE_SCHEDULE_FAIL:
             return Object.assign({}, state, {
                 loading: false,
-                errorMsg: 'Complete schedule failed',
+                errorMsg: L.scheduleCompleteFail,
             });
 
         case ActionTypes.CREATE_SCHEDULE:
@@ -510,14 +514,14 @@ const gym = (state = initState, action = NonAction) => {
 
                 return Object.assign({}, state, {
                     customerPage: updatedSelectedCustomer,
-                    successMsg: 'Schedule save successed',
+                    successMsg: L.scheduleCreateSuccess,
                     loading: false
                 });
             }
         case ActionTypes.CREATE_SCHEDULE_FAIL:
             return Object.assign({}, state, {
                 loading: false,
-                errorMsg: 'Create schedule failed',
+                errorMsg: L.scheduleCreateFail,
             });
 
         case ActionTypes.LOAD_CUSTOMER_SCHEDULE:

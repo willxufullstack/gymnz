@@ -11,7 +11,9 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import CustomInput from "-components/CustomInput/CustomInput.jsx";
 import { pinyin } from "-utils";
 import Typography from '@material-ui/core/Typography';
+import i18N from '../../lang'
 
+const L = i18N('CustomerSelectionDialogue')
 const styles = {
     dialogTitle: {
         paddingTop: 0,
@@ -59,7 +61,7 @@ class CustomerSelectionDialogue extends React.Component {
             <ListItem key={customer.id} className={classes.selectedCustomer}>
                 <ListItemText className={classes.customerName} primary={customer.name} />
                 <ListItemSecondaryAction>
-                    <Button color='transparentPrimary' onClick={() => this.props.onSelect(this.state.selectedCustomer)}>Save</Button>
+                    <Button color='primary' onClick={() => this.props.onSelect(this.state.selectedCustomer)}>{L.schedule}</Button>
                 </ListItemSecondaryAction>
             </ListItem>
             :
@@ -76,9 +78,9 @@ class CustomerSelectionDialogue extends React.Component {
     };
 
     onSearchKeyChanged = (e) => {
-        this.setState({ 
+        this.setState({
             selectedCustomer: null,
-            input: e.currentTarget.value 
+            input: e.currentTarget.value
         });
     };
 
@@ -97,7 +99,7 @@ class CustomerSelectionDialogue extends React.Component {
                     inputProps={{
                         value: this.state.input,
                         onChange: this.onSearchKeyChanged,
-                        placeholder: 'Search',
+                        placeholder: L.search,
                         className: classes.searchBoxInput
                     }}
                 />

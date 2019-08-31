@@ -10,11 +10,14 @@ import Customer from "-views/Customer/Customer"
 import GymSettings from "-views/GymSetting/GymSettings";
 import LinkedMonthlyReport from '-views/Report/MonthlyReport';
 import AccountingPage from '-views/Accounting/AccountingPage';
+import i18N from './lang'
+
+const L = i18N('Routes')
 
 const dashboardRoutes = [
     {
         path: "/dashboard",
-        name: "Dashboard",
+        name: L.dashboard,
         rtlName: "لوحة القيادة",
         icon: Dashboard,
         component: () => <LinkedDashboard/>,

@@ -17,6 +17,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import i18N from '../../lang'
+
+const L = i18N('CreateNewDialogue')
 
 const styles = {
     cardCategoryWhite: {
@@ -168,7 +171,7 @@ class CreateNewDialogue extends React.Component {
                         </GridContainer>
                     </CardBody>
                     <CardFooter>
-                        <Button onClick={this.cancel}>Cancel</Button>
+                        <Button onClick={this.cancel}>{L.cancel}</Button>
                         <Button
                             disabled={
                                 !this.props.inputFields.reduce((preValue, curValue) => {
@@ -177,7 +180,7 @@ class CreateNewDialogue extends React.Component {
                             }
                             onClick={this.save}
                             color="primary"
-                        >Save</Button>
+                        >{L.save}</Button>
                     </CardFooter>
                 </Card>
             </GridItem>
