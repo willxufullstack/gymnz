@@ -3,6 +3,16 @@ export default (component, lang = 'zh') => {
 }
 
 const Lang = {
+    Routes: {
+        zh: {
+            dashboard: '总览',
+            customer: '客户'
+        },
+        en: {
+            dashboard: 'Dashboard',
+            customer: 'Customer'
+        }
+    },
     CustomerSelectionDialogue: {
         zh: {
             search: '请输入拼音首字母',
@@ -47,14 +57,6 @@ const Lang = {
             orderCreateFail: 'Create order failed, please try again'
         }
     },
-    Routes: {
-        zh: {
-            dashboard: '总览'
-        },
-        en: {
-            dashboard: 'Dashboard'
-        }
-    },
     CreateNewDialogue: {
         zh: {
             cancel: '取消',
@@ -63,6 +65,31 @@ const Lang = {
         en: {
             cancel: 'Cancel',
             save: 'Save'
+        }
+    },
+    Customers: {
+        zh: {
+            customers: '客户',
+            name: '姓名',
+            sex: '性别',
+            phone: '电话',
+            female: '女',
+            male: '男',
+            emptyDataSourceMessage: '没有数据',
+            searchTooltip: '搜索',
+            searchPlaceholder: '姓名/电话'
+
+        },
+        en: {
+            customers: 'Customers',
+            name: 'Name',
+            sex: 'Sex',
+            phone: 'Phone',
+            female: 'F',
+            male: 'M',
+            emptyDataSourceMessage: 'No records to display',
+            searchTooltip: 'search',
+            searchPlaceholder: 'Name/Phone'
         }
     },
     Dashboard: {

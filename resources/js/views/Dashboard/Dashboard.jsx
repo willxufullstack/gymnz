@@ -146,8 +146,8 @@ class Dashboard extends React.Component {
                     name: 'sex',
                     label: L.sex,
                     options: [
-                        { value: 0, label: 'Female' },
-                        { value: 1, label: 'Male' }
+                        { value: 0, label: L.female },
+                        { value: 1, label: L.male }
                     ]
                 },
                 {
