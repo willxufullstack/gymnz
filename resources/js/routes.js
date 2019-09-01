@@ -33,7 +33,7 @@ const dashboardRoutes = [
     },
     {
         path: "/report/monthly",
-        name: "Report",
+        name: L.report,
         rtlName: "",
         icon: LibraryBooks,
         component: props => <LinkedMonthlyReport {...props}/>,

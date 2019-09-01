@@ -7,12 +7,14 @@ const Lang = {
         zh: {
             dashboard: '总览',
             customer: '客户',
-            finance: '财务'
+            finance: '财务',
+            report: '数据'
         },
         en: {
             dashboard: 'Dashboard',
             customer: 'Customer',
-            finance: 'Accounting'
+            finance: 'Accounting',
+            report: 'Report'
         }
     },
     Utils: {
@@ -335,6 +337,42 @@ const Lang = {
             coursePercent: 'Course(%)',
             salePercent: 'Sale(%)',
             tax: 'Tax'
+        }
+    },
+    MonthlyReport: {
+        zh: {
+            activeCustomer: '活跃客户',
+            scheduleCount: '课程数',
+            orderCount: '订单数',
+            orderPrice: '订单总价',
+            price: '价格',
+            bookedTotal: '已约/总计',
+            coach: '教练',
+            created: '创建时间',
+            count: '课程数',
+            name: '姓名',
+            noData: '无数据',
+            summary: '总览',
+            sale: '销售',
+            coach: '教练',
+            customer: '客户'
+        },
+        en: {
+            activeCustomer: 'Active Customer',
+            scheduleCount: 'Schedule Count',
+            orderCount: 'Total Order Count',
+            orderPrice: 'Total Order Price',
+            price: 'Price',
+            bookedTotal: 'Booked/Total',
+            coach: 'Coach',
+            created: 'Created',
+            count: 'Count',
+            name: 'Name',
+            noData: 'No Data',
+            summary: 'Summary',
+            sale: 'Sale',
+            coach: 'Coach',
+            customer: 'Customer'
         }
     }
 }
