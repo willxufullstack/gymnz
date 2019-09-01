@@ -41,7 +41,7 @@ const dashboardRoutes = [
     },
     {
         path: "/accounting",
-        name: "Finance",
+        name: L.finance,
         rtlName: "财务",
         icon: MoneyIcon,
         component: ()=><AccountingPage/>,

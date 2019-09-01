@@ -7,9 +7,9 @@ import Reimbursement from './Reimbursement';
 import SalarySummary from './SalarySummary';
 import SalarySetting from './SalarySetting';
 import Tabs from "-components/CustomTabs/CustomTabs.jsx";
+import i18N from '../../lang'
 
-
-
+const L = i18N('AccountingPage')
 class AccountingPage extends React.Component {
     constructor(props) {
         super(props);
@@ -24,20 +24,20 @@ class AccountingPage extends React.Component {
 
     render() {
         return <Tabs
-            title={'Finance'}
+            title={L.finance}
             headerColor="primary"
             onSwitch={this.tapTab}
             tabs={[{
-                tabName: 'Salary',
+                tabName: L.salary,
                 tabContent: <SalarySummary {...this.props}/>
             }, {
-                tabName: "Reimbursement",
+                tabName: L.reimbursement,
                 tabContent: <Reimbursement {...this.props}/>,
             }, {
-                tabName: "Accounting",
+                tabName: L.accounting,
                 tabContent: <Accounting {...this.props}/>,
             },{
-                tabName: 'Salary Setting',
+                tabName: L.salarySetting,
                 tabContent: <SalarySetting {...this.props}/>
             },]}
         />;

@@ -12,7 +12,9 @@ import dayjs from 'dayjs';
 import Done from '@material-ui/icons/CheckCircle';
 import Pay from '@material-ui/icons/PlayCircleOutline';
 import Success from "-components/Typography/Success.jsx";
+import i18N from '../../lang'
 
+const L = i18N('SalarySummary')
 const styles = {
     datePicker: {
         width: 62,
@@ -60,7 +62,7 @@ class SalarySummary extends React.Component {
 
     getPayConfirmation = () => {
         return <Confirmation
-            message='Have you finished the payment?'
+            message={L.payConfirm}
             onConfirm={this.pay}
             onCancel={() => { this.setState({ showPayConfirmation: false }) }}
         />;
@@ -69,7 +71,7 @@ class SalarySummary extends React.Component {
     getTable = () => {
         const columns = [
             {
-                title: 'Name', field: 'coach.user.name', editable: 'never',
+                title: L.name, field: 'coach.user.name', editable: 'never',
                 cellStyle: {
                     width: 120,
                     maxWidth: 120
@@ -80,7 +82,7 @@ class SalarySummary extends React.Component {
                 }
             },
             {
-                title: 'Amount', field: 'total', editable: 'never',
+                title: L.amount, field: 'total', editable: 'never',
                 cellStyle: {
                     width: 100,
                     maxWidth: 100
@@ -91,7 +93,7 @@ class SalarySummary extends React.Component {
                 }
             },
             {
-                title: 'Base - Tax', field: 'tax', editable: 'never', cellStyle: {
+                title: L.baseTax, field: 'tax', editable: 'never', cellStyle: {
                     width: 160,
                     maxWidth: 160
                 },
@@ -101,10 +103,10 @@ class SalarySummary extends React.Component {
                 },
                 render: rowData => `${rowData.base} - ${rowData.tax}`
             },
-            { title: 'Course', field: 'course_count', editable: 'never', render: rowData => `${rowData.course_fixed} * ${rowData.course_count}` },
-            { title: 'Adjustment', field: 'adjustment' },
-            { title: 'Comments', field: 'adjustment_reason' },
-            { title: '', editable: 'never', render: rowData => rowData.status === 2 ? <Success><Done /></Success> : <Button onClick={() => this.tapPay(rowData)} color='transparentPrimary'><Pay />Pay</Button> }
+            { title: L.course, field: 'course_count', editable: 'never', render: rowData => `${rowData.course_fixed} * ${rowData.course_count}` },
+            { title: L.adjustment, field: 'adjustment' },
+            { title: L.comments, field: 'adjustment_reason' },
+            { title: '', editable: 'never', render: rowData => rowData.status === 2 ? <Success><Done /></Success> : <Button onClick={() => this.tapPay(rowData)} color='transparentPrimary'><Pay />{L.pay}</Button> }
         ];
         const data = this.props.gym.salaryReceipts;
         const dateSelector = (<MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>

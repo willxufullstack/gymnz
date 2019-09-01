@@ -1,6 +1,8 @@
 import React from 'react'
 import MaterialTable from 'material-table'
+import i18N from '../../lang'
 
+const L = i18N('SalarySetting')
 const styles = {
     datePicker: {
         width: 62,
@@ -23,18 +25,18 @@ class SalarySetting extends React.Component {
 
     getTable = () => {
         const columns = [
-            { title: 'Name', field: 'coach.user.name', editable: 'never' },
-            { title: 'Base', field: 'base', type: 'numeric' },
-            { title: 'Course(Fixed)', field: 'course_fixed', type: 'numeric' },
-            { title: 'Course(%)', field: 'course_percentage', type: 'numeric' },
-            { title: 'Sale(%)', field: 'sale_percentage', type: 'numeric' },
-            { title: 'Tax', field: 'tax', type: 'numeric' }
+            { title: L.name, field: 'coach.user.name', editable: 'never' },
+            { title: L.base, field: 'base', type: 'numeric' },
+            { title: L.courseFixed, field: 'course_fixed', type: 'numeric' },
+            { title: L.coursePercent, field: 'course_percentage', type: 'numeric' },
+            { title: L.salePercent, field: 'sale_percentage', type: 'numeric' },
+            { title: L.tax, field: 'tax', type: 'numeric' }
         ]
         const data = this.props.gym.salarySettings
         return (
             <div>
                 <MaterialTable
-                    title={'Salary Setting'}
+                    title={L.salarySetting}
                     columns={columns}
                     data={data}
                     editable={{

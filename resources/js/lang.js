@@ -6,11 +6,13 @@ const Lang = {
     Routes: {
         zh: {
             dashboard: '总览',
-            customer: '客户'
+            customer: '客户',
+            finance: '财务'
         },
         en: {
             dashboard: 'Dashboard',
-            customer: 'Customer'
+            customer: 'Customer',
+            finance: 'Accounting'
         }
     },
     Utils: {
@@ -223,6 +225,116 @@ const Lang = {
             female: 'Female',
             male: 'Male',
             createOrder: 'CreateOrder'
+        }
+    },
+    SalarySummary: {
+        zh: {
+            payConfirm: '确定完成支付了吗？',
+            name: '姓名',
+            amount: '金额',
+            baseTax: '底薪 - 社保',
+            course: '课程数量',
+            adjustment: '调整金额',
+            comments: '备注',
+            pay: '支付'
+        },
+        en: {
+            payConfirm: 'Have you finished the payment?',
+            name: 'Name',
+            amount: 'Amount',
+            baseTax: 'Base - Tax',
+            course: 'Course',
+            adjustment: 'Adjustment',
+            comments: 'Comments',
+            pay: 'Pay'
+        }
+    },
+    AccountingPage: {
+        zh: {
+            finance: '财务',
+            salary: '工资',
+            reimbursement: '报销',
+            accounting: '收支',
+            salarySetting: '工资设置'
+        },
+        en: {
+            finance: 'Finance',
+            salary: 'Salary',
+            reimbursement: 'Reimbursement',
+            accounting: 'Accounting',
+            salarySetting: 'Salary Setting'
+        }
+    },
+    Reimbursement: {
+        zh: {
+            createReimbursement: '新的报销',
+            owner: '报销人',
+            category: '分类',
+            amount: '金额',
+            detail: '详情',
+            payConfirm: '确定完成支付了吗？',
+            operator: '操作人',
+            time: '时间',
+            pay: '支付',
+            reimbursement: '报销'
+        },
+        en: {
+            createReimbursement: 'Create Reimbursement',
+            owner: 'Owner',
+            category: 'Category',
+            amount: 'Amount',
+            detail: 'Detail',
+            payConfirm: 'Have you finished the payment?',
+            operator: 'Operator',
+            time: 'Time',
+            pay: 'Pay',
+            reimbursement: 'Reimbursement'
+        }
+    },
+    Accounting: {
+        zh: {
+            newIncome: '新的收入',
+            newExpenditure: '新的支出',
+            category: '分类',
+            amount: '金额',
+            detail: '详情',
+            operator: '操作人',
+            time: '时间',
+            pay: '支付',
+            income: '收入',
+            expenditure: '支出'
+        },
+        en: {
+            newIncome: 'New Income',
+            newExpenditure: 'New Expenditure',
+            category: 'Category',
+            amount: 'Amount',
+            detail: 'Detail',
+            operator: 'Operator',
+            time: 'Time',
+            pay: 'Pay',
+            income: 'Income',
+            expenditure: 'Expenditure'
+        }
+    },
+    SalarySetting: {
+        zh: {
+            salarySetting: '工资设置',
+            name: '姓名',
+            base: '底薪',
+            courseFixed: '课提(固定)',
+            coursePercent: '课提(%)',
+            salePercent: '销提(%)',
+            tax: '社保'
+        },
+        en: {
+            salarySetting: 'Salary Setting',
+            name: 'Name',
+            base: 'Base',
+            courseFixed: 'Course(Fixed)',
+            coursePercent: 'Course(%)',
+            salePercent: 'Sale(%)',
+            tax: 'Tax'
         }
     }
 }

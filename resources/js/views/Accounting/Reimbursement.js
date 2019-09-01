@@ -13,8 +13,9 @@ import {
     MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 import DayjsUtils from "@date-io/dayjs";
+import i18N from '../../lang'
 
-
+const L = i18N('Reimbursement')
 const styles = {
     datePicker: {
         width: 62,
@@ -52,23 +53,23 @@ class Reimbursement extends React.Component {
                         this.setState({ showNewReimbursement: false });
                     });
             },
-            title: 'Create Reimbursement',
+            title: L.createReimbursement,
             dialogue: true,
             inputFields: [{
                 name: 'coach_id',
-                label: 'Owner',
+                label: L.owner,
                 options: this.props.gym.coaches.map((coach) => { return { value: coach.id, label: coach.user.name } }),
             }, {
                 name: 'category',
-                label: 'Category',
+                label: L.category,
                 options: utils.arrayToOptions(consts.AccoutingExpenditureCategoryOptions),
             }, {
                 name: 'amount',
-                label: 'Amount',
+                label: L.amount,
                 type: 'decimal'
             }, {
                 name: 'detail',
-                label: 'Detail',
+                label: L.detail,
                 type: 'text',
             }]
         };
@@ -94,7 +95,7 @@ class Reimbursement extends React.Component {
 
     getPayConfirmation = () => {
         return <Confirmation
-            message='Have you finished the payment?'
+            message={L.payConfirm}
             onConfirm={this.pay}
             onCancel={() => { this.setState({ showPayConfirmation: false }) }}
         />;
@@ -102,12 +103,12 @@ class Reimbursement extends React.Component {
 
     getTable = () => {
         const columns = [
-            { title: 'Amount', field: 'amount' },
-            { title: 'Category', field: 'category' },
-            { title: 'Detail', field: 'detail' },
-            { title: 'Operator', field: 'op.name' },
-            { title: 'Time', field: 'created_at' },
-            { title: '', render: rowData => <Button onClick={() => this.tapPay(rowData)} color='transparentPrimary'><Pay/>Pay</Button> }
+            { title: L.amount, field: 'amount' },
+            { title: L.category, field: 'category' },
+            { title: L.detail, field: 'detail' },
+            { title: L.operator, field: 'op.name' },
+            { title: L.Time, field: 'created_at' },
+            { title: '', render: rowData => <Button onClick={() => this.tapPay(rowData)} color='transparentPrimary'><Pay/>{L.pay}</Button> }
         ];
         const data = this.props.gym.reimbursements;
         const dateSelector = (<MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>
@@ -115,7 +116,7 @@ class Reimbursement extends React.Component {
         </MuiPickersUtilsProvider>);
         const btns = (<React.Fragment>
             {dateSelector}
-            <Button color='transparentPrimary' size='sm' onClick={() => this.setState({ showNewReimbursement: true })}><Add />Reimbursement</Button>
+            <Button color='transparentPrimary' size='sm' onClick={() => this.setState({ showNewReimbursement: true })}><Add />{L.reimbursement}</Button>
         </React.Fragment>);
         return <div><MaterialTable
             title={btns}
