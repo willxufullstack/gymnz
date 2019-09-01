@@ -13,6 +13,18 @@ const Lang = {
             customer: 'Customer'
         }
     },
+    Utils: {
+        zh: {
+            normal: '进行中',
+            refunded: '已退款',
+            unknown: '未知'
+        },
+        en: {
+            normal: 'Normal',
+            refrunded: 'Refunded',
+            unknown: 'Unknown'
+        }
+    },
     CustomerSelectionDialogue: {
         zh: {
             search: '请输入拼音首字母',
@@ -21,6 +33,16 @@ const Lang = {
         en: {
             search: 'Search',
             schedule: 'Schedule'
+        }
+    },
+    Scheduling: {
+        zh: {
+            save: '保存',
+            noCoach: '没有找到教练'
+        },
+        en: {
+            save: 'Save',
+            noCoach: 'No available coach found'
         }
     },
     Confirmation: {
@@ -67,6 +89,84 @@ const Lang = {
             save: 'Save'
         }
     },
+    CustomerPhotoSection: {
+        zh: {
+            uploadFail: '图片上传失败',
+            delete: '删除',
+            deleteConfirm: '确定要删除照片吗？',
+            add: '添加'
+        },
+        en: {
+            uploadFail: 'Upload image failed',
+            delete: 'Delete',
+            deleteConfirm: 'Are you sure to delete the photo?',
+            add: 'Add'
+        }
+    },
+    CustomerDataSection: {
+        zh: {
+            date: '日期',
+            value: '数值',
+            edit: '编辑 ',
+            add: '添加',
+            addFull: '添加一组数据'
+        },
+        en: {
+            date: 'Date',
+            value: 'Value',
+            edit: 'Edit',
+            add: 'Add',
+            addFull: 'ADD FULL DATA'
+        }
+    },
+    Customer: {
+        zh: {
+            refund: '退款',
+            amount: '金额',
+            reason: '原因',
+            refundSubTitle: '请填写退款详细信息',
+            price: '价格',
+            bookedTotal: '已约/总计',
+            coach: '教练',
+            created: '创建时间',
+            status: '状态',
+            action: '操作',
+            date: '日期',
+            time: '时间',
+            noUnfinished: '没有未完成的课程',
+            cancel: '取消',
+            complete: '完成',
+            unfinished: '未完成',
+            cancelConfirm: '确定要取消该课程吗？',
+            book: '预约',
+            orders: '订单',
+            data: '数据',
+            photo: '照片'
+        },
+        en: {
+            refund: 'Refund',
+            amount: 'Amount',
+            reason: 'Reason',
+            refundSubTitle: 'Please fill the detail information for the refund',
+            price: 'Price',
+            bookedTotal: 'Booked/Total',
+            coach: 'Coach',
+            created: 'Created',
+            status: 'Status',
+            action: 'Action',
+            date: 'Date',
+            time: 'Time',
+            noUnfinished: 'No unfinished schedule',
+            cancel: 'Cancel',
+            complete: 'Complete',
+            unfinished: 'Unfinished',
+            cancelConfirm: 'Are you sure to cancel the schedule?',
+            book: 'Book',
+            orders: 'Orders',
+            data: 'Data',
+            photo: 'Photo'
+        }
+    },
     Customers: {
         zh: {
             customers: '客户',
@@ -78,7 +178,6 @@ const Lang = {
             emptyDataSourceMessage: '没有数据',
             searchTooltip: '搜索',
             searchPlaceholder: '姓名/电话'
-
         },
         en: {
             customers: 'Customers',

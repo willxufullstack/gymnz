@@ -9,7 +9,9 @@ import Add from "@material-ui/icons/Add";
 import Edit from "@material-ui/icons/Edit";
 import MaterialTable from 'material-table';
 import { Card, CardContent, withStyles, Typography, Dialog } from "@material-ui/core";
+import i18N from '../../lang'
 
+const L = i18N('CustomerDataSection')
 const styles = {
     chartCard: {
         paddingTop: 0
@@ -96,7 +98,7 @@ class CustomerDataSection extends React.Component {
 
     getCreateDialogue = () => {
         let params = {
-            title: 'Data',
+            title: L.data,
             onSave: (data) => {
                 this.save(data, this.props.options);
             },
@@ -110,8 +112,8 @@ class CustomerDataSection extends React.Component {
         let dataSet = this.props.data.find(r => r.option === this.state.editingOption);
         let { data } = dataSet;
         const columns = [
-            { title: 'Date', field: 'date', editable: 'never' },
-            { title: 'Value', field: 'value', type: 'numeric' },
+            { title: L.date, field: 'date', editable: 'never' },
+            { title: L.value, field: 'value', type: 'numeric' },
         ];
         return <Dialog fullWidth open={true} onClose={() => this.setState({ editingOption: false })} >
             <MaterialTable
@@ -163,13 +165,13 @@ class CustomerDataSection extends React.Component {
                                     <Typography variant='h6' className={classes.chartOption}>{data.option}</Typography>
                                     <Muted className={classes.chartUnit}>{data.unit}</Muted>
                                 </div>
-                                <Button color='transparentGray' size='sm' onClick={() => this.setState({ editingOption: data.option })}><Edit /> Edit </Button>
-                                <Button color='transparentPrimary' size='sm' onClick={() => this.setState({ addDialogueField: this.getInputField(data.option) })}><Add /> ADD </Button>
+                                <Button color='transparentGray' size='sm' onClick={() => this.setState({ editingOption: data.option })}><Edit /> {L.edit} </Button>
+                                <Button color='transparentPrimary' size='sm' onClick={() => this.setState({ addDialogueField: this.getInputField(data.option) })}><Add />{L.add}</Button>
                             </div>
                             {this.getLineChart(data.data)}
                         </CardContent>
                     </Card>)}
-            <Button style={{ marginTop: 16 }} color='transparentPrimary' fullWidth={true} onClick={() => this.setState({ addDialogueField: this.getInputField() })}><Add /> ADD FULL DATA</Button>
+            <Button style={{ marginTop: 16 }} color='transparentPrimary' fullWidth={true} onClick={() => this.setState({ addDialogueField: this.getInputField() })}><Add />{L.addFull}</Button>
         </React.Fragment>;
 
     }

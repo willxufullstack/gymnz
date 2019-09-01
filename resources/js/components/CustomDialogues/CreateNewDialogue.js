@@ -233,13 +233,13 @@ class CreateNewDialogue extends React.Component {
                 }
             </DialogContent>
             <DialogActions>
-                <Button onClick={this.cancel} color="transparentGray">Cancel</Button>
+                <Button onClick={this.cancel} color="transparentGray">{L.cancel}</Button>
                 <Button disabled={
                     !this.props.inputFields.reduce((preValue, curValue) => {
                         return !!preValue && this.isValid(curValue);
                     }, true)
                 }
-                    onClick={this.save} color="primary">OK</Button>
+                    onClick={this.save} color="primary">{L.save}</Button>
             </DialogActions>
         </Dialog>;
     };

@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
-export * from './helper/pinyin';
+import i18N from './lang';
 
+const L = i18N('Utils')
+export * from './helper/pinyin';
 
 export const TimeStrMap = getTimeStrMap();
 
@@ -111,10 +113,10 @@ export function arrayToOptions(arr) {
 export function getOrderStatus(status) {
     switch (status) {
         case 1:
-            return 'Normal';
+            return L.normal;
         case 2:
-            return 'Refunded';
+            return L.refunded;
         default:
-            return 'Unknown';
+            return L.unknown;
     };
 }
