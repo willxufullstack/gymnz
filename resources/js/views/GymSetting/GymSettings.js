@@ -15,7 +15,9 @@ import Organization from './Organization';
 import { Typography, IconButton } from '@material-ui/core';
 import Primary from '-components/Typography/Primary';
 import CreateNewDialogue from "-components/CustomDialogues/CreateNewDialogue";
+import i18N from '../../lang'
 
+const L = i18N('GymSettings')
 class GymSettings extends React.Component {
     constructor(props) {
         super(props);
@@ -55,12 +57,12 @@ class GymSettings extends React.Component {
             inputFields={[
                 {
                     name: 'name',
-                    label: 'Name',
+                    label: L.name,
                     value: this.props.selectedGym.name
                 }
             ]}
             dialogue={true}
-            title="Edit Gym Name"
+            title={L.editName}
         />
     };
 
@@ -87,7 +89,7 @@ class GymSettings extends React.Component {
             <GridContainer>
                 {this.state.editGymNameDialogue && this.getEditGymNameDialogue()}
                 <GridItem xs={12} sm={12} md={6} classes={{ grid: 'setting-option-block' }}>
-                    <Typography variant='subtitle1' paragraph><Label fontSize='small' />Available Time</Typography>
+                    <Typography variant='subtitle1' paragraph><Label fontSize='small' />{L.availableTime}</Typography>
                     <InputRange
                         formatLabel={value => this.getTimeLabel(value)}
                         draggableTrack
@@ -99,7 +101,7 @@ class GymSettings extends React.Component {
                         value={this.state.workingHours} />
                 </GridItem>
                 <GridItem xs={12} sm={12} md={6} classes={{ grid: 'setting-option-block' }}>
-                    <Typography variant='subtitle1' paragraph ><Label fontSize='small' />Name</Typography>
+                    <Typography variant='subtitle1' paragraph ><Label fontSize='small' />{L.name}</Typography>
                     <Primary className='setting-gym-name'>{this.props.selectedGym.name}<IconButton onClick={() => this.setState({ editGymNameDialogue: true })} ><Edit fontSize="large" /></IconButton></Primary>
                 </GridItem>
             </GridContainer>
@@ -108,17 +110,17 @@ class GymSettings extends React.Component {
 
     render() {
         return <Tabs
-            title={'Manage'}
+            title={L.manage}
             headerColor="primary"
             onSwitch={this.tapTab}
             tabs={[{
-                tabName: 'Coach',
+                tabName: L.coach,
                 tabContent: <Coach {...this.props} />
             }, {
-                tabName: "Gym",
+                tabName: L.gym,
                 tabContent: this.getSettingTab(),
             }, {
-                tabName: "Organization",
+                tabName: L.organization,
                 tabContent: <Organization {...this.props} />
             }]}
         />

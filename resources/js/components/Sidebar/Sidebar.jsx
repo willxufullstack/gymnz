@@ -15,7 +15,9 @@ import SimpleMenu from "-components/SimpleMenu/SimpleMenu";
 import Button from "-components/CustomButtons/Button";
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ArrowBack from '@material-ui/icons/ArrowBack';
+import i18N from '../../lang'
 
+const L = i18N('Other')
 const Sidebar = ({ ...props }) => {
   // verifies if routeName is the one active (in browser input)
   function activeRoute(routeName) {
@@ -128,7 +130,7 @@ const Sidebar = ({ ...props }) => {
           <div className={classes.sidebarWrapper}>{links}</div>
           <Button style={{
             zIndex: 100
-          }} color='transparentGray' onClick={LogoutFunc}><ArrowBack/>logout</Button>
+          }} color='transparentGray' onClick={LogoutFunc}><ArrowBack/>{L.logout}</Button>
           {image !== undefined ? (
             <div
               className={classes.background}
