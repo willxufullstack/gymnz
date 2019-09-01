@@ -3,18 +3,28 @@ export default (component, lang = 'zh') => {
 }
 
 const Lang = {
+    Other: {
+        zh: {
+            logout: '注销'
+        },
+        en: {
+            logout: 'Logout'
+        }
+    },
     Routes: {
         zh: {
             dashboard: '总览',
             customer: '客户',
             finance: '财务',
-            report: '数据'
+            report: '数据',
+            manage: '设置'
         },
         en: {
             dashboard: 'Dashboard',
             customer: 'Customer',
             finance: 'Accounting',
-            report: 'Report'
+            report: 'Report',
+            manage: 'Manage'
         }
     },
     Utils: {
@@ -373,6 +383,76 @@ const Lang = {
             sale: 'Sale',
             coach: 'Coach',
             customer: 'Customer'
+        }
+    },
+    GymSettings: {
+        zh: {
+            manage: '设置',
+            name: '名称',
+            editName: '编辑名称',
+            availableTime: '工作时间',
+            coach: '教练',
+            gym: '本店',
+            organization: '分组'
+        },
+        en: {
+            manage: 'Manage',
+            name: 'Name',
+            editName: 'Edit Gym Name',
+            availableTime: 'Available Time',
+            coach: 'Coach',
+            gym: 'Gym',
+            organization: 'Organization'
+        }
+    },
+    Coach: {
+        zh: {
+            name: '姓名',
+            sex: '性别',
+            phone: '电话',
+            female: '女',
+            male: '男',
+            password: '密码',
+            deleteConfirm: '确定要删除',
+            resetConfirm: '确定要重置密码为 00000000?',
+            delete:'移除',
+            resetPwd: '重置密码',
+            createCoach: '添加教练'
+        },
+        en: {
+            name: 'Name',
+            sex: 'Sex',
+            phone: 'Phone',
+            female: 'F',
+            male: 'M',
+            password: 'Password',
+            deleteConfirm: 'Do you want to remove ',
+            resetConfirm: 'Do you want to reset passwrod to 00000000?',
+            delete: 'Delete',
+            resetPwd: 'Reset Password',
+            createCoach: 'Create Coach'
+        }
+    },
+    Organization: {
+        zh: {
+            name: '名称',
+            editName: '编辑名称',
+            createOrganization: '新建分组',
+            description: '描述',
+            createGym: '新建分店',
+            deleteConfirm: '确定要删除',
+            deleteOrg: '删除分组',
+            noGym: '请添加分店'
+        },
+        en: {
+            name: 'Name',
+            editName: 'Edit Name',
+            createOrganization: 'Create Organization',
+            description: 'Description',
+            createGym: 'Create Gym',
+            deleteConfirm: 'Do you want to remove ',
+            deleteOrg: 'Delete Organization',
+            noGym: 'No gym found',
         }
     }
 }

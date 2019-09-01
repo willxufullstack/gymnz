@@ -22,7 +22,9 @@ import Snackbar from "-components/Snackbar/Snackbar";
 import AddAlert from "@material-ui/icons/AddAlert";
 import { IconButton } from '@material-ui/core';
 import Confirmation from "-components/CustomDialogues/Confirmation";
+import i18N from '../../lang'
 
+const L = i18N('Organization')
 class Organization extends React.Component {
     constructor(props) {
         super(props);
@@ -69,12 +71,12 @@ class Organization extends React.Component {
             inputFields={[
                 {
                     name: 'name',
-                    label: 'Name',
+                    label: L.name,
                     value: this.state.editOrgNameDialogue.name
                 }
             ]}
             dialogue={true}
-            title="Edit Name"
+            title={L.editName}
         />
     };
 
@@ -86,16 +88,18 @@ class Organization extends React.Component {
         const orgFields = {
             onCancel: this.props.actions.cancelNewOrg,
             onSave: this.props.actions.createOrg,
-            title: 'Create Organization',
+            title: L.createOrganization,
             dialogue: true,
             inputFields: [{
                 name: 'name',
+                label: L.name
             }, {
                 name: 'description',
+                label: L.description
             }]
         };
         const gymFields = {
-            title: 'Create Gym',
+            title: L.createGym,
             onCancel: this.props.actions.cancelNewGym,
             onSave: data => {
                 data.org_id = this.state.activeOrg.id;
@@ -104,8 +108,10 @@ class Organization extends React.Component {
             dialogue: true,
             inputFields: [{
                 name: 'name',
+                label: L.name
             }, {
                 name: 'description',
+                label: L.description
             }]
         };
         if (this.props.organization.showNewOrg) {
@@ -121,7 +127,7 @@ class Organization extends React.Component {
 
     render() {
         const deleteOrgParams = {
-            message: this.state.activeOrg && 'Do you want to remove ' + this.state.activeOrg.name + '?',
+            message: this.state.activeOrg && L.deleteConfirm + this.state.activeOrg.name + '?',
             onCancel: this.hideDeleteOrgConfirmation,
             onConfirm: this.deleteOrg
         };
@@ -157,15 +163,15 @@ class Organization extends React.Component {
                                                             })}
                                                     </List>
                                                     :
-                                                    <h4>No gym found</h4>
+                                                    <h4>{L.noGym}</h4>
                                                 }
                                                 <Button size="sm" color='transparentPrimary' onClick={this.showAddGym(item)}>
-                                                    <CircleAddOutline /> Create New Gym
+                                                    <CircleAddOutline /> {L.createGym}
                                                 </Button>
                                             </CardBody>
                                             <CardFooter stats style={{ marginTop: 0 }}>
                                                 <Button fullWidth size="sm" color='transparentGray' onClick={this.showDeleteOrgConfirmation(item)}>
-                                                    Delete Organization
+                                                    {L.deleteOrg}
                                                     </Button>
                                             </CardFooter>
                                         </Card>

@@ -59,7 +59,7 @@ const dashboardRoutes = [
     },
     {
         path: "/setting",
-        name: "Manage",
+        name: L.manage,
         rtlName: "健身房管理页",
         icon: SettingsIcon,
         component: ()=><GymSettings/>,
