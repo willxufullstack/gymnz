@@ -7,6 +7,22 @@ export function switchGym(value) {
     };
 }
 
+export function changePwd(currentPwd, newPwd) {
+    return {
+        type: ActionTypes.CHANGE_PWD,
+        payload: {
+            request: {
+                method: 'post',
+                url: '/auth/reset',
+                data: {
+                    currentPassword: currentPwd,
+                    newPassword: newPwd
+                }
+            }
+        }
+    }
+}
+
 export function loadLoggedInCoachInfo() {
     return {
         type: ActionTypes.LOAD_LOGGED_IN_COACH_INFO,
