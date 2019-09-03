@@ -113,7 +113,7 @@ class Admin extends React.Component {
                         <Snackbar
                             place="tc"
                             color="danger"
-                            icon={AddAlert}
+                            // icon={AddAlert}
                             message={this.props.gym.errorMsg || this.props.setting.errorMsg}
                             open={!!(this.props.gym.errorMsg || this.props.setting.errorMsg)}
                             closeNotification={() => this.props.actions.closeErrMsg()}
@@ -122,7 +122,7 @@ class Admin extends React.Component {
                         <Snackbar
                             place="tc"
                             color="success"
-                            icon={AddAlert}
+                            // icon={AddAlert}
                             autoHideDuration={6000}
                             message={this.props.gym.successMsg || this.props.setting.successMsg}
                             open={!!(this.props.gym.successMsg || this.props.setting.successMsg)}
