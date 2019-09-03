@@ -95,7 +95,6 @@ class Coach extends React.Component {
             onCancel: this.hideDeleteCoachConfirmation,
             onConfirm: this.deleteCoach
         }
-        console.log(this.state.resetPasswordConfirmation.user)
         const resetPasswordConfirmation = {
             message: this.state.resetPasswordConfirmation && L.resetConfirm,
             onCancel: this.hideResetPasswordConfirmation,

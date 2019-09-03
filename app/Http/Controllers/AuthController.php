@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
+
 
 class AuthController extends Controller
 {
@@ -31,6 +35,26 @@ class AuthController extends Controller
 
         if ($token = $this->guard()->attempt($credentials)) {
             return $this->respondWithToken($token);
+        }
+
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    public function reset(Request $request)
+    {
+        $user = $this->guard()->user();
+        $credentials = [
+            'email' => $user->email,
+            'password' => $request->input('currentPassword')
+        ];
+
+        if ($token = $this->guard()->attempt($credentials)) {
+            $password = $request->input('newPassword');
+            $user->password = Hash::make($password);
+            $user->setRememberToken(Str::random(60));
+            $user->save();
+            return $this->respondWithToken($token);
+            // $this->guard()->login($user);
         }
 
         return response()->json(['error' => 'Unauthorized'], 401);

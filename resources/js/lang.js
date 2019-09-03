@@ -392,8 +392,13 @@ const Lang = {
             editName: '编辑名称',
             availableTime: '工作时间',
             coach: '教练',
-            gym: '本店',
-            organization: '分组'
+            gym: '设置',
+            organization: '分组',
+            resetPwd: '重置密码',
+            currentPwd: '当前密码',
+            newPwd: '新密码',
+            repeatPwd: '再次输入',
+            save: '保存'
         },
         en: {
             manage: 'Manage',
@@ -401,8 +406,13 @@ const Lang = {
             editName: 'Edit Gym Name',
             availableTime: 'Available Time',
             coach: 'Coach',
-            gym: 'Gym',
-            organization: 'Organization'
+            gym: 'Setting',
+            organization: 'Organization',
+            resetPwd: 'Reset Password',
+            currentPwd: 'Current password',
+            newPwd: 'New passwrod',
+            repeatPwd: 'repeat again',
+            save: 'Save'
         }
     },
     Coach: {
