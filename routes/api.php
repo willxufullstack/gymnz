@@ -74,4 +74,6 @@ Route::group([
 
     Route::resource('gym.salaryreceipt', 'SalaryReceiptController');
     Route::post('gym/{gym}/salaryreceipt/{receipt}/pay', 'SalaryReceiptController@pay');
+
+    Route::resource('coach.template', 'PlanTemplateController');
 });
