@@ -84,8 +84,16 @@ class PlanTemplateController extends Controller
      * @param  \App\PlanTemplate  $planTemplate
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PlanTemplate $planTemplate)
+    public function destroy(Request $request, $coachId, $id)
     {
-        //
+        $template = PlanTemplate::where(['id' => $id, 'coach_id' => $coachId])->first();
+        if (empty($template)) {
+            return response()->json(array('message' => 'can not find the tempalte ' . $id), 500);
+        }
+        $success = $template->delete();
+        if ($success) {
+            return response()->json($template, 200);
+        }
+        return response()->json(array('message' => 'fail'), 500);
     }
 }

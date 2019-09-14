@@ -93,8 +93,16 @@ class WorkoutActionController extends Controller
      * @param  \App\WorkoutAction  $workoutAction
      * @return \Illuminate\Http\Response
      */
-    public function destroy(WorkoutAction $workoutAction)
+    public function destroy($id)
     {
-        //
+        $action = WorkoutAction::where(['id' => $id])->first();
+        if (empty($action)) {
+            return response()->json(array('message' => 'can not find the action ' . $id), 500);
+        }
+        $success = $action->delete();
+        if ($success) {
+            return response()->json($action, 200);
+        }
+        return response()->json(array('message' => 'fail'), 500);
     }
 }
