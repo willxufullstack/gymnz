@@ -10,6 +10,9 @@ const appStyle = theme => ({
     top: "0",
     height: "100vh"
   },
+  summaryCard: {
+    marginBottom: 0
+  },
   mainPanel: {
     [theme.breakpoints.up("md")]: {
       width: `calc(100% - ${drawerWidth}px)`
@@ -20,11 +23,12 @@ const appStyle = theme => ({
     ...transition,
     maxHeight: "100%",
     width: "100%",
-    overflowScrolling: "touch"
+    overflowScrolling: "touch",
+    paddingBottom: 20
   },
   content: {
-    marginTop: "40px",
-    minHeight: "calc(100vh - 53px)"
+    // marginTop: "40px",
+    // minHeight: "calc(100vh - 53px)"
   },
   container,
   map: {

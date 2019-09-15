@@ -31,11 +31,13 @@ const Lang = {
         zh: {
             normal: '进行中',
             refunded: '已退款',
+            expired: '已过期',
             unknown: '未知'
         },
         en: {
             normal: 'Normal',
             refrunded: 'Refunded',
+            expired: 'Expired',
             unknown: 'Unknown'
         }
     },
@@ -123,23 +125,26 @@ const Lang = {
             value: '数值',
             edit: '编辑 ',
             add: '添加',
-            addFull: '添加一组数据'
+            addFull: '添加一组数据',
+            data: '数据'
         },
         en: {
             date: 'Date',
             value: 'Value',
             edit: 'Edit',
             add: 'Add',
-            addFull: 'ADD FULL DATA'
+            addFull: 'ADD FULL DATA',
+            data: 'Data'
         }
     },
     Customer: {
         zh: {
             refund: '退款',
             amount: '金额',
-            reason: '原因',
+            reason: '详情（课程数量/账号/原因等)',
             refundSubTitle: '请填写退款详细信息',
-            price: '价格',
+            price: '总价',
+            unitPrice: '单价',
             bookedTotal: '已约/总计',
             coach: '教练',
             created: '创建时间',
@@ -214,7 +219,8 @@ const Lang = {
             customerName: '姓名',
             sex: '性别',
             phone: '电话',
-            price: '价格',
+            price: '总价',
+            unitPrice: '单价',
             amount: '课程数量',
             duration: '有效期 (月)',
             coach: '教练',

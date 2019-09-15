@@ -135,6 +135,9 @@ class GymController extends Controller
         // get workinghours
         $gym = Gym::find($id);
         $workingHours = range($gym->setting['workingHours']['min'], $gym->setting['workingHours']['max'] - 1);
+        if(empty($workingHours) || count($workingHours) < 4) {
+            $workingHours = range(32, 92);
+        }
 
         // build available hours according to working hours
         $coaches = Coach::with('user')->where([

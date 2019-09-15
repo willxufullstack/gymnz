@@ -48,7 +48,9 @@ class AccountingController extends Controller
         $data = $request->only('category', 'detail', 'amount');
         $data['created_by'] = Auth::User()->id;
         $data['gym_id'] = $gymId;
-        return Accounting::create($data);
+        $ret = Accounting::create($data);
+        $ret['op'] = Auth::User();
+        return $ret;
     }
 
     /**

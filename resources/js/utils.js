@@ -110,8 +110,13 @@ export function arrayToOptions(arr) {
     });
 }
 
-export function getOrderStatus(status) {
-    switch (status) {
+export function getOrderStatus(order) {
+    const today = new Date()
+    const expiry = new Date(order.expiry)
+    if(today > expiry){
+        return L.expired;
+    }
+    switch (order.status) {
         case 1:
             return L.normal;
         case 2:

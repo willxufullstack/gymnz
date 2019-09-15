@@ -59,24 +59,20 @@ class Accounting extends React.Component {
 
     saveExpenditure = data => {
         data.amount *= -1
-        this.props.actions
-            .createAccountingRow(this.props.selectedGym.id, data)
-            .then(() => {
-                this.setState({ showNewExpenditure: false })
-            })
+        this.props.actions.createAccountingRow(this.props.selectedGym.id, data)
+
+        this.setState({ showNewExpenditure: false })
     }
 
     saveIncome = data => {
-        this.props.actions
-            .createAccountingRow(this.props.selectedGym.id, data)
-            .then(() => {
-                this.setState({ showNewIncome: false })
-            })
+        this.props.actions.createAccountingRow(this.props.selectedGym.id, data)
+
+        this.setState({ showNewIncome: false })
     }
 
     getNewIncomeDialogue = () => {
         const params = {
-            onSave: this.saveExpenditure,
+            onSave: this.saveIncome,
             onCancel: () => {
                 this.setState({ showNewIncome: false })
             },

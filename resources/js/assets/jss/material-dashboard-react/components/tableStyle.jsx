@@ -50,6 +50,13 @@ const tableStyle = theme => ({
     padding: "12px 8px",
     verticalAlign: "middle"
   },
+  strokeTableCell: {
+    ...defaultFont,
+    lineHeight: "1.42857143",
+    padding: "12px 8px",
+    verticalAlign: "middle",
+    textDecoration: 'line-through'
+  },
   tableResponsive: {
     width: "100%",
     marginTop: theme.spacing(3),

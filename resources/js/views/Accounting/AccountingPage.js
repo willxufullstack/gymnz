@@ -24,7 +24,7 @@ class AccountingPage extends React.Component {
 
     render() {
         return <Tabs
-            title={L.finance}
+            title={''}
             headerColor="primary"
             onSwitch={this.tapTab}
             tabs={[{

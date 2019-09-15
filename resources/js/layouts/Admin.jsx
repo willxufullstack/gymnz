@@ -123,12 +123,10 @@ class Admin extends React.Component {
                             place="tc"
                             color="success"
                             // icon={AddAlert}
-                            autoHideDuration={6000}
+                            autoHideDuration={2000}
                             message={this.props.gym.successMsg || this.props.setting.successMsg}
                             open={!!(this.props.gym.successMsg || this.props.setting.successMsg)}
                             closeNotification={() => this.props.actions.closeSuccessMsg()}
-                            onClose={() => this.props.actions.closeSuccessMsg()}
-                            close
                         />
                         <div className={classes.container}>{switchRoutes}</div>
                     </div>

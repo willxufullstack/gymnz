@@ -1,4 +1,8 @@
+.summary-card {
+  margin-bottom: 0 !important
+}
 .gym-day-view-container {
+  margin-top: 20px;
   .gymd-day-picker {
     max-width: 50px;
     text-align: center;
@@ -36,7 +40,7 @@
   .gym-day-view-body-container {
     padding-top: 20px;
     padding-right: 10px;
-    max-height: calc(100vh - 143px);
+    max-height: calc(100vh - 103px);
     overflow-y: scroll;
     box-shadow: 0px 6px 6px -3px rgba(0, 0, 0, 0.2) inset;
     .time-column {

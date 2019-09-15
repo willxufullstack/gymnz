@@ -17,7 +17,7 @@ class PhotoController extends Controller
      */
     public function index(Request $request, $userId)
     {
-        $photos = Photo::where('user_id', $userId)->get();
+        $photos = Photo::where('user_id', $userId)->orderBy('created_at', 'DESC')->get();
         if($photos){
             return response()->json($photos, 200);
         }
@@ -31,7 +31,7 @@ class PhotoController extends Controller
      */
     public function create()
     {
-        
+
     }
 
     /**

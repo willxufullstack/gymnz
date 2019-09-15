@@ -1,251 +1,360 @@
-import React from "react";
-import Select from 'react-select';
+import React from 'react'
+import Select from 'react-select'
 // @material-ui/core components
-import withStyles from "@material-ui/core/styles/withStyles";
+import withStyles from '@material-ui/core/styles/withStyles'
 // core components
-import GridItem from "-components/Grid/GridItem.jsx";
-import GridContainer from "-components/Grid/GridContainer.jsx";
-import CustomInput from "-components/CustomInput/CustomInput.jsx";
-import Button from "-components/CustomButtons/Button.jsx";
-import Card from "-components/Card/Card.jsx";
-import CardHeader from "-components/Card/CardHeader.jsx";
-import CardBody from "-components/Card/CardBody.jsx";
-import CardFooter from "-components/Card/CardFooter.jsx";
-import PropTypes from "prop-types";
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import GridItem from '-components/Grid/GridItem.jsx'
+import GridContainer from '-components/Grid/GridContainer.jsx'
+import CustomInput from '-components/CustomInput/CustomInput.jsx'
+import Button from '-components/CustomButtons/Button.jsx'
+import Card from '-components/Card/Card.jsx'
+import CardHeader from '-components/Card/CardHeader.jsx'
+import CardBody from '-components/Card/CardBody.jsx'
+import CardFooter from '-components/Card/CardFooter.jsx'
+import PropTypes from 'prop-types'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
 import i18N from '../../lang'
 
 const L = i18N('CreateNewDialogue')
 
 const styles = {
+    noMargin: {
+        margin: 0
+    },
+    dialogueTitle: {
+        borderBottom: '1px solid #ccc'
+    },
     cardCategoryWhite: {
-        color: "rgba(255,255,255,.62)",
-        margin: "0",
-        fontSize: "14px",
-        marginTop: "0",
-        marginBottom: "0"
+        color: 'rgba(255,255,255,.62)',
+        margin: '0',
+        fontSize: '14px',
+        marginTop: '0',
+        marginBottom: '0'
     },
     cardTitleWhite: {
-        color: "#FFFFFF",
-        marginTop: "0px",
-        minHeight: "auto",
-        fontWeight: "300",
+        color: '#FFFFFF',
+        marginTop: '0px',
+        minHeight: 'auto',
+        fontWeight: '300',
         fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-        marginBottom: "3px",
-        textDecoration: "none"
+        marginBottom: '3px',
+        textDecoration: 'none'
     }
-};
+}
 
 class CreateNewDialogue extends React.Component {
     constructor(props) {
-        super(props);
-        let data = {};
-        props.inputFields.forEach((field) => {
-            data[field.name] = field.value || '';
+        super(props)
+        let data = {}
+        props.inputFields.forEach(field => {
+            data[field.name] = field.value || ''
         })
-        this.state = data;
+        this.state = data
     }
 
     cancel = () => {
         this.props.onCancel()
-    };
+    }
 
     save = () => {
-        let data = {};
+        let data = {}
         Object.keys(this.state).forEach(k => {
-            data[k] = this.state[k];
-            if (data[k].label) {
-                data[k] = data[k].value;
+            if (this.state[k]) {
+                data[k] = this.state[k]
+                if (data[k].label) {
+                    data[k] = data[k].value
+                }
             }
-        });
-        console.log(data);
-        this.props.onSave(data);
-    };
+        })
+        console.log(data)
+        this.props.onSave(data)
+    }
 
-    onChange = (field) => (e) => {
-        let changed = {};
-        changed[field] = e.currentTarget.value;
-        this.setState(changed);
-    };
+    onChange = field => e => {
+        let changed = {}
+        changed[field] = e.currentTarget.value
+        this.setState(changed)
+    }
 
-    getLabel = (field) => {
-        return field.label ? field.label : field.name.charAt(0).toUpperCase() + field.name.slice(1);
-    };
+    getLabel = field => {
+        return field.label
+            ? field.label
+            : field.name.charAt(0).toUpperCase() + field.name.slice(1)
+    }
 
     getInputType = field => {
         if (!field.type) {
-            return 'text';
+            return 'text'
         }
         if (field.type === 'phone') {
-            return 'number';
+            return 'number'
         }
-        return field.type;
-    };
+        return field.type
+    }
 
-    isValid = (field) => {
-        let validateFunc = (v) => true;
+    isValid = field => {
+        let validateFunc = v => true
         if (field.validation) {
-            validateFunc = field.validation;
+            validateFunc = field.validation
         } else {
-            let t = field.type ? field.type.toLowerCase() : '';
+            let t = field.type ? field.type.toLowerCase() : ''
             switch (t) {
                 case 'password':
-                    validateFunc = v => v.length >= 8;
-                    break;
+                    validateFunc = v => v.length >= 8
+                    break
                 case 'number':
-                    validateFunc = v => v.length && /^\d+$/.test(v);
-                    break;
+                    validateFunc = v => v.length && /^\d+$/.test(v)
+                    break
                 case 'decimal':
-                    validateFunc = v => v.length && /^[\d\.]+$/.test(v);
-                    break;
+                    validateFunc = v => v.length && /^[\d\.]+$/.test(v)
+                    break
                 case 'phone':
-                    validateFunc = v => v.length && /^[1]([3-9])[0-9]{9}$/.test(v);
-                    break;
+                    validateFunc = v =>
+                        v.length && /^[1]([3-9])[0-9]{9}$/.test(v)
+                    break
                 case 'email':
-                    validateFunc = v => v.length && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
-                    break;
+                    validateFunc = v =>
+                        v.length &&
+                        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v)
+                    break
                 default:
-                    validateFunc = (v) => {
-                        let value = v;
+                    validateFunc = v => {
+                        let value = v
                         if (v.value) {
-                            value = v.value;
+                            value = v.value
                         }
-                        return !!value;
+                        return !!value
                     }
             }
         }
-        return validateFunc(this.state[field.name]);
-    };
+        return validateFunc(this.state[field.name])
+    }
 
     getCard = () => {
-        const { classes } = this.props;
-        return (<GridContainer alignItems="center" justify={"center"}>
-            <GridItem xs={12} sm={12} md={8}>
-                <Card>
-                    <CardHeader color="primary">
-                        <h4 className={classes.cardTitleWhite}>{this.props.title}</h4>
-                        <p className={classes.cardCategoryWhite}>{this.props.subtitle || ''}</p>
-                    </CardHeader>
-                    <CardBody>
-                        <GridContainer>
-                            {this.props.inputFields.map((field) => {
-                                // selection list
-                                if (field.options) {
-                                    return <GridItem gridClass={field.hide && 'hide'} key={field.name} xs={12} sm={12} md={12}>
-                                        <Select
-                                            className='form-selection'
-                                            options={field.options}
-                                            onChange={(opt) => {
-                                                this.setState({ [field.name]: opt });
-                                                this.isValid(field);
-                                            }}
-                                            placeholder={this.getLabel(field)}
-                                            value={this.state[field.name]}
-                                        />
-                                    </GridItem>;
+        const { classes } = this.props
+        return (
+            <GridContainer alignItems='center' justify={'center'}>
+                <GridItem xs={12} sm={12} md={8}>
+                    <Card>
+                        <CardHeader color='primary'>
+                            <h4 className={classes.cardTitleWhite}>
+                                {this.props.title}
+                            </h4>
+                            <p className={classes.cardCategoryWhite}>
+                                {this.props.subtitle || ''}
+                            </p>
+                        </CardHeader>
+                        <CardBody>
+                            <GridContainer>
+                                {this.props.inputFields.map(field => {
+                                    // selection list
+                                    if (field.options) {
+                                        return (
+                                            <GridItem
+                                                gridClass={field.hide && 'hide'}
+                                                key={field.name}
+                                                xs={12}
+                                                sm={12}
+                                                md={12}
+                                            >
+                                                <Select
+                                                    className='form-selection'
+                                                    options={field.options}
+                                                    onChange={opt => {
+                                                        this.setState({
+                                                            [field.name]: opt
+                                                        })
+                                                        this.isValid(field)
+                                                    }}
+                                                    placeholder={this.getLabel(
+                                                        field
+                                                    )}
+                                                    value={
+                                                        this.state[field.name]
+                                                    }
+                                                />
+                                            </GridItem>
+                                        )
+                                    }
+                                    return (
+                                        <GridItem
+                                            gridClass={field.hide && 'hide'}
+                                            key={field.name}
+                                            xs={12}
+                                            sm={12}
+                                            md={12}
+                                        >
+                                            <CustomInput
+                                                style={styles.noMargin}
+                                                labelText={this.getLabel(field)}
+                                                id={field.name.replace(
+                                                    / /,
+                                                    '-'
+                                                )}
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                error={
+                                                    this.state[field.name]
+                                                        ? !this.isValid(field)
+                                                        : undefined
+                                                }
+                                                success={
+                                                    this.state[field.name]
+                                                        ? this.isValid(field)
+                                                        : undefined
+                                                }
+                                                inputProps={{
+                                                    type: this.getInputType(
+                                                        field
+                                                    ),
+                                                    value: this.state[
+                                                        field.name
+                                                    ],
+                                                    onChange: this.onChange(
+                                                        field.name
+                                                    ),
+                                                    placeholder:
+                                                        field.placeholder || ''
+                                                }}
+                                            />
+                                        </GridItem>
+                                    )
+                                })}
+                            </GridContainer>
+                        </CardBody>
+                        <CardFooter>
+                            <Button onClick={this.cancel}>{L.cancel}</Button>
+                            <Button
+                                disabled={
+                                    !this.props.allowEmpty &&
+                                    !this.props.inputFields.reduce(
+                                        (preValue, curValue) => {
+                                            return (
+                                                !!preValue &&
+                                                this.isValid(curValue)
+                                            )
+                                        },
+                                        true
+                                    )
                                 }
-                                return (
-                                    <GridItem gridClass={field.hide && 'hide'} key={field.name} xs={12} sm={12} md={12}>
-                                        <CustomInput
-                                            labelText={this.getLabel(field)}
-                                            id={field.name.replace(/ /, '-')}
-                                            formControlProps={{
-                                                fullWidth: true
-                                            }}
-                                            error={this.state[field.name] ? !this.isValid(field) : undefined}
-                                            success={this.state[field.name] ? this.isValid(field) : undefined}
-                                            inputProps={{
-                                                type: this.getInputType(field),
-                                                value: this.state[field.name],
-                                                onChange: this.onChange(field.name),
-                                                placeholder: field.placeholder || ''
-                                            }}
-                                        />
-                                    </GridItem>
-                                );
-                            })}
-                        </GridContainer>
-                    </CardBody>
-                    <CardFooter>
-                        <Button onClick={this.cancel}>{L.cancel}</Button>
-                        <Button
-                            disabled={
-                                !this.props.inputFields.reduce((preValue, curValue) => {
-                                    return !!preValue && this.isValid(curValue);
-                                }, true)
-                            }
-                            onClick={this.save}
-                            color="primary"
-                        >{L.save}</Button>
-                    </CardFooter>
-                </Card>
-            </GridItem>
-        </GridContainer>);
-    };
+                                onClick={this.save}
+                                color='primary'
+                            >
+                                {L.save}
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                </GridItem>
+            </GridContainer>
+        )
+    }
 
     getDialogue = () => {
-        return <Dialog fullWidth={true} open={true} onClose={this.cancel} aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title">{this.props.title}</DialogTitle>
-            <DialogContent>
-                <DialogContentText>
-                    {this.props.subtitle || ''}
-                </DialogContentText>
-                {this.props.inputFields.map((field) => {
-                    // selection list
-                    if (field.options) {
-                        return <GridItem gridClass={field.hide && 'hide'} key={field.name} xs={12} sm={12} md={12}>
-                            <Select
-                                className='form-selection'
-                                options={field.options}
-                                onChange={(opt) => {
-                                    this.setState({ [field.name]: opt });
-                                    this.isValid(field);
-                                }}
-                                placeholder={this.getLabel(field)}
-                                value={this.state[field.name]}
-                            />
-                        </GridItem>;
-                    }
-                    return (
-                        <GridItem gridClass={field.hide && 'hide'} key={field.name} xs={12} sm={12} md={12}>
-                            <CustomInput
-                                labelText={this.getLabel(field)}
-                                id={field.name.replace(/ /, '-')}
-                                formControlProps={{
-                                    fullWidth: true
-                                }}
-                                error={this.state[field.name] ? !this.isValid(field) : undefined}
-                                success={this.state[field.name] ? this.isValid(field) : undefined}
-                                inputProps={{
-                                    type: this.getInputType(field),
-                                    value: this.state[field.name],
-                                    onChange: this.onChange(field.name),
-                                    placeholder: field.placeholder || ''
-                                }}
-                            />
-                        </GridItem>
-                    );
-                })
-                }
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={this.cancel} color="transparentGray">{L.cancel}</Button>
-                <Button disabled={
-                    !this.props.inputFields.reduce((preValue, curValue) => {
-                        return !!preValue && this.isValid(curValue);
-                    }, true)
-                }
-                    onClick={this.save} color="primary">{L.save}</Button>
-            </DialogActions>
-        </Dialog>;
-    };
+        const { classes } = this.props
+        return (
+            <Dialog
+                fullWidth={true}
+                open={true}
+                onClose={this.cancel}
+                aria-labelledby='form-dialog-title'
+            >
+                <DialogTitle id='form-dialog-title' style={styles.dialogueTitle}>
+                    {this.props.title}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {this.props.subtitle || ''}
+                    </DialogContentText>
+                    {this.props.inputFields.map(field => {
+                        // selection list
+                        if (field.options) {
+                            return (
+                                <GridItem
+                                    gridClass={field.hide && 'hide'}
+                                    key={field.name}
+                                    xs={12}
+                                    sm={12}
+                                    md={12}
+                                >
+                                    <Select
+                                        className='form-selection'
+                                        options={field.options}
+                                        onChange={opt => {
+                                            this.setState({ [field.name]: opt })
+                                            this.isValid(field)
+                                        }}
+                                        placeholder={this.getLabel(field)}
+                                        value={this.state[field.name]}
+                                    />
+                                </GridItem>
+                            )
+                        }
+                        return (
+                            <GridItem
+                                gridClass={field.hide && 'hide'}
+                                key={field.name}
+                                xs={12}
+                                sm={12}
+                                md={12}
+                            >
+                                <CustomInput
+                                    labelText={this.getLabel(field)}
+                                    id={field.name.replace(/ /, '-')}
+                                    formControlProps={{
+                                        fullWidth: true
+                                    }}
+                                    error={
+                                        this.state[field.name]
+                                            ? !this.isValid(field)
+                                            : undefined
+                                    }
+                                    success={
+                                        this.state[field.name]
+                                            ? this.isValid(field)
+                                            : undefined
+                                    }
+                                    inputProps={{
+                                        type: this.getInputType(field),
+                                        value: this.state[field.name],
+                                        onChange: this.onChange(field.name),
+                                        placeholder: field.placeholder || ''
+                                    }}
+                                />
+                            </GridItem>
+                        )
+                    })}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={this.cancel} color='transparentGray'>
+                        {L.cancel}
+                    </Button>
+                    <Button
+                        disabled={
+                            !this.props.allowEmpty &&
+                            !this.props.inputFields.reduce(
+                                (preValue, curValue) => {
+                                    return !!preValue && this.isValid(curValue)
+                                },
+                                true
+                            )
+                        }
+                        onClick={this.save}
+                        color='primary'
+                    >
+                        {L.save}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        )
+    }
 
     render() {
-        return this.props.dialogue ? this.getDialogue() : this.getCard();
+        return this.props.dialogue ? this.getDialogue() : this.getCard()
     }
 }
 
@@ -253,7 +362,7 @@ CreateNewDialogue.propTypes = {
     onSave: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     inputFields: PropTypes.array,
-    title: PropTypes.string,
-};
+    title: PropTypes.string
+}
 
-export default withStyles(styles)(CreateNewDialogue);
+export default withStyles(styles)(CreateNewDialogue)

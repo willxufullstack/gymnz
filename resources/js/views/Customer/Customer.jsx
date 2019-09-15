@@ -15,9 +15,22 @@ import 'dayjs/locale/zh-cn'
 import Button from '-components/CustomButtons/Button.jsx'
 import Confirmation from '-components/CustomDialogues/Confirmation'
 import CreateNewDialogue from '../../components/CustomDialogues/CreateNewDialogue'
+import { withStyles } from '@material-ui/core'
 import i18N from '../../lang'
 
 const L = i18N('Customer')
+
+const styles = {
+    tabTitle: {
+        padding: '4px 20px',
+        backgroundColor: '#8e24aa',
+        marginBottom: 0,
+        borderRadius: 20,
+        fontWeight: '900',
+        fontSize: 16,
+        boxShadow: '2px 2px 3px 0 rgba(156, 39, 176, 0.95)'
+    }
+}
 class Customer extends React.Component {
     constructor(props) {
         super(props)
@@ -96,7 +109,7 @@ class Customer extends React.Component {
             return <p>No Orders</p>
         }
         let header = [
-            L.price,
+            L.unitPrice + '/' + L.price,
             L.bookedTotal,
             L.coach,
             L.created,
@@ -114,11 +127,11 @@ class Customer extends React.Component {
                 </Button>
             )
             return [
-                r.price + '',
+                (r.price / r.course_amount).toFixed(0) + '/' + r.price,
                 r.booked_amount + ' / ' + r.course_amount,
                 r.coach.user.name,
                 r.created_at,
-                utils.getOrderStatus(r.status),
+                utils.getOrderStatus(r),
                 r.status === 1 ? btn : '--'
             ]
         })
@@ -129,6 +142,7 @@ class Customer extends React.Component {
                 tableHeaderColor='primary'
                 tableHead={header}
                 tableData={tableData}
+                strokeRow={i => orders[i].status === 2}
             />
         )
     }
@@ -217,6 +231,7 @@ class Customer extends React.Component {
 
     render() {
         let { booked, total } = this.props.gym.customerPage.customerBalance
+        const { classes } = this.props
         let unfinishedTabHeader = (
             <Badge
                 className='tab-badge'
@@ -242,7 +257,13 @@ class Customer extends React.Component {
                     this.getRefundDialogue(this.state.refundDialogue)}
                 <Paper square>
                     <Tabs
-                        title={booked + '/' + total}
+                        title={
+                            <div>
+                                <p className={classes.tabTitle}>
+                                    {booked + ' / ' + total}
+                                </p>
+                            </div>
+                        }
                         headerColor='primary'
                         onSwitch={this.tapTab}
                         tabs={[
@@ -293,4 +314,4 @@ const LinkedCustomer = connect(
     mapDispatchToProps
 )(Customer)
 
-export default LinkedCustomer
+export default withStyles(styles)(LinkedCustomer)

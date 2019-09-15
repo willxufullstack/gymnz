@@ -54,6 +54,14 @@ class ScheduleController extends Controller
 
         // $query->dd();
         $ret = $query->get();
+        if ($request->input('price')) {
+            foreach ($ret as &$row) {
+                if ($row['order_id']) {
+                    $order = Order::find($row['order_id']);
+                    $row['price'] = $order->price / $order->course_amount;
+                }
+            }
+        }
         if ($ret) {
             return response()->json($ret, 200);
         }

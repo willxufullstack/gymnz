@@ -151,7 +151,7 @@ class OrderController extends Controller
             'gym_id' => $gymId,
             'id' => $orderId,
         ])->first();
-        if(!$order){
+        if (!$order) {
             return response()->json(array('message' => 'cannot find the order'), 404);
         }
         $order->status = 2;
@@ -179,7 +179,6 @@ class OrderController extends Controller
         $query = Order::with('coach.user')
             ->where([
                 'customer_id' => $customerId,
-                'status' => 1,
             ]);
         if ($request->input('gym')) {
             $query = $query->where('gym_id', '=', $request->input('gym'));
@@ -188,7 +187,12 @@ class OrderController extends Controller
         $ret = ['total' => 0, 'booked' => 0];
         // calc
         foreach ($orders as $order) {
-            $ret['total'] += $order->course_amount;
+            if ($order->status === 1) {
+                $ret['total'] += $order->course_amount;
+            } else {
+                // calc total by the actual booked amount if refund
+                $ret['total'] += $order->booked_amount;
+            }
             $ret['booked'] += $order->booked_amount;
         }
         return response()->json($ret, 200);

@@ -8,18 +8,23 @@ import withStyles from '@material-ui/core/styles/withStyles'
 import Paper from '@material-ui/core/Paper'
 // @material-ui/icons
 import Add from '@material-ui/icons/Add'
-
 // core components
 import GridItem from '-components/Grid/GridItem.jsx'
 import GridContainer from '-components/Grid/GridContainer.jsx'
 import Badge from '@material-ui/core/Badge'
 import CustomerSelectionDialogue from '-components/CustomDialogues/CustomerSelectionDialogue'
-
+import Card from '-components/Card/Card.jsx'
+import CardHeader from '-components/Card/CardHeader.jsx'
+import CardIcon from '-components/Card/CardIcon.jsx'
+import CardFooter from '-components/Card/CardFooter.jsx'
+import Icon from '@material-ui/core/Icon'
 import Button from '-components/CustomButtons/Button.jsx'
 import * as utils from '-utils'
 import * as config from '-config'
 import dayjs from 'dayjs'
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
+import Danger from '-components/Typography/Danger.jsx'
+import Warning from '-components/Typography/Warning.jsx'
 
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import classnames from 'classnames'
@@ -47,7 +52,8 @@ class Dashboard extends React.Component {
     handleDateChange = selectedDate => {
         this.setState({ selectedDate }, () => {
             this.props.actions.LoadGymSchedule(this.props.selectedGym.id, {
-                date: dayjs(selectedDate).format('YYYY-MM-DD')
+                date: dayjs(selectedDate).format('YYYY-MM-DD'),
+                price: 1
             })
         })
     }
@@ -78,9 +84,7 @@ class Dashboard extends React.Component {
     }
 
     reloadSchedule = () => {
-        this.props.actions.LoadGymSchedule(this.props.selectedGym.id, {
-            date: dayjs(this.state.selectedDate).format('YYYY-MM-DD')
-        })
+        this.handleDateChange(this.state.selectedDate)
     }
 
     onTapCancelSchedule = schedule => e => {
@@ -136,6 +140,7 @@ class Dashboard extends React.Component {
             },
             subtitle: this.props.selectedGym.name,
             title: L.createOrder,
+            dialogue: true,
             inputFields: [
                 {
                     name: 'name',
@@ -216,7 +221,11 @@ class Dashboard extends React.Component {
             return false
         }
         // skip when the time slot overlap with existing schedules
-        if (this.props.gym.schedules.filter(s => isOverlap(s, start)).length) {
+        if (
+            this.props.gym.schedules.filter(
+                s => coach.id === s.coach_id && isOverlap(s, start)
+            ).length
+        ) {
             return
         }
 
@@ -405,11 +414,43 @@ class Dashboard extends React.Component {
         )
     }
 
+    getSummaryHeader = () => {
+        const { classes } = this.props
+        return (
+            <GridContainer>
+                <GridItem xs={12} sm={6} md={3}>
+                    <Card className='summary-card'>
+                        <CardHeader color='warning' stats icon>
+                            <p className={classes.cardCategory}>今日课程</p>
+                            <h3 className={classes.cardTitle}>
+                                {this.props.gym.schedules &&
+                                    this.props.gym.schedules.length}
+                                <small>节</small>
+                            </h3>
+                        </CardHeader>
+                    </Card>
+                </GridItem>
+                <GridItem xs={12} sm={6} md={3}>
+                    <Card className='summary-card'>
+                        <CardHeader color='success' stats icon>
+                            <p className={classes.cardCategory}>课程总价</p>
+                            <h3 className={classes.cardTitle}>
+                                ¥
+                                {this.props.gym.schedules.reduce(
+                                    (prev, cur) => prev + cur.price, 0
+                                )}
+                            </h3>
+                        </CardHeader>
+                    </Card>
+                </GridItem>
+            </GridContainer>
+        )
+    }
+
     render() {
-        return this.props.gym.showNewOrder ? (
-            this.newOrderDialog()
-        ) : (
+        return (
             <div>
+                {this.props.gym.showNewOrder && this.newOrderDialog()}
                 {this.state.showCustomerSelection && (
                     <CustomerSelectionDialogue
                         {...this.state.showCustomerSelection}
@@ -420,7 +461,11 @@ class Dashboard extends React.Component {
                         {...this.state.scheduleActionConfirmationParams}
                     />
                 )}
+
+                {this.getSummaryHeader()}
+
                 {this.getGymDayOverView()}
+
                 <Button
                     justIcon
                     round

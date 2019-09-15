@@ -1,20 +1,29 @@
-import "../../../sass/customer.scss"
-import React from 'react';
-import Button from "-components/CustomButtons/Button.jsx";
-import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue';
-import dayjs from "dayjs";
-import ChartistGraph from "react-chartist";
-import Muted from "-components/Typography/Muted.jsx";
-import Add from "@material-ui/icons/Add";
-import Edit from "@material-ui/icons/Edit";
-import MaterialTable from 'material-table';
-import { Card, CardContent, withStyles, Typography, Dialog } from "@material-ui/core";
+import '../../../sass/customer.scss'
+import React from 'react'
+import Button from '-components/CustomButtons/Button.jsx'
+import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
+import dayjs from 'dayjs'
+import ChartistGraph from 'react-chartist'
+import Muted from '-components/Typography/Muted.jsx'
+import Add from '@material-ui/icons/Add'
+import Edit from '@material-ui/icons/Edit'
+import MaterialTable from 'material-table'
+import {
+    Card,
+    CardContent,
+    withStyles,
+    Typography,
+    Dialog
+} from '@material-ui/core'
 import i18N from '../../lang'
 
 const L = i18N('CustomerDataSection')
 const styles = {
     chartCard: {
-        paddingTop: 0
+        paddingTop: 0,
+        width: '45%',
+        display: 'inline-block',
+        margin: '4px'
     },
     chartHeaderContainer: {
         display: 'flex',
@@ -34,147 +43,216 @@ const styles = {
         marginLeft: 10,
         fontWeight: 600
     }
-};
+}
 
 class CustomerDataSection extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             addDialogueField: false,
             editingOption: null
-        };
+        }
     }
 
-    optionToInputField = (opt) => {
+    optionToInputField = opt => {
         return {
             name: opt.option,
-            label: opt.option,
+            label: opt.option + '(' + opt.unit + ')',
             type: 'decimal',
-            placeholder: opt.unit,
+            placeholder: opt.unit
         }
-    };
+    }
 
-    getInputField = (tar) => {
+    getInputField = tar => {
         if (!tar) {
-            return this.props.options.map(this.optionToInputField);
+            return this.props.options.map(this.optionToInputField)
         }
-        return this.props.options.filter(opt => opt.option === tar).map(this.optionToInputField);
-    };
+        return this.props.options
+            .filter(opt => opt.option === tar)
+            .map(this.optionToInputField)
+    }
 
     save = (items, opts, date = null) => {
         if (!date) {
-            date = dayjs().format('YYYY-MM-DD');
+            date = dayjs().format('YYYY-MM-DD')
         }
-        let data = Object.keys(items).map((k) => {
-            let target = opts.find((opt) => opt.option === k);
-            target.value = Number(items[k]);
-            target.date = date;
-            return target;
-        });
-        this.props.actions.batchCreateCustomerBodyData(this.props.customerId, data)
+        let data = Object.keys(items).map(k => {
+            let target = opts.find(opt => opt.option === k)
+            target.value = Number(items[k])
+            target.date = date
+            return target
+        })
+        this.setState({ addDialogueField: null })
+        this.props.actions
+            .batchCreateCustomerBodyData(this.props.customerId, data)
             .then(() => {
-                this.setState({ addDialogueField: null });
-                this.props.actions.loadGroupedCustomerBodyData(this.props.customerId);
-            });
-    };
+                this.props.actions.loadGroupedCustomerBodyData(
+                    this.props.customerId
+                )
+            })
+    }
 
     componentWillMount() {
-        this.props.actions.loadGroupedCustomerBodyData(this.props.customerId);
-    };
+        this.props.actions.loadGroupedCustomerBodyData(this.props.customerId)
+    }
 
-    getLineChart = (data) => {
+    getLineChart = data => {
         const chartData = {
-            series: [
-                data.map(row => row.value)
-            ],
+            series: [data.map(row => row.value)],
             labels: data.map(row => dayjs(row.date).format('MM/DD'))
         }
-        return <ChartistGraph
-            className="ct-chart"
-            data={chartData}
-            type="Line"
-        />;
-    };
+        return (
+            <ChartistGraph className='ct-chart' data={chartData} type='Line' />
+        )
+    }
 
     getCreateDialogue = () => {
         let params = {
             title: L.data,
-            onSave: (data) => {
-                this.save(data, this.props.options);
+            dialogue: true,
+            allowEmpty: true,
+            onSave: data => {
+                this.save(data, this.props.options)
             },
-            onCancel: () => { this.setState({ addDialogueField: null }) },
+            onCancel: () => {
+                this.setState({ addDialogueField: null })
+            },
             inputFields: this.state.addDialogueField
-        };
-        return <CreateNewDialogue {...params} />;
-    };
+        }
+        return <CreateNewDialogue {...params} />
+    }
 
     getEditDialogue = () => {
-        let dataSet = this.props.data.find(r => r.option === this.state.editingOption);
-        let { data } = dataSet;
+        let dataSet = this.props.data.find(
+            r => r.option === this.state.editingOption
+        )
+        let { data } = dataSet
         const columns = [
             { title: L.date, field: 'date', editable: 'never' },
-            { title: L.value, field: 'value', type: 'numeric' },
-        ];
-        return <Dialog fullWidth open={true} onClose={() => this.setState({ editingOption: false })} >
-            <MaterialTable
-                title={dataSet.option + ' / ' + dataSet.unit}
-                data={data}
-                columns={columns}
-                editable={{
-                    isDeletable: (rowData) => true,
-                    onRowUpdate: (newData, oldData) =>
-                        new Promise((resolve, reject) => {
-                            this.props.actions.updateCustomerBodyData(this.props.customerId, newData.id, newData)
-                                .then(() => {
-                                    this.props.actions.loadGroupedCustomerBodyData(this.props.customerId);
-                                    resolve();
-                                })
-                        }),
-                    onRowDelete: (oldData) =>
-                        new Promise((resolve, reject) => {
-                            this.props.actions.deleteCustomerBodyData(this.props.customerId, oldData.id)
-                                .then(() => {
-                                    this.props.actions.loadGroupedCustomerBodyData(this.props.customerId);
-                                    resolve();
-                                })
-                        }),
-                }}
-                options={{
-                    search: false,
-                    actionsColumnIndex: -1,
-                }}
-            />
-        </Dialog>;
-
-    };
-
+            { title: L.value, field: 'value', type: 'numeric' }
+        ]
+        return (
+            <Dialog
+                fullWidth
+                open={true}
+                onClose={() => this.setState({ editingOption: false })}
+            >
+                <MaterialTable
+                    title={dataSet.option + ' / ' + dataSet.unit}
+                    data={data}
+                    columns={columns}
+                    editable={{
+                        isDeletable: rowData => true,
+                        onRowUpdate: (newData, oldData) =>
+                            new Promise((resolve, reject) => {
+                                this.props.actions
+                                    .updateCustomerBodyData(
+                                        this.props.customerId,
+                                        newData.id,
+                                        newData
+                                    )
+                                    .then(() => {
+                                        this.props.actions.loadGroupedCustomerBodyData(
+                                            this.props.customerId
+                                        )
+                                        resolve()
+                                    })
+                            }),
+                        onRowDelete: oldData =>
+                            new Promise((resolve, reject) => {
+                                this.props.actions
+                                    .deleteCustomerBodyData(
+                                        this.props.customerId,
+                                        oldData.id
+                                    )
+                                    .then(() => {
+                                        this.props.actions.loadGroupedCustomerBodyData(
+                                            this.props.customerId
+                                        )
+                                        resolve()
+                                    })
+                            })
+                    }}
+                    options={{
+                        search: false,
+                        actionsColumnIndex: -1
+                    }}
+                />
+            </Dialog>
+        )
+    }
 
     render() {
-        const { classes } = this.props;
-        if (this.state.addDialogueField) {
-            return this.getCreateDialogue();
-        }
-        return <React.Fragment>
-            {this.state.editingOption && this.getEditDialogue()}
-            {this.props.data &&
-                this.props.data.map(data =>
-                    <Card key={data.option} classes={{ root: classes.chartCard }}>
-                        <CardContent>
-                            <div className={classes.chartHeaderContainer}>
-                                <div className={classes.chartHeaderLeft}>
-                                    <Typography variant='h6' className={classes.chartOption}>{data.option}</Typography>
-                                    <Muted className={classes.chartUnit}>{data.unit}</Muted>
+        const { classes } = this.props
+        return (
+            <React.Fragment>
+                {this.state.addDialogueField && this.getCreateDialogue()}
+                {this.state.editingOption && this.getEditDialogue()}
+                <Button
+                    style={{ marginTop: 16 }}
+                    color='transparentPrimary'
+                    fullWidth={true}
+                    onClick={() =>
+                        this.setState({
+                            addDialogueField: this.getInputField()
+                        })
+                    }
+                >
+                    <Add />
+                    {L.addFull}
+                </Button>
+                {this.props.data &&
+                    this.props.data.map(data => (
+                        <Card
+                            key={data.option}
+                            classes={{ root: classes.chartCard }}
+                        >
+                            <CardContent>
+                                <div className={classes.chartHeaderContainer}>
+                                    <div className={classes.chartHeaderLeft}>
+                                        <Typography
+                                            variant='h6'
+                                            className={classes.chartOption}
+                                        >
+                                            {data.option}
+                                        </Typography>
+                                        <Muted className={classes.chartUnit}>
+                                            {data.unit}
+                                        </Muted>
+                                    </div>
+                                    <Button
+                                        color='transparentGray'
+                                        size='sm'
+                                        onClick={() =>
+                                            this.setState({
+                                                editingOption: data.option
+                                            })
+                                        }
+                                    >
+                                        <Edit /> {L.edit}{' '}
+                                    </Button>
+                                    <Button
+                                        color='transparentPrimary'
+                                        size='sm'
+                                        onClick={() =>
+                                            this.setState({
+                                                addDialogueField: this.getInputField(
+                                                    data.option
+                                                )
+                                            })
+                                        }
+                                    >
+                                        <Add />
+                                        {L.add}
+                                    </Button>
                                 </div>
-                                <Button color='transparentGray' size='sm' onClick={() => this.setState({ editingOption: data.option })}><Edit /> {L.edit} </Button>
-                                <Button color='transparentPrimary' size='sm' onClick={() => this.setState({ addDialogueField: this.getInputField(data.option) })}><Add />{L.add}</Button>
-                            </div>
-                            {this.getLineChart(data.data)}
-                        </CardContent>
-                    </Card>)}
-            <Button style={{ marginTop: 16 }} color='transparentPrimary' fullWidth={true} onClick={() => this.setState({ addDialogueField: this.getInputField() })}><Add />{L.addFull}</Button>
-        </React.Fragment>;
-
+                                {this.getLineChart(data.data)}
+                            </CardContent>
+                        </Card>
+                    ))}
+            </React.Fragment>
+        )
     }
 }
 
-export default withStyles(styles)(CustomerDataSection);
+export default withStyles(styles)(CustomerDataSection)

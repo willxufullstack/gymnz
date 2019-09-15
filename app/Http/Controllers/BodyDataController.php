@@ -159,16 +159,94 @@ class BodyDataController extends Controller
     {
         $opts = [
             [
-                'option' => 'Weight',
-                'unit' => 'kg'
+                'option' => '体重',
+                'unit' => 'kg',
+                'category' => 'basic'
             ],
             [
-                'option' => 'Chest',
-                'unit' => 'cm'
+                'option' => '体脂率',
+                'unit' => '%',
+                'category' => 'basic'
             ],
             [
-                'option' => 'Thigh Left',
-                'unit' => 'cm'
+                'option' => '体脂肪重量',
+                'unit' => 'kg',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '骨骼肌重量',
+                'unit' => 'kg',
+                'category' => 'basic'
+            ],
+            [
+                'option' => 'BMI',
+                'unit' => 'kg/m²',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '腰臀比',
+                'unit' => '腰/臀',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '基础代谢',
+                'unit' => 'Kcal/d',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '胸围',
+                'unit' => 'cm',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '臀围',
+                'unit' => 'cm',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '大腿围L',
+                'unit' => 'cm',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '大腿围R',
+                'unit' => 'cm',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '大臂围L',
+                'unit' => 'cm',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '大臂围R',
+                'unit' => 'cm',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '静态心率',
+                'unit' => 'bpm',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '建议运动心率',
+                'unit' => 'bpm',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '卧推重量',
+                'unit' => 'kg',
+                'category' => '1rm'
+            ],
+            [
+                'option' => '深蹲重量',
+                'unit' => 'kg',
+                'category' => '1rm'
+            ],
+            [
+                'option' => '硬拉重量',
+                'unit' => 'kg',
+                'category' => '1rm'
             ]
         ];
         return response()->json($opts, 200);
