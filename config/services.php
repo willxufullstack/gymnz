@@ -49,4 +49,10 @@ return [
         'secret' => env('QNSECRETKEY', 'null'),
         'bucket' => env('QNBUKET', 'null'),
     ],
+
+    'wx' => [
+        'id' => env('WX_APP_ID', 'aa'),
+        'secret' => env('WX_APP_SECRET', 'aa'),
+
+    ]
 ];

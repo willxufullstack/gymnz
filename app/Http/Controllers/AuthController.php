@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -19,7 +20,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login', 'openid', 'bind']]);
     }
 
     /**
@@ -116,5 +117,42 @@ class AuthController extends Controller
     public function guard()
     {
         return Auth::guard('api');
+    }
+
+    public function openid(Request $request)
+    {
+        $code = $request->input('code');
+        $appId = config('services.wx.id');
+        $secret = config('services.wx.secret');
+        $url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' . $appId . '&secret=' . $secret . '&js_code=' . $code . '&grant_type=authorization_code';
+        $json = json_decode(file_get_contents($url), true);
+        $ret = [
+            'openid' => $json['openid']
+        ];
+
+        return response()->json($ret);
+    }
+
+    public function bind(Request $request)
+    {
+        $phone = $request->input('phone');
+        $openid = $request->input('openid');
+
+
+        if (empty($phone) || empty($openid)) {
+            return response()->json(array('message' => 'missing parameters'), 500);
+        }
+
+        $user = User::where('email', $phone)->first();
+        if (empty($user)) {
+            return response()->json(array('message' => 'cannot find the user'), 500);
+        }
+        $user->openid = $openid;
+        $user->save();
+
+        // return token
+        $token = $this->guard()->tokenById($user->id);
+        return $this->respondWithToken($token);
+        // find and save openied
     }
 }
