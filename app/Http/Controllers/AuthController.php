@@ -137,6 +137,7 @@ class AuthController extends Controller
     {
         $phone = $request->input('phone');
         $openid = $request->input('openid');
+        $avatar = $request->input('avatar');
 
 
         if (empty($phone) || empty($openid)) {
@@ -148,11 +149,11 @@ class AuthController extends Controller
             return response()->json(array('message' => 'cannot find the user'), 500);
         }
         $user->openid = $openid;
+        $user->avatar = $avatar;
         $user->save();
 
         // return token
         $token = $this->guard()->tokenById($user->id);
         return $this->respondWithToken($token);
-        // find and save openied
     }
 }
