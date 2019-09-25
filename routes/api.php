@@ -24,6 +24,7 @@ Route::group([
     'prefix' => 'auth'
 ], function ($router) {
     Route::get('openid', 'AuthController@openid');
+    Route::post('token', 'AuthController@token');
     Route::post('bind', 'AuthController@bind');
     Route::post('login', 'AuthController@login');
     Route::post('logout', 'AuthController@logout');

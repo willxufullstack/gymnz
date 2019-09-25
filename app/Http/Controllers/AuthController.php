@@ -20,7 +20,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'openid', 'bind']]);
+        $this->middleware('auth:api', ['except' => ['login', 'openid', 'bind', 'token']]);
     }
 
     /**
@@ -131,6 +131,22 @@ class AuthController extends Controller
         ];
 
         return response()->json($ret);
+    }
+
+    public function token(Request $request) {
+        $code = $request->input('code');
+        $appId = config('services.wx.id');
+        $secret = config('services.wx.secret');
+        $url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' . $appId . '&secret=' . $secret . '&js_code=' . $code . '&grant_type=authorization_code';
+        $json = json_decode(file_get_contents($url), true);
+        $openid = $json['openid'];
+        // find user by openid
+        $user = User::where('openid', $openid)->first();
+        if (empty($user)) {
+            return response()->json(array('message' => 'cannot find the user'), 500);
+        }
+        $token = $this->guard()->tokenById($user->id);
+        return $this->respondWithToken($token);
     }
 
     public function bind(Request $request)
