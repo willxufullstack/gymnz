@@ -156,7 +156,14 @@ class ScheduleController extends Controller
         if (empty($schedule)) {
             return response()->json(array('message' => 'can not find the schedule ' . $id), 500);
         }
-        $success = $schedule->update($request->only('detail'));
+
+        if ($request->has('conclusion')) {
+            $schedule->conclusion = $request->input('conclusion');
+        }
+        if ($request->has('detail')) {
+            $schedule->detail = $request->input('detail');
+        }
+        $success = $schedule->save();
         if ($success) {
             return response()->json($schedule, 200);
         }
