@@ -19,9 +19,9 @@ class TimelineController extends Controller
         $userId = Auth::User()->id;
 
         // default to tomorrow
-        $tommorrow = strtotime(date('Y-m-d', time()). ' +1 day');
+        $tommorrow = strtotime(date('Y-m-d', time()) . ' +1 day');
         $dateBefore = date('Y-m-d', $tommorrow);
-        if($request->has('before')) {
+        if ($request->has('before')) {
             $dateBefore = $request->input('before');
         }
         $schedules = Schedule::where('customer_id', $userId)
@@ -31,8 +31,11 @@ class TimelineController extends Controller
             ->get();
 
         $ret = [];
-        foreach($schedules as $s) {
-            $ret[] = $s->toTimelineCard();
+        foreach ($schedules as $s) {
+            $ret[] = $s->toTrainCard();
+            if ($s->conclusion) {
+                $ret[] = $s->toConclusionCard();
+            }
         }
         return $ret;
     }

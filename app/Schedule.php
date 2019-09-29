@@ -35,7 +35,7 @@ class Schedule extends Model
         return $this->belongsTo('App\Coach');
     }
 
-    public function toTimelineCard()
+    public function toTrainCard()
     {
         $detail = json_decode($this->detail);
         $title = '~ 训练 ~';
@@ -53,6 +53,18 @@ class Schedule extends Model
             'date' => $this->date,
             'id' => $this->id,
             'gym' => $this->gym_id,
+            'avatar' => $this->coach->avatar ?? 'https://i.pravatar.cc/80'
+        ];
+    }
+    public function toConclusionCard()
+    {
+        return [
+            'type' => 'body-only',
+            'body' => $this->conclusion,
+            'date' => $this->date,
+            'id' => $this->id,
+            'gym' => $this->gym_id,
+            'status' => $this->status,
             'avatar' => $this->coach->avatar ?? 'https://i.pravatar.cc/80'
         ];
     }
