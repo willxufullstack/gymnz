@@ -30,7 +30,7 @@ Route::group([
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::post('reset', 'AuthController@reset');
-    Route::post('me', 'AuthController@me');
+    Route::get('me', 'AuthController@me');
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -81,4 +81,6 @@ Route::group([
     Route::resource('coach.template', 'PlanTemplateController');
 
     Route::resource('timeline', 'TimelineController');
+
+    Route::resource('talk', 'TalkController');
 });

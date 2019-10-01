@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Schedule;
+use App\Talk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,6 +38,26 @@ class TimelineController extends Controller
                 $ret[] = $s->toConclusionCard();
             }
         }
+
+        $piv = end($ret)['date'];
+        // append talk
+        $tos = Talk::where('to_id', $userId)
+            ->where('created_at', '>=', $piv)
+            ->where('created_at', '<', $dateBefore)
+            ->get();
+
+        foreach($tos as $to) {
+            $ret[] = $to->toTimelineCard();
+        }
+
+        $froms = Talk::where('from_id', $userId)
+            ->where('created_at', '>=', $piv)
+            ->where('created_at', '<', $dateBefore)
+            ->get();
+        foreach($froms as $from) {
+            $ret[] = $from->toTimelineCard();
+        }
+
         return $ret;
     }
 

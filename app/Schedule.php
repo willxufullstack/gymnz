@@ -53,6 +53,7 @@ class Schedule extends Model
             'date' => $this->date,
             'id' => $this->id,
             'gym' => $this->gym_id,
+            'user_id' => $this->coach->user->id,
             'avatar' => $this->coach->avatar ?? 'https://i.pravatar.cc/80'
         ];
     }
@@ -65,6 +66,7 @@ class Schedule extends Model
             'id' => $this->id,
             'gym' => $this->gym_id,
             'status' => $this->status,
+            'user_id' => $this->coach->user->id,
             'avatar' => $this->coach->avatar ?? 'https://i.pravatar.cc/80'
         ];
     }
