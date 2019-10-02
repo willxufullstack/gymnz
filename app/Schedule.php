@@ -35,6 +35,18 @@ class Schedule extends Model
         return $this->belongsTo('App\Coach');
     }
 
+    public function getStartDateTime()
+    {
+        $mins = $this->start * 15;
+        return strftime('%Y-%m-%d %H:%M', strtotime($this->date . " +$mins minutes"));
+    }
+
+    public function getEndDateTime()
+    {
+        $mins = ($this->end + 1) * 15;
+        return  strftime('%Y-%m-%d %H:%M', strtotime($this->date . " +$mins minutes"));
+    }
+
     public function toTrainCard()
     {
         $detail = json_decode($this->detail);
@@ -50,7 +62,7 @@ class Schedule extends Model
         return [
             'type' => 'title-only',
             'title' => $title,
-            'date' => $this->date,
+            'date' => $this->getStartDateTime(),
             'id' => $this->id,
             'gym' => $this->gym_id,
             'user_id' => $this->coach->user->id,
@@ -62,7 +74,7 @@ class Schedule extends Model
         return [
             'type' => 'body-only',
             'body' => $this->conclusion,
-            'date' => $this->date,
+            'date' => $this->getEndDateTime(),
             'id' => $this->id,
             'gym' => $this->gym_id,
             'status' => $this->status,

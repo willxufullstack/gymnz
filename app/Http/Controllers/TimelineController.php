@@ -19,6 +19,10 @@ class TimelineController extends Controller
     {
         $userId = Auth::User()->id;
 
+        if ($request->has('user')) {
+            $userId = $request->input('user');
+        }
+
         // default to tomorrow
         $tommorrow = strtotime(date('Y-m-d', time()) . ' +1 day');
         $dateBefore = date('Y-m-d', $tommorrow);
@@ -38,25 +42,29 @@ class TimelineController extends Controller
                 $ret[] = $s->toConclusionCard();
             }
         }
+        if(empty($ret)) {
+            return [];
+        }
 
         $piv = end($ret)['date'];
         // append talk
-        $tos = Talk::where('to_id', $userId)
-            ->where('created_at', '>=', $piv)
+        $talks = Talk::with(['from', 'to'])
+            ->where(function ($query) use ($userId) {
+                $query->where('to_id', $userId);
+                $query->orWhere('from_id',  $userId);
+            })
+            ->where('created_at', '>=', substr($piv, 0, 10))
             ->where('created_at', '<', $dateBefore)
             ->get();
 
-        foreach($tos as $to) {
+        foreach ($talks as $to) {
             $ret[] = $to->toTimelineCard();
         }
 
-        $froms = Talk::where('from_id', $userId)
-            ->where('created_at', '>=', $piv)
-            ->where('created_at', '<', $dateBefore)
-            ->get();
-        foreach($froms as $from) {
-            $ret[] = $from->toTimelineCard();
-        }
+        // order ret by date
+        usort($ret, function ($a, $b) {
+            return strtotime($a['date']) >= strtotime($b['date']);
+        });
 
         return $ret;
     }

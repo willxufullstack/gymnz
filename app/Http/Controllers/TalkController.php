@@ -13,9 +13,20 @@ class TalkController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+
+        // OBSOLETED
+        $userId =  $request->input('user');
+
+        return Talk::with(['from', 'to'])
+            ->where(function ($query) use ($userId) {
+                $query->where('to_id', $userId);
+                $query->orWhere('from_id',  $userId);
+            })
+            ->orderBy('created_at', 'DESC')
+            ->limit(100)
+            ->get();
     }
 
     /**
@@ -40,15 +51,14 @@ class TalkController extends Controller
         $talk = new Talk();
         $data = $request->only('message', 'type', 'to', 'gym');
 
-        $talk->to_id = (int)$data['to'];
+        $talk->to_id = (int) $data['to'];
         $talk->from_id = $by;
-        $talk->gym_id = (int)$data['gym'];
+        $talk->gym_id = (int) $data['gym'];
         $talk->message = $data['message'];
         $talk->type = 'message';
         $talk->save();
 
         return response()->json($talk->toTimelineCard(), 201);
-
     }
 
     /**

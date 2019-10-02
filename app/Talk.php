@@ -23,11 +23,10 @@ class Talk extends Model
     }
 
     function toTimelineCard() {
-
         return [
             'type' => 'body-only',
             'body' => $this->message,
-            'date' => $this->created_at,
+            'date' => $this->created_at->format('Y-m-d H:i'),
             'id' => $this->id,
             'gym' => $this->gym_id,
             'user_id' => $this->from->id,

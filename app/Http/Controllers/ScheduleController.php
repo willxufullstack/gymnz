@@ -107,10 +107,12 @@ class ScheduleController extends Controller
         $schedule->end = $scheduleData['end'];
         $schedule->detail = '[]';
         $schedule->status = 1;
+        $schedule->conclusion = '';
 
         $schedule->customer()->associate(User::find($scheduleData['customer']));
         $schedule->coach()->associate(Coach::with('user')->find($scheduleData['coach']));
         $schedule->gym()->associate(Gym::find($scheduleData['gym']));
+
 
         $schedule->save();
         // TODO handle save error

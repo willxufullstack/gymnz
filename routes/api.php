@@ -37,6 +37,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group([], function () {
+    // paste route here to skip auth when debug
+});
+
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
