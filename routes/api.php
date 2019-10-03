@@ -31,6 +31,7 @@ Route::group([
     Route::post('refresh', 'AuthController@refresh');
     Route::post('reset', 'AuthController@reset');
     Route::get('me', 'AuthController@me');
+
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -38,7 +39,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group([], function () {
+     // it's a picture so should make it as public
+     Route::get('/user/{user}/bodydata/chart', 'BodyDataController@chart');
     // paste route here to skip auth when debug
+
 });
 
 Route::group([
@@ -48,6 +52,7 @@ Route::group([
 
     Route::get('/token/upload', 'PhotoController@getUploadToken');
     Route::get('/bodydata/predefined', 'BodyDataController@getPredefinedOptions');
+
 
     Route::get('coach', 'CoachController@getCoachInfoByUserId');
 

@@ -6,10 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\User;
+use Goat1000\SVGGraph\SVGGraph;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-
-
 
 class AuthController extends Controller
 {
@@ -20,7 +19,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'openid', 'bind', 'token']]);
+        $this->middleware('auth:api', ['except' => ['login', 'openid', 'bind', 'token', 'chart']]);
     }
 
     /**
@@ -133,7 +132,8 @@ class AuthController extends Controller
         return response()->json($ret);
     }
 
-    public function token(Request $request) {
+    public function token(Request $request)
+    {
         $code = $request->input('code');
         $appId = config('services.wx.id');
         $secret = config('services.wx.secret');

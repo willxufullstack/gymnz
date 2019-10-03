@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\BodyData;
 use App\User;
 use Auth;
-
+use Goat1000\SVGGraph\SVGGraph;
 
 class BodyDataController extends Controller
 {
@@ -152,6 +152,66 @@ class BodyDataController extends Controller
         }
         $row->delete();
         return $row;
+    }
+
+    public function chart(Request $request, $user)
+    {
+        $option = '体重';
+        $rows = BodyData::where('option', $option)
+            ->where('user_id', $user)
+            ->where('date', '<=', $request->input('date'))
+            ->orderBy('date', 'DESC')
+            ->limit(5)
+            ->get();
+        $date2value = [];
+        $min = PHP_INT_MAX;
+        $max = PHP_INT_MIN;
+        foreach ($rows as $row) {
+            $date2value[substr($row['date'], 5, 5)] = $row['value'];
+            if ($row['value'] < $min) {
+                $min = $row['value'];
+            }
+            if ($row['value'] > $max) {
+                $max = $row['value'];
+            }
+        }
+
+        $sacledMin = $min - ($max - $min) * 0.5;
+        $scaledMax = $max + ($max - $min) * 0.5;
+
+
+        array_reverse($date2value);
+        $values = [$date2value];
+
+        $settings = array(
+            'back_colour'       => 'transparent',
+            'stroke_colour'     => 'rgb(47,145,138)',
+            'line_stroke_width' => 4,
+            'back_stroke_width' => 0,
+            'back_stroke_colour' => '#4fd2c2',
+            'axis_colour'       => '#fff',
+            'axis_overlap'      => 2,
+            'axis_font'         => 'Georgia',
+            'axis_font_size'    => 10,
+            'grid_colour'       => '#4fd2c2 ',
+            'label_colour'      => '#fff',
+            'pad_right'         => 20,
+            'pad_left'          => 20,
+            'link_base'         => '/',
+            'link_target'       => '_top',
+            'fill_under'        => array(false, false),
+            'marker_size'       => 4,
+            'marker_type'       => array('circle'),
+            'marker_colour'     => array('rgb(47,145,138)'),
+            'axis_min_v'        => $sacledMin,
+            'axis_max_v'        => $scaledMax,
+            'grid_division_v'   => ($scaledMax - $sacledMin) / 4
+        );
+
+        $graph = new SVGGraph(320, 240, $settings);
+
+        $graph->values($values);
+        $graph->render('LineGraph');
     }
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\BodyData;
 use App\Schedule;
 use App\Talk;
 use Illuminate\Http\Request;
@@ -60,6 +61,9 @@ class TimelineController extends Controller
         foreach ($talks as $to) {
             $ret[] = $to->toTimelineCard();
         }
+
+        // append body data
+        $ret = array_merge($ret, BodyData::getBodyDataCard($userId, $piv, $dateBefore));
 
         // order ret by date
         usort($ret, function ($a, $b) {
