@@ -53,7 +53,6 @@ Route::group([
     Route::get('/token/upload', 'PhotoController@getUploadToken');
     Route::get('/bodydata/predefined', 'BodyDataController@getPredefinedOptions');
 
-
     Route::get('coach', 'CoachController@getCoachInfoByUserId');
 
     Route::get('gym/{gym}/customer', 'GymController@getCustomerList');

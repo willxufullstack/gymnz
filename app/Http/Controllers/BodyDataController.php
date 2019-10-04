@@ -38,14 +38,34 @@ class BodyDataController extends Controller
      */
     public function index(Request $request, $userId)
     {
-        $ret = BodyData::where('user_id', $userId)->orderBy('date', 'ASC')->get();
 
-        // group
-        if ($request->has('group')) {
-            $ret = $this->groupDataByOption($ret);
+        if (!$request->has('chart')) {
+            $ret = BodyData::where('user_id', $userId)->orderBy('date', 'ASC')->get();
+
+            // group
+            if ($request->has('group')) {
+                $ret = $this->groupDataByOption($ret);
+            }
+
+            return response()->json($ret, 200);
         }
 
-        return response()->json($ret, 200);
+        $rows = BodyData::select('option')
+            ->where('user_id', $userId)
+            ->distinct('option')
+            ->get();
+
+        $ret = [];
+
+        $host = request()->getSchemeAndHttpHost();
+        foreach ($rows as $row) {
+            $ret[] = [
+                'url' => $host . "/api/user/$userId/bodydata/chart?option=" . $row['option'],
+                'option' => $row['option']
+            ];
+        }
+
+        return response()->json($ret);
     }
 
     /**
@@ -154,12 +174,54 @@ class BodyDataController extends Controller
         return $row;
     }
 
+    private function getGrap($min, $max)
+    {
+        $sacledMin = $min - ($max - $min) * 0.2;
+        $scaledMax = $max + ($max - $min) * 0.2;
+
+        // dd($sacledMin, $scaledMax);
+        $settings = array(
+            'back_colour'       => 'transparent',
+            'stroke_colour'     => 'rgba(255,255,255,0.5)',
+            'line_stroke_width' => 4,
+            'back_stroke_width' => 0,
+            'back_stroke_colour' => '#4fd2c2',
+            'axis_colour'       => '#fff',
+            'axis_overlap'      => 2,
+            'axis_font'         => 'Georgia',
+            'axis_font_size'    => 10,
+            'grid_colour'       => '#4fd2c2 ',
+            'label_colour'      => '#fff',
+            'pad_right'         => 20,
+            'pad_left'          => 20,
+            'link_base'         => '/',
+            'link_target'       => '_top',
+            'fill_under'        => array(false, false),
+            'marker_size'       => 6,
+            'marker_type'       => array('circle'),
+            'marker_colour'     => array('rgba(255,255,255,0.8)'),
+            'axis_min_v'        => $sacledMin,
+            'axis_max_v'        => $scaledMax,
+            'grid_division_v'   => ($scaledMax - $sacledMin) / 4
+        );
+
+        return new SVGGraph(320, 240, $settings);
+    }
+
     public function chart(Request $request, $user)
     {
         $option = '体重';
+        if($request->has('option')) {
+            $option = $request->input('option');
+        }
+        $date = strftime('%Y-%m-%d', time());
+        if ($request->has('date')) {
+            $date = $request->input('date');
+        }
+
         $rows = BodyData::where('option', $option)
             ->where('user_id', $user)
-            ->where('date', '<=', $request->input('date'))
+            ->where('date', '<=', $date)
             ->orderBy('date', 'DESC')
             ->limit(5)
             ->get();
@@ -176,39 +238,11 @@ class BodyDataController extends Controller
             }
         }
 
-        $sacledMin = $min - ($max - $min) * 0.5;
-        $scaledMax = $max + ($max - $min) * 0.5;
-
 
         array_reverse($date2value);
         $values = [$date2value];
 
-        $settings = array(
-            'back_colour'       => 'transparent',
-            'stroke_colour'     => 'rgb(47,145,138)',
-            'line_stroke_width' => 4,
-            'back_stroke_width' => 0,
-            'back_stroke_colour' => '#4fd2c2',
-            'axis_colour'       => '#fff',
-            'axis_overlap'      => 2,
-            'axis_font'         => 'Georgia',
-            'axis_font_size'    => 10,
-            'grid_colour'       => '#4fd2c2 ',
-            'label_colour'      => '#fff',
-            'pad_right'         => 20,
-            'pad_left'          => 20,
-            'link_base'         => '/',
-            'link_target'       => '_top',
-            'fill_under'        => array(false, false),
-            'marker_size'       => 4,
-            'marker_type'       => array('circle'),
-            'marker_colour'     => array('rgb(47,145,138)'),
-            'axis_min_v'        => $sacledMin,
-            'axis_max_v'        => $scaledMax,
-            'grid_division_v'   => ($scaledMax - $sacledMin) / 4
-        );
-
-        $graph = new SVGGraph(320, 240, $settings);
+        $graph = $this->getGrap($min, $max);
 
         $graph->values($values);
         $graph->render('LineGraph');
