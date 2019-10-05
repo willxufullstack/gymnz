@@ -28,4 +28,9 @@ class Gym extends Model
     {
         return $this->hasMany('App\Coach');
     }
+
+    public function getSetting()
+    {
+        return json_decode($this->setting, true);
+    }
 }

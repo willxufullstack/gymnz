@@ -31,6 +31,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\PaySalaryEvent' => [
             'App\Listeners\SalaryPaymentAccountingAction',
         ],
+        'App\Events\BonusEvent' => [
+            'App\Listeners\BonusListener',
+        ]
     ];
 
     /**

@@ -19,12 +19,22 @@ import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import CustomInput from '-components/CustomInput/CustomInput.jsx'
 import { withStyles } from '@material-ui/core'
 import i18N from '../../lang'
+import Switch from 'react-switch'
 
 const L = i18N('GymSettings')
 const styles = {
     resetPwdContainer: {
         width: '60%',
         margin: 'auto'
+    },
+    bonusSettingRow: {
+        display: 'flex'
+    },
+    bonusSwitch: {
+        marginLeft: 12,
+    },
+    bounsLabel: {
+        flex: 1
     }
 }
 class GymSettings extends React.Component {
@@ -39,6 +49,7 @@ class GymSettings extends React.Component {
                 newPwd: '',
                 repeatPwd: ''
             },
+            bonus: props.setting && props.setting.bonus ? props.setting.bonus : 0,
             workingHours: {
                 max:
                     props.setting &&
@@ -61,10 +72,19 @@ class GymSettings extends React.Component {
     }
 
     saveWorkingHours = value => {
+        const setting = { ...this.props.selectedGym.setting,
+            workingHours: value
+        }
         this.props.actions.updateGym(this.state.selectedGymId, {
-            setting: {
-                workingHours: value
-            }
+            setting
+        })
+    }
+    saveBonus = () => {
+        const setting = { ...this.props.selectedGym.setting,
+            bonus: this.state.bonus
+        }
+        this.props.actions.updateGym(this.state.selectedGymId, {
+            setting
         })
     }
 
@@ -123,6 +143,7 @@ class GymSettings extends React.Component {
         return null
     }
     getSettingTab = () => {
+        const { feature } = this.props.selectedGym
         return (
             <GridContainer>
                 {this.state.editGymNameDialogue &&
@@ -170,6 +191,49 @@ class GymSettings extends React.Component {
                             <Edit fontSize='large' />
                         </IconButton>
                     </Primary>
+                </GridItem>
+                <GridItem
+                    xs={12}
+                    sm={12}
+                    md={6}
+                    classes={{ grid: 'setting-option-block' }}
+                >
+                    <div className={this.props.classes.bonusSettingRow}>
+                        <Typography variant='subtitle1' paragraph className={this.props.classes.bounsLabel}>
+                            <Label fontSize='small' />
+                            满 {this.state.bonus ? this.state.bonus : 'N'} 赠1
+                        </Typography>
+                        <Switch
+                            onChange={(checked)=>{
+                                const bonus = checked ? 4 : 0
+                                this.setState({bonus}, this.saveBonus)
+                            }}
+                            className={this.props.classes.bonusSwitch}
+                            checked={!!this.state.bonus}
+                            onColor='#ab47bc'
+                            onHandleColor='#ab47bc'
+                            handleDiameter={30}
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            boxShadow='0px 1px 5px rgba(0, 0, 0, 0.6)'
+                            activeBoxShadow='0px 0px 1px 10px rgba(0, 0, 0, 0.2)'
+                            height={20}
+                            width={48}
+                            className='react-switch'
+                        />
+                    </div>
+                    {!!this.state.bonus && (
+                        <InputRange
+                            step={1}
+                            maxValue={15}
+                            minValue={4}
+                            onChange={v => {
+                                this.setState({ bonus: v })
+                            }}
+                            onChangeComplete={this.saveBonus}
+                            value={this.state.bonus}
+                        />
+                    )}
                 </GridItem>
             </GridContainer>
         )

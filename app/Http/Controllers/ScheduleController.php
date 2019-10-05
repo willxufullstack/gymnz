@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Gym;
 use App\User;
 use App\Coach;
+use App\Events\BonusEvent;
 use App\Order;
 use App\Schedule;
 use Auth;
@@ -52,8 +53,12 @@ class ScheduleController extends Controller
             $query->groupBy($group)->orderBy('course_amount', 'DESC');
         }
 
-        // $query->dd();
         $ret = $query->get();
+
+        foreach($ret as &$row) {
+            $row->monthCount = $row->getMonthCount();
+        }
+
         if ($request->input('price')) {
             foreach ($ret as &$row) {
                 if ($row['order_id']) {
@@ -62,6 +67,7 @@ class ScheduleController extends Controller
                 }
             }
         }
+
         if ($ret) {
             return response()->json($ret, 200);
         }
@@ -200,14 +206,24 @@ class ScheduleController extends Controller
 
     public function complete($gymId, $id)
     {
-        $schedule = Schedule::with(['coach.user', 'customer'])
+        $schedule = Schedule::with(['coach.user', 'customer', 'gym'])
             ->where(['id' => $id, 'gym_id' => $gymId])
             ->first();
         if (empty($schedule)) {
             return response()->json(array('message' => 'can not find the schedule ' . $id), 500);
         }
+
         $schedule->status = 2;
         $success = $schedule->save();
+
+        // check where have bonus setting
+        $setting = $schedule->gym->setting;
+        if ($setting['bonus']) {
+            if($schedule->getMonthCount() === (int)$setting['bonus']) {
+                event(new BonusEvent($schedule));
+            }
+        }
+
         if ($success) {
             return response()->json($schedule, 200);
         }

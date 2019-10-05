@@ -47,6 +47,20 @@ class Schedule extends Model
         return  strftime('%Y-%m-%d %H:%M', strtotime($this->date . " +$mins minutes"));
     }
 
+    public function getMonthCount()
+    {
+        if($this->monthCount !== null) {
+            return $this->monthCount;
+        }
+        $dataArray = explode('-', $this->date);
+        $this->monthCount = Schedule::where(['gym_id' => $this->gym_id, 'customer_id' => $this->customer_id])
+            ->whereYear('date', '=', $dataArray[0])
+            ->whereMonth('date', '=', $dataArray[1])
+            ->where('status', 2)
+            ->count();
+        return $this->monthCount;
+    }
+
     public function toTrainCard()
     {
         $detail = json_decode($this->detail);

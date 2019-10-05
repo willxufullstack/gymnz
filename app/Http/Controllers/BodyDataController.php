@@ -50,7 +50,7 @@ class BodyDataController extends Controller
             return response()->json($ret, 200);
         }
 
-        $rows = BodyData::select('option')
+        $rows = BodyData::select('option', 'unit')
             ->where('user_id', $userId)
             ->distinct('option')
             ->get();
@@ -61,6 +61,7 @@ class BodyDataController extends Controller
         foreach ($rows as $row) {
             $ret[] = [
                 'url' => $host . "/api/user/$userId/bodydata/chart?option=" . $row['option'],
+                'unit' => $row['unit'],
                 'option' => $row['option']
             ];
         }

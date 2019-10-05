@@ -52,7 +52,6 @@
                                 @enderror
                             </div>
                         </div>
-
                         <div class="form-group row">
                             <label for="password-confirm" class="col-md-4 col-form-label text-md-right">确认密码</label>
 
