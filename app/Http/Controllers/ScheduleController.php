@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\BodyData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Gym;
@@ -119,8 +120,8 @@ class ScheduleController extends Controller
         $schedule->coach()->associate(Coach::with('user')->find($scheduleData['coach']));
         $schedule->gym()->associate(Gym::find($scheduleData['gym']));
 
-
         $schedule->save();
+        event(new \App\Events\ScheduleCreateEvent($schedule));
         // TODO handle save error
         // 3. update order booked_amount
         $order->booked_amount++;

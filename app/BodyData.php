@@ -2,6 +2,7 @@
 
 namespace App;
 
+use DateTime;
 use Illuminate\Database\Eloquent\Model;
 
 class BodyData extends Model
@@ -15,6 +16,19 @@ class BodyData extends Model
     public function user()
     {
         return $this->belongsTo('App\User');
+    }
+
+    public static function getDaysFromLastRecord($user)
+    {
+        $data = self::where('user_id', $user)
+            ->orderBy('date', 'DESC')
+            ->first();
+        if(empty($data)){
+            return -1;
+        }
+        $from = new DateTime($data['date']);
+        $today   = new DateTime();
+        return $from->diff($today)->format('%a');
     }
 
     public static function getBodyDataCard($user, $start, $end)

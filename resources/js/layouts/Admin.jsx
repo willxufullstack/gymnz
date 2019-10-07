@@ -114,6 +114,7 @@ class Admin extends React.Component {
                             place="tc"
                             color="danger"
                             // icon={AddAlert}
+                            disableWindowBlurListener
                             message={this.props.gym.errorMsg || this.props.setting.errorMsg}
                             open={!!(this.props.gym.errorMsg || this.props.setting.errorMsg)}
                             closeNotification={() => this.props.actions.closeErrMsg()}
@@ -124,9 +125,12 @@ class Admin extends React.Component {
                             color="success"
                             // icon={AddAlert}
                             autoHideDuration={2000}
+                            disableWindowBlurListener
                             message={this.props.gym.successMsg || this.props.setting.successMsg}
                             open={!!(this.props.gym.successMsg || this.props.setting.successMsg)}
-                            closeNotification={() => this.props.actions.closeSuccessMsg()}
+                            onClose={() => {
+                                this.props.actions.closeSuccessMsg()
+                            }}
                         />
                         <div className={classes.container}>{switchRoutes}</div>
                     </div>

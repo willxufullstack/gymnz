@@ -33,6 +33,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         'App\Events\BonusEvent' => [
             'App\Listeners\BonusListener',
+        ],
+        'App\Events\ScheduleCreateEvent' => [
+            'App\Listeners\BodyDataMeasureAction',
         ]
     ];
 

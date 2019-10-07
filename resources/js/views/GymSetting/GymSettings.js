@@ -50,6 +50,7 @@ class GymSettings extends React.Component {
                 repeatPwd: ''
             },
             bonus: props.setting && props.setting.bonus ? props.setting.bonus : 0,
+            bodyMeasureDays: props.setting && props.setting.bodyMeasureDays ? props.setting.bodyMeasureDays : 0,
             workingHours: {
                 max:
                     props.setting &&
@@ -82,6 +83,15 @@ class GymSettings extends React.Component {
     saveBonus = () => {
         const setting = { ...this.props.selectedGym.setting,
             bonus: this.state.bonus
+        }
+        this.props.actions.updateGym(this.state.selectedGymId, {
+            setting
+        })
+    }
+
+    saveBodyMeasureDays = () => {
+        const setting = { ...this.props.selectedGym.setting,
+            bodyMeasureDays: this.state.bodyMeasureDays
         }
         this.props.actions.updateGym(this.state.selectedGymId, {
             setting
@@ -232,6 +242,49 @@ class GymSettings extends React.Component {
                             }}
                             onChangeComplete={this.saveBonus}
                             value={this.state.bonus}
+                        />
+                    )}
+                </GridItem>
+                <GridItem
+                    xs={12}
+                    sm={12}
+                    md={6}
+                    classes={{ grid: 'setting-option-block' }}
+                >
+                    <div className={this.props.classes.bonusSettingRow}>
+                        <Typography variant='subtitle1' paragraph className={this.props.classes.bounsLabel}>
+                            <Label fontSize='small' />
+                            {this.state.bodyMeasureDays ? this.state.bodyMeasureDays : 'N'} 天数据测量提醒
+                        </Typography>
+                        <Switch
+                            onChange={(checked)=>{
+                                const bodyMeasureDays = checked ? 40 : 0
+                                this.setState({bodyMeasureDays}, this.saveBodyMeasureDays)
+                            }}
+                            className={this.props.classes.bonusSwitch}
+                            checked={!!this.state.bodyMeasureDays}
+                            onColor='#ab47bc'
+                            onHandleColor='#ab47bc'
+                            handleDiameter={30}
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            boxShadow='0px 1px 5px rgba(0, 0, 0, 0.6)'
+                            activeBoxShadow='0px 0px 1px 10px rgba(0, 0, 0, 0.2)'
+                            height={20}
+                            width={48}
+                            className='react-switch'
+                        />
+                    </div>
+                    {!!this.state.bodyMeasureDays && (
+                        <InputRange
+                            step={10}
+                            maxValue={90}
+                            minValue={30}
+                            onChange={v => {
+                                this.setState({ bodyMeasureDays: v })
+                            }}
+                            onChangeComplete={this.saveBodyMeasureDays}
+                            value={this.state.bodyMeasureDays}
                         />
                     )}
                 </GridItem>
