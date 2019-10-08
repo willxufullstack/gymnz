@@ -47,9 +47,22 @@ class Schedule extends Model
         return  strftime('%Y-%m-%d %H:%M', strtotime($this->date . " +$mins minutes"));
     }
 
+    public function getBodyMeasurementTask()
+    {
+        if ($this->task !== null) {
+            return $this;
+        }
+        $this->task = '';
+        $key = 'body_' . $this->customer_id;
+        if ($task = Task::where('key', $key)->where('status', 1)->first()) {
+            $this->task = $task->message;
+        }
+        return $this;
+    }
+
     public function getMonthCount()
     {
-        if($this->monthCount !== null) {
+        if ($this->monthCount !== null) {
             return $this->monthCount;
         }
         $dataArray = explode('-', $this->date);

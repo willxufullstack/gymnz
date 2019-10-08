@@ -41,9 +41,8 @@ class BodyDataMeasureAction
 
         $gymId = $schedule->gym_id;
         $customer = $schedule->customer;
-        // $coach = Coach::with('user')->find($schedule->coach_id);
         $coach = $schedule->coach;
-        if ($days === -1 || $days > 1) {
+        if ($days === -1 || $days >= $gymSetting['bodyMeasureDays']) {
             // create a body event if no task
             $key = 'body_' . $customer->id;
             if (!Task::where('key', $key)->where('status', 1)->first()) {

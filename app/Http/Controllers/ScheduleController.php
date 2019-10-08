@@ -56,7 +56,7 @@ class ScheduleController extends Controller
 
         $ret = $query->get();
 
-        foreach($ret as &$row) {
+        foreach ($ret as &$row) {
             $row->monthCount = $row->getMonthCount();
         }
 
@@ -66,6 +66,11 @@ class ScheduleController extends Controller
                     $order = Order::find($row['order_id']);
                     $row['price'] = $order->price / $order->course_amount;
                 }
+            }
+        }
+        if( $request->input('task')) {
+            foreach ($ret as &$row) {
+               $row->getBodyMeasurementTask();
             }
         }
 
@@ -127,6 +132,7 @@ class ScheduleController extends Controller
         $order->booked_amount++;
         $order->save();
 
+        $schedule->getBodyMeasurementTask();
         return response()->json($schedule, 201);
     }
 
@@ -138,7 +144,10 @@ class ScheduleController extends Controller
      */
     public function show($gymId, $id)
     {
-        return Schedule::with(['coach.user', 'customer'])->where(['id' => $id, 'gym_id' => $gymId])->first();
+        return Schedule::with(['coach.user', 'customer'])
+            ->where(['id' => $id, 'gym_id' => $gymId])
+            ->first()
+            ->getBodyMeasurementTask();
     }
 
     /**
@@ -220,7 +229,7 @@ class ScheduleController extends Controller
         // check where have bonus setting
         $setting = $schedule->gym->setting;
         if ($setting['bonus']) {
-            if($schedule->getMonthCount() === (int)$setting['bonus']) {
+            if ($schedule->getMonthCount() === (int) $setting['bonus']) {
                 event(new BonusEvent($schedule));
             }
         }
