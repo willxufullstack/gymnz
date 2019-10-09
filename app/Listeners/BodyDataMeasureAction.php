@@ -37,7 +37,7 @@ class BodyDataMeasureAction
         // create a task
         // 4. trigger body measure event
 
-        $days = BodyData::getDaysFromLastRecord($schedule->customer_id);
+        $days = BodyData::getDaysFromLastRecord($schedule->customer_id, $schedule->date);
 
         $gymId = $schedule->gym_id;
         $customer = $schedule->customer;

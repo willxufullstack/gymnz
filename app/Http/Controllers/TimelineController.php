@@ -43,7 +43,7 @@ class TimelineController extends Controller
                 $ret[] = $s->toConclusionCard();
             }
         }
-        if(empty($ret)) {
+        if (empty($ret)) {
             return [];
         }
 
@@ -137,5 +137,26 @@ class TimelineController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function message()
+    {
+        $userId = Auth::user()->id;
+        // get latest schedule
+        $schedule = Schedule::with('gym')->where('customer_id', $userId)->orderBy('date', 'DESC')->first();
+
+        if (empty($schedule)) {
+            return response()->json([message => 'cannot find the schedule'], 404);
+        }
+        $expectedDays = $schedule->gym->setting['bodyMeasureDays'];
+        if(empty($expectedDays)) {
+            return response()->json(['message' => '']);
+        }
+        $days = BodyData::getDaysFromLastRecord($userId);
+        $nextMeasureDays = $expectedDays - $days;
+        if($days === -1 || $nextMeasureDays < 0 ) {
+            $nextMeasureDays = 0;
+        }
+        return response()->json(['message' => '距离下次测量还有' . $nextMeasureDays . '天']);
     }
 }

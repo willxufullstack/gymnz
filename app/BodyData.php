@@ -18,7 +18,7 @@ class BodyData extends Model
         return $this->belongsTo('App\User');
     }
 
-    public static function getDaysFromLastRecord($user)
+    public static function getDaysFromLastRecord($user, $date = null)
     {
         $data = self::where('user_id', $user)
             ->orderBy('date', 'DESC')
@@ -27,7 +27,7 @@ class BodyData extends Model
             return -1;
         }
         $from = new DateTime($data['date']);
-        $today   = new DateTime();
+        $today = new DateTime($date);
         return $from->diff($today)->format('%a');
     }
 

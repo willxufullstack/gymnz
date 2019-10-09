@@ -88,6 +88,7 @@ Route::group([
 
     Route::resource('coach.template', 'PlanTemplateController');
 
+    Route::get('timeline/message', 'TimelineController@message');
     Route::resource('timeline', 'TimelineController');
 
     Route::resource('talk', 'TalkController');
