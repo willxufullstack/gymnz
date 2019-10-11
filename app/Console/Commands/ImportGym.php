@@ -78,6 +78,7 @@ class ImportGym extends Command
             $user->name = $coach['displayname'];
             $user->sex = $coach['sex'];
             $user->avatar = $coach['avatar'];
+            $user->openid = $coach['openid'];
             $user->save();
 
             // 3.map coach=>user
