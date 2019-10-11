@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Coach;
 use App\Gym;
 use App\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Hash;
 
 class ImportGym extends Command
 {
@@ -49,17 +51,45 @@ class ImportGym extends Command
         // 1. get gym from remote
 
         $json = json_decode(file_get_contents($url), true);
+
+        // dd($json);
         // 2. save gym
-        // $gym = $request->only("name", "description", "org_id");
         $gym = [
             'name' => $json['name'],
             'description' => $json['address'],
             'org_id' => (int) $orgId,
             'created_by' => $byUser->id,
-            'setting' => ["workingHours" => ["min" => 28,"max" => 96]]
+            'setting' => ["workingHours" => ["min" => 28, "max" => 96]]
         ];
 
-        Gym::create($gym);
-        echo("success\n");
+        $gym = Gym::create($gym);
+        echo("created gym " . $json['name'] . "\n");
+
+        // 2.create coach user
+        foreach ($json['coaches_set'] as $coach) {
+            // add coach input the gym
+            $coachObj = new Coach([
+                'created_by' => $byUser->id,
+            ]);
+
+            $user = new User();
+            $user->password = Hash::make('00000000');
+            $user->email = $coach['name'];
+            $user->name = $coach['displayname'];
+            $user->sex = $coach['sex'];
+            $user->avatar = $coach['avatar'];
+            $user->save();
+
+            // 3.map coach=>user
+            $coachObj->user()->associate($user);
+
+            // 4.map coach=>gym
+            $coachObj->gym()->associate($gym);
+            $coachObj->save();
+
+            echo('created coach '. $user['displayname'] . ' ' . $user->email . "\n");
+        }
+
+        echo ("success\n");
     }
 }
