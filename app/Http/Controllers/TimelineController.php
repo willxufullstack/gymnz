@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TimelineController extends Controller
 {
-    const SCHEDULE_PAGE_SIZE = 2;
+    const SCHEDULE_PAGE_SIZE = 5;
     /**
      * Display a listing of the resource.
      *
