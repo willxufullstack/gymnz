@@ -6,6 +6,7 @@ use App\Coach;
 use App\Gym;
 use App\Order;
 use App\User;
+use App\Schedule;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
@@ -49,7 +50,9 @@ class ImportCustomers extends Command
 
         $url = 'http://o2-fit.com/api/' . $phoneNumber . '/customers/';
 
+        echo "loading customers ... \n";
         $customersJson = json_decode(file_get_contents($url), true);
+        echo "done\n";
 
         $imported = 0;
         $skipped = 0;
@@ -125,7 +128,70 @@ class ImportCustomers extends Command
             $coach = Coach::where('user_id', $coachUser->id)->first();
         }
         $order->coach()->associate($coach);
-        // 6. return
+        // 6. save order
         $order->save();
+
+        // 7. import schedule
+        self::importScheduleByOrder($oriOrder, $order, $defaultCoach, $gym);
+
+    }
+
+    private static function importScheduleByOrder($oriOrder, $destOrder, $defaultCoach, $defaultGym) {
+        // 1. get booked
+        $orderId = $oriOrder['id'];
+        $customerPhone = $oriOrder['customerdetail']['name'];
+        $url = "http://o2-fit.com/api/$customerPhone/o/$orderId/";
+
+        echo "loading order ... \n";
+        $json = json_decode(file_get_contents($url), true);
+        echo "done \n";
+
+        $booked = $json['booked'];
+        // import every schedule
+        echo "booked count ". count($booked) . "\n";
+        foreach($booked as $s) {
+            // skip empty order
+            if(!empty($s)){
+                echo '.';
+                self::importSchedule($s, $destOrder, $defaultCoach, $defaultGym);
+                continue;
+            }
+            // skipped
+            echo "x";
+        }
+        echo "\n";
+    }
+
+    private static function importSchedule($oriSchedule, $destOrder, $defaultCoach, $defaultGym) {
+
+        $schedule = new Schedule();
+        $schedule->created_by = $destOrder->coach->user->id;
+        $schedule->order_id = $destOrder->id;
+        $schedule->date = $oriSchedule['date'];
+
+        // 36 + hour * 2
+
+        $schedule->start = 36 + $oriSchedule['hour'] * 2;
+        $schedule->end =  $schedule->start + 3;
+
+        $schedule->detail = '[]';
+        $schedule->status = 2;
+        $schedule->conclusion = '';
+
+
+        $customer = User::where('email', $oriSchedule['customerprofile']['name'])->first();
+        $schedule->customer()->associate($customer);
+
+        $coach = $defaultCoach;
+        $coachUser = User::where('email', $oriSchedule['coachprofile']['name'])->first();
+        if(!empty($coachUser)){
+            $coach = Coach::where('user_id', $coachUser->id)->first();
+        }
+
+        $schedule->coach()->associate($coach);
+        $schedule->gym()->associate($defaultGym);
+
+        $schedule->save();
+        // echo "imported schedule {$schedule->date}  {$oriSchedule['coachprofile']['displayname']} => {$coach->user->name}\n";
     }
 }
