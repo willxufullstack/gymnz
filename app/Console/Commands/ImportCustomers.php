@@ -191,7 +191,33 @@ class ImportCustomers extends Command
         $schedule->coach()->associate($coach);
         $schedule->gym()->associate($defaultGym);
 
+        $schedule->detail = self::convertPlan(json_decode($oriSchedule['detail'], true));
+
         $schedule->save();
         // echo "imported schedule {$schedule->date}  {$oriSchedule['coachprofile']['displayname']} => {$coach->user->name}\n";
+    }
+
+    private static function convertPlan($plan) {
+        $ret = [];
+        foreach($plan as $item) {
+            if($item['contenttype'] === 'action') {
+                $newItem = [
+                    'contenttype' => $item['contenttype'],
+                    'interval' => $item['interval'],
+                    'id' => $item['workoutid'],
+                    'name' => $item['name'],
+                    'set_times' => $item['repeattimes'],
+                    'unit' => $item['unit'],
+                    'repeat_times' => $item['weight'],
+                    'weight' => $item['comments'] ?? '-'
+                ];
+                $ret[] = $newItem;
+
+            }
+            if($item['contenttype'] === 'comments') {
+                $ret[] = $item;
+            }
+        }
+        return json_encode($ret);
     }
 }
