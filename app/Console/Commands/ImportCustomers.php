@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\BodyData;
 use App\Coach;
 use App\Gym;
 use App\Order;
@@ -77,6 +78,8 @@ class ImportCustomers extends Command
                 continue;
             }
             echo ('imported customer ' . $customer['displayname'] . ' : ' . $customer['name'] . "\n");
+            self::importBodyData($customer['name'], $user['id'], $coachUser->id);
+
             self::importOrders($customer['name'], $defaultCoach);
             $imported++;
         }
@@ -243,5 +246,44 @@ class ImportCustomers extends Command
             } catch (\Exception $ex) { }
         }
         return json_encode($ret);
+    }
+
+    private static function importBodyData($phone, $customerId, $by) {
+        // 1. get data http://o2-fit.com/api/13001094300/e/all/
+        $url = "http://o2-fit.com/api/$phone/e/all/";
+        $resp = file_get_contents($url);
+        $items = json_decode($resp, true);
+
+         // 2. save
+        foreach($items as $item){
+            $value = $item['value'];
+
+            // skip if not numeric
+            if(!is_numeric($value)) {
+                continue;
+            }
+
+            // `value` double NOT NULL DEFAULT '0',
+            // `date` date NOT NULL,
+            // `option` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+            // `unit` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+            // `created_by` bigint(20) unsigned NOT NULL,
+            // `user_id` bigint(20) unsigned NOT NULL,
+            // `created_at` timestamp NULL DEFAULT NULL,
+            // `updated_at` timestamp NULL DEFAULT NULL,
+            // `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+
+            $bd = new BodyData();
+            $bd->created_by = $by;
+            $bd->value = $item['value'];
+            $bd->option = $item['option'];
+            $bd->unit = $item['unit'];
+            $bd->date = $item['date'];
+            $bd->user_id = $customerId;
+            $bd->save();
+            echo "imported " . $item['option'] . ": " . $item['value'] . "\n";
+
+        }
+
     }
 }
