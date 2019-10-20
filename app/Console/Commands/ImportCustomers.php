@@ -118,7 +118,7 @@ class ImportCustomers extends Command
         $order->customer()->associate($customer);
         // 4. map gym
         $gym = Gym::where('name', $oriOrder['gym'])->first();
-        if(empty($gym)) {
+        if (empty($gym)) {
             $gym = Gym::find($defaultCoach->gym_id);
         }
         $order->gym()->associate($gym);
@@ -133,10 +133,10 @@ class ImportCustomers extends Command
 
         // 7. import schedule
         self::importScheduleByOrder($oriOrder, $order, $defaultCoach, $gym);
-
     }
 
-    private static function importScheduleByOrder($oriOrder, $destOrder, $defaultCoach, $defaultGym) {
+    private static function importScheduleByOrder($oriOrder, $destOrder, $defaultCoach, $defaultGym)
+    {
         // 1. get booked
         $orderId = $oriOrder['id'];
         $customerPhone = $oriOrder['customerdetail']['name'];
@@ -148,10 +148,10 @@ class ImportCustomers extends Command
 
         $booked = $json['booked'];
         // import every schedule
-        echo "booked count ". count($booked) . "\n";
-        foreach($booked as $s) {
+        echo "booked count " . count($booked) . "\n";
+        foreach ($booked as $s) {
             // skip empty order
-            if(!empty($s)){
+            if (!empty($s)) {
                 echo '.';
                 self::importSchedule($s, $destOrder, $defaultCoach, $defaultGym);
                 continue;
@@ -162,61 +162,85 @@ class ImportCustomers extends Command
         echo "\n";
     }
 
-    private static function importSchedule($oriSchedule, $destOrder, $defaultCoach, $defaultGym) {
+    private static function importSchedule($oriSchedule, $destOrder, $defaultCoach, $defaultGym)
+    {
+        try {
+            $schedule = new Schedule();
+            $schedule->created_by = $destOrder->coach->user->id;
+            $schedule->order_id = $destOrder->id;
+            $schedule->date = $oriSchedule['date'];
 
-        $schedule = new Schedule();
-        $schedule->created_by = $destOrder->coach->user->id;
-        $schedule->order_id = $destOrder->id;
-        $schedule->date = $oriSchedule['date'];
+            // 36 + hour * 2
 
-        // 36 + hour * 2
+            $schedule->start = 36 + $oriSchedule['hour'] * 2;
+            $schedule->end =  $schedule->start + 3;
 
-        $schedule->start = 36 + $oriSchedule['hour'] * 2;
-        $schedule->end =  $schedule->start + 3;
-
-        $schedule->detail = '[]';
-        $schedule->status = 2;
-        $schedule->conclusion = '';
+            $schedule->detail = '[]';
+            $schedule->status = 2;
+            $schedule->conclusion = '';
 
 
-        $customer = User::where('email', $oriSchedule['customerprofile']['name'])->first();
-        $schedule->customer()->associate($customer);
+            $customer = User::where('email', $oriSchedule['customerprofile']['name'])->first();
+            $schedule->customer()->associate($customer);
 
-        $coach = $defaultCoach;
-        $coachUser = User::where('email', $oriSchedule['coachprofile']['name'])->first();
-        if(!empty($coachUser)){
-            $coach = Coach::where('user_id', $coachUser->id)->first();
+            $coach = $defaultCoach;
+            $coachUser = User::where('email', $oriSchedule['coachprofile']['name'])->first();
+            if (!empty($coachUser)) {
+                $coach = Coach::where('user_id', $coachUser->id)->first();
+            }
+
+            $schedule->coach()->associate($coach);
+            $schedule->gym()->associate($defaultGym);
+            $schedule->conclusion = self::importReview($oriSchedule);
+
+            $schedule->detail = self::convertPlan(json_decode($oriSchedule['detail'], true));
+
+            $schedule->save();
+        } catch (\Exception $e) {
+
+            echo "!!!!!empty customer, skip schedule\n";
+            return;
         }
-
-        $schedule->coach()->associate($coach);
-        $schedule->gym()->associate($defaultGym);
-
-        $schedule->detail = self::convertPlan(json_decode($oriSchedule['detail'], true));
-
-        $schedule->save();
         // echo "imported schedule {$schedule->date}  {$oriSchedule['coachprofile']['displayname']} => {$coach->user->name}\n";
     }
 
-    private static function convertPlan($plan) {
-        $ret = [];
-        foreach($plan as $item) {
-            if($item['contenttype'] === 'action') {
-                $newItem = [
-                    'contenttype' => $item['contenttype'],
-                    'interval' => $item['interval'],
-                    'id' => $item['workoutid'],
-                    'name' => $item['name'],
-                    'set_times' => $item['repeattimes'],
-                    'unit' => $item['unit'],
-                    'repeat_times' => $item['weight'],
-                    'weight' => $item['comments'] ?? '-'
-                ];
-                $ret[] = $newItem;
+    private static function importReview($oriSchedule)
+    {
+        $id = $oriSchedule['id'];
+        $url = "http://o2-fit.com/api/s/$id/review/";
+        try {
+            $resp = file_get_contents($url);
+            $json = json_decode($resp, true);
+            echo ('. ');
+            return $json['coach_review'];
+        } catch (\Exception $ex) {
+            echo ('x ');
+            return '';
+        }
+    }
 
-            }
-            if($item['contenttype'] === 'comments') {
-                $ret[] = $item;
-            }
+    private static function convertPlan($plan)
+    {
+        $ret = [];
+        foreach ($plan as $item) {
+            try {
+                if ($item['contenttype'] === 'action') {
+                    $newItem = [
+                        'contenttype' => $item['contenttype'],
+                        'interval' => $item['interval'],
+                        'id' => $item['workoutid'],
+                        'name' => $item['name'],
+                        'set_times' => $item['repeattimes'],
+                        'unit' => $item['unit'],
+                        'repeat_times' => $item['weight'],
+                        'weight' => $item['comments'] ?? '-'
+                    ];
+                    $ret[] = $newItem;
+                }
+                if ($item['contenttype'] === 'comments') {
+                    $ret[] = $item;
+                }
+            } catch (\Exception $ex) { }
         }
         return json_encode($ret);
     }
