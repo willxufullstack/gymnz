@@ -6,6 +6,7 @@ use App\BodyData;
 use App\Coach;
 use App\Gym;
 use App\Order;
+use App\Photo;
 use App\User;
 use App\Schedule;
 use Illuminate\Console\Command;
@@ -80,6 +81,8 @@ class ImportCustomers extends Command
             echo ('imported customer ' . $customer['displayname'] . ' : ' . $customer['name'] . "\n");
             self::importBodyData($customer['name'], $user['id'], $coachUser->id);
 
+            self::importPhotos($customer['name'], $user['id'], $coachUser->id);
+
             self::importOrders($customer['name'], $defaultCoach);
             $imported++;
         }
@@ -112,8 +115,6 @@ class ImportCustomers extends Command
         $formattedTime = str_replace('Z', '', $formattedTime);
         $order->created_at = $formattedTime;
         // calcuate expiry
-        // !!!!TODO
-        // $order->expiry = Carbon::now()->addMonths($order->duration);
         $order->expiry = $oriOrder['endtime'] !== 'N/A' ? $oriOrder['endtime'] : date("Y-m-d", time());
         // 3. map user
         // get customer
@@ -135,7 +136,12 @@ class ImportCustomers extends Command
         $order->save();
 
         // 7. import schedule
-        self::importScheduleByOrder($oriOrder, $order, $defaultCoach, $gym);
+        $bookedCount = self::importScheduleByOrder($oriOrder, $order, $defaultCoach, $gym);
+
+        // 8. update booked_amount and status
+        $order->booked_amount = $bookedCount;
+        $order->save();
+        echo $bookedCount . ' / ' . $oriOrder['course_count'] . "\n";
     }
 
     private static function importScheduleByOrder($oriOrder, $destOrder, $defaultCoach, $defaultGym)
@@ -163,6 +169,7 @@ class ImportCustomers extends Command
             echo "x";
         }
         echo "\n";
+        return count($booked);
     }
 
     private static function importSchedule($oriSchedule, $destOrder, $defaultCoach, $defaultGym)
@@ -248,6 +255,37 @@ class ImportCustomers extends Command
         return json_encode($ret);
     }
 
+    private static function importPhotos($phone, $customerId, $by) {
+        // http://o2-fit.com/api/13001094300/album/
+        $url = "http://o2-fit.com/api/$phone/album/";
+        $resp = file_get_contents($url);
+        $photos = json_decode($resp, true)['results'];
+
+        // `user_id` bigint(20) unsigned NOT NULL,
+        // `url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+        // `created_by` bigint(20) unsigned NOT NULL,
+        // `created_at` timestamp NULL DEFAULT NULL,
+        // `updated_at` timestamp NULL DEFAULT NULL,
+        // `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+        foreach($photos as $oriPhoto) {
+            $photo = new Photo();
+            $photo->user_id = $customerId;
+            $photo->url = $oriPhoto['url'];
+            $photo->created_by = $by;
+
+            $formattedTime = str_replace('T', ' ', $oriPhoto['created']);
+            $formattedTime = str_replace('Z', '', $formattedTime);
+            $photo->created_at = $formattedTime;
+
+            if($photo->save()){
+                echo "imported " . $oriPhoto['url'] . "\n";
+                break;
+            }
+            echo "fail to import photo for {$phone}";
+        }
+
+    }
+
     private static function importBodyData($phone, $customerId, $by) {
         // 1. get data http://o2-fit.com/api/13001094300/e/all/
         $url = "http://o2-fit.com/api/$phone/e/all/";
@@ -284,6 +322,5 @@ class ImportCustomers extends Command
             echo "imported " . $item['option'] . ": " . $item['value'] . "\n";
 
         }
-
     }
 }
