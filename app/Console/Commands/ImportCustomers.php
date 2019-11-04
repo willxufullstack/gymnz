@@ -279,7 +279,7 @@ class ImportCustomers extends Command
 
             if($photo->save()){
                 echo "imported " . $oriPhoto['url'] . "\n";
-                break;
+                continue;
             }
             echo "fail to import photo for {$phone}";
         }
