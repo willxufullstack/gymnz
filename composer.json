@@ -13,6 +13,7 @@
         "goat1000/svggraph": "^3.2",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
+        "predis/predis": "^1.1",
         "qiniu/php-sdk": "^7.2",
         "tymon/jwt-auth": "1.0.*"
     },

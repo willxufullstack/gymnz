@@ -12,6 +12,7 @@ use App\Events\BonusEvent;
 use App\Order;
 use App\Schedule;
 use Auth;
+use Illuminate\Support\Facades\Redis;
 
 class ScheduleController extends Controller
 {
@@ -117,7 +118,14 @@ class ScheduleController extends Controller
         $schedule->date = $scheduleData['date'];
         $schedule->start = $scheduleData['start'];
         $schedule->end = $scheduleData['end'];
-        $schedule->detail = '[]';
+
+        // try to get detail from redis
+        $detail = Redis::get('tmp_schedule_plan_'.$scheduleData['customer']);
+        if(!$detail) {
+            $detail = '[]';
+        }
+        $schedule->detail = $detail;
+
         $schedule->status = 1;
         $schedule->conclusion = '';
 
@@ -200,6 +208,12 @@ class ScheduleController extends Controller
         if (empty($schedule)) {
             return response()->json(array('message' => 'can not find the schedule ' . $id), 500);
         }
+
+        // keep the plan into cache
+        Redis::set('tmp_schedule_plan_'.$schedule->customer_id, $schedule->detail);
+
+
+
         $success = $schedule->delete();
         if ($success) {
             // update order booked
@@ -226,9 +240,11 @@ class ScheduleController extends Controller
         $schedule->status = 2;
         $success = $schedule->save();
 
+        Redis::del('tmp_schedule_plan_'.$schedule->customer_id);
+
         // check where have bonus setting
         $setting = $schedule->gym->setting;
-        if ($setting['bonus']) {
+        if (array_key_exists('bonus', $setting) && $setting['bonus']) {
             if ($schedule->getMonthCount() === (int) $setting['bonus']) {
                 event(new BonusEvent($schedule));
             }
