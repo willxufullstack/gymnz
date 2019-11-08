@@ -188,6 +188,11 @@ class ScheduleController extends Controller
         }
         if ($request->has('detail')) {
             $schedule->detail = $request->input('detail');
+            // save action default value if it's the latest schedule
+            $latest = Schedule::where(['customer_id' => $schedule->customer_id])->orderBy('date', 'DESC')->first();
+            if($latest->id === $id) {
+                $schedule->saveActionDefaultValue();
+            }
         }
         $success = $schedule->save();
         if ($success) {

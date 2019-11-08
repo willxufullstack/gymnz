@@ -12,9 +12,13 @@ class WorkoutActionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return WorkoutAction::all();
+        $customerId = null;
+        if($request->has('customer')){
+            $customerId = $request->input('customer');
+        }
+        return WorkoutAction::actionsWithDefaultValueByCustomer($customerId);
     }
 
     /**

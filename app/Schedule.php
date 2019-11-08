@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Redis;
 
 class Schedule extends Model
 {
@@ -33,6 +34,25 @@ class Schedule extends Model
     public function coach()
     {
         return $this->belongsTo('App\Coach');
+    }
+
+    public function saveActionDefaultValue(){
+        $detail = json_decode($this->detail, true);
+        if(empty($detail)){
+            return;
+        }
+        $key = 'action_default_value_'.$this->customer_id;
+        // to hash
+        $hash = json_decode(Redis::get($key), true);
+
+        if(!$hash){
+            $hash = [];
+        }
+        foreach($detail as $action) {
+            $action['lastUsed'] = $this->date;
+            $hash[$action['id']] = $action;
+        }
+        Redis::set($key, json_encode($hash));
     }
 
     public function getStartDateTime()
