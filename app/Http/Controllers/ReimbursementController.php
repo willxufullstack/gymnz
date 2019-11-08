@@ -19,7 +19,7 @@ class ReimbursementController extends Controller
             return response()->json(array('message' => 'missing time range'), 500);
         }
 
-        $query = Reimbursement::with('op')
+        $query = Reimbursement::with(['op', 'coach.user'])
             ->where('gym_id', $gymId)
             ->where('created_at', '>=', $request->input('start'))
             ->where('created_at', '<=', $request->input('end'))

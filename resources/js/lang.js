@@ -294,6 +294,7 @@ const Lang = {
             operator: '操作人',
             time: '时间',
             pay: '支付',
+            coach: '教练',
             reimbursement: '报销'
         },
         en: {
@@ -306,6 +307,7 @@ const Lang = {
             operator: 'Operator',
             time: 'Time',
             pay: 'Pay',
+            coach: 'Coach',
             reimbursement: 'Reimbursement'
         }
     },

@@ -24,4 +24,9 @@ class Reimbursement extends Model
     {
         return $this->belongsTo('App\User', 'approved_by', 'id');
     }
+
+    public function coach()
+    {
+        return $this->belongsTo('App\Coach');
+    }
 }
