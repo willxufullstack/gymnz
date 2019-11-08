@@ -120,11 +120,12 @@ class MonthlyReport extends React.Component {
         if (!orders) {
             return <p>No Orders</p>
         }
-        let header = [L.price, L.bookedTotal, L.coach, L.created]
+        let header = [L.price, L.bookedTotal, L.coach, L.customer, L.created]
         let tableData = orders.map(r => [
             r.price + '',
             r.booked_amount + ' / ' + r.course_amount,
             r.coach.user.name,
+            r.customer.name,
             r.created_at
         ])
 
