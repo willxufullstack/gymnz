@@ -78,6 +78,7 @@ Route::group([
     Route::resource('gym.reimbursement', 'ReimbursementController');
     Route::get('gym/{gym}/reimbursement/{reimbursementId}/pay', 'ReimbursementController@pay');
 
+    Route::get('schedule/history', 'ScheduleController@history');
     Route::resource('gym.schedule', 'ScheduleController');
     Route::get('gym/{gym}/schedule/{schedule}/complete', 'ScheduleController@complete');
 

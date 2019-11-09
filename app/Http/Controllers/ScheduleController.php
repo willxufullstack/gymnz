@@ -260,4 +260,12 @@ class ScheduleController extends Controller
         }
         return response()->json(array('message' => 'fail'), 500);
     }
+
+    public function history(Request $request){
+        if (!$request->has('customer')) {
+            return response()->json(array('message' => 'missing parameter'), 500);
+        }
+        $customer = (int)$request->input('customer');
+        return Schedule::where('customer_id', $customer)->orderBy('date', 'DESC')->get();
+    }
 }
