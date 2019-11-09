@@ -20,6 +20,9 @@ class WorkoutAction extends Model
 
         $key = 'action_default_value_'.$customerId;
         $defaultValues = json_decode(Redis::get($key), true);
+        if(!$defaultValues) {
+            $defaultValues = [];
+        }
         $ori = WorkoutAction::all();
         $ret = [];
         foreach($ori as $action) {
