@@ -113,7 +113,7 @@ class Schedule extends Model
             'id' => $this->id,
             'gym' => $this->gym_id,
             'user_id' => $this->coach->user->id,
-            'avatar' => $this->coach->avatar ?? 'https://i.pravatar.cc/80'
+            'avatar' => $this->coach->user->avatar ?? 'https://i.pravatar.cc/80'
         ];
     }
     public function toConclusionCard()
@@ -126,7 +126,7 @@ class Schedule extends Model
             'gym' => $this->gym_id,
             'status' => $this->status,
             'user_id' => $this->coach->user->id,
-            'avatar' => $this->coach->avatar ?? 'https://i.pravatar.cc/80'
+            'avatar' => $this->coach->user->avatar ?? 'https://i.pravatar.cc/80'
         ];
     }
 }

@@ -43,6 +43,9 @@ class BodyData extends Model
             $grouped[$row['date']] = true;
         }
 
+        $userObj = User::find($user);
+        $avatar = $userObj ? $userObj->avatar : null;
+
 
         $ret = [];
         $host = request()->getSchemeAndHttpHost();
@@ -52,7 +55,7 @@ class BodyData extends Model
                 'date' => $date,
                 'id' => $date,
                 'user_id' => $user,
-                'avatar' => 'https://i.pravatar.cc/80',
+                'avatar' => $avatar ?? 'https://i.pravatar.cc/80',
                 'url' => $host . "/api/user/$user/bodydata/chart?date=$date"
             ];
         }
