@@ -40,12 +40,13 @@ class BodyData extends Model
         // group
         $grouped = [];
         foreach ($data as $row) {
-            $grouped[$row['date']] = true;
+            if(array_key_exists($row['date'], $grouped)) {
+                continue;
+            }
+            $userObj = User::find($row->created_by);
+            $avatar = $userObj->avatar ?? 'http://static.o2-fit.com/image/logo.png?imageView2/1/w/80/h/80/format/jpg';
+            $grouped[$row['date']] = $avatar;
         }
-
-        $userObj = User::find($user);
-        $avatar = $userObj ? $userObj->avatar : null;
-
 
         $ret = [];
         $host = request()->getSchemeAndHttpHost();
@@ -55,7 +56,7 @@ class BodyData extends Model
                 'date' => $date,
                 'id' => $date,
                 'user_id' => $user,
-                'avatar' => $avatar ?? 'http://static.o2-fit.com/image/logo.png?imageView2/1/w/80/h/80/format/jpg',
+                'avatar' => $grouped[$date],
                 'url' => $host . "/api/user/$user/bodydata/chart?date=$date"
             ];
         }
