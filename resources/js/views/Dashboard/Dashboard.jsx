@@ -143,6 +143,13 @@ class Dashboard extends React.Component {
             dialogue: true,
             inputFields: [
                 {
+                    name: 'coach',
+                    label: L.coach,
+                    options: this.props.gym.coaches.map(coach => {
+                        return { value: coach.id, label: coach.user.name }
+                    })
+                },
+                {
                     name: 'name',
                     label: L.customerName,
                     validation: v => v.length > 0
@@ -182,13 +189,6 @@ class Dashboard extends React.Component {
                     value: this.props.selectedGym.id,
                     hide: true
                 },
-                {
-                    name: 'coach',
-                    label: L.coach,
-                    options: this.props.gym.coaches.map(coach => {
-                        return { value: coach.id, label: coach.user.name }
-                    })
-                }
             ]
         }
         return <CreateNewDialogue {...fields} />

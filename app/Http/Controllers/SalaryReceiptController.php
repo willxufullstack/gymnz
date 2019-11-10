@@ -47,6 +47,7 @@ class SalaryReceiptController extends Controller
             // '1' indicates it has not been archieved
             if ($r->status == 1) {
                 $r->syncWithSetting();
+                $r->updateKPI();
                 $r->updateTotal();
                 $r->save();
             }
@@ -120,6 +121,7 @@ class SalaryReceiptController extends Controller
         $receipt->created_by = Auth::User()->id;
         $receipt->update($updateFields);
         $receipt->updateTotal();
+        $receipt->updateKPI();
         $receipt->save();
 
         return response()->json($receipt, 200);

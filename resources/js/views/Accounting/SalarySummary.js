@@ -71,6 +71,17 @@ class SalarySummary extends React.Component {
     getTable = () => {
         const columns = [
             {
+                title: 'KPI', field: 'kpi', editable: 'never',
+                cellStyle: {
+                    width: 80,
+                    maxWidth: 80
+                },
+                headerStyle: {
+                    width: 80,
+                    maxWidth: 80
+                }
+            },
+            {
                 title: L.name, field: 'coach.user.name', editable: 'never',
                 cellStyle: {
                     width: 120,

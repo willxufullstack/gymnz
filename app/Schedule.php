@@ -36,6 +36,18 @@ class Schedule extends Model
         return $this->belongsTo('App\Coach');
     }
 
+    public function getPrice(){
+        $orderId = $this->order_id;
+        // get order
+
+        $order = Order::find($orderId);
+        if(empty($order)){
+            return 0;
+        }
+        // get course price
+        return $order->price / $order->course_amount;
+    }
+
     public function saveActionDefaultValue(){
         $detail = json_decode($this->detail, true);
         if(empty($detail)){
