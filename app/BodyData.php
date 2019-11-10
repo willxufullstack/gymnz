@@ -55,7 +55,7 @@ class BodyData extends Model
                 'date' => $date,
                 'id' => $date,
                 'user_id' => $user,
-                'avatar' => $avatar ?? 'https://i.pravatar.cc/80',
+                'avatar' => $avatar ?? 'http://static.o2-fit.com/image/logo.png?imageView2/1/w/80/h/80/format/jpg',
                 'url' => $host . "/api/user/$user/bodydata/chart?date=$date"
             ];
         }

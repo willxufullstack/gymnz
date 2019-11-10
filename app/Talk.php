@@ -30,7 +30,8 @@ class Talk extends Model
             'id' => $this->id,
             'gym' => $this->gym_id,
             'user_id' => $this->from->id,
-            'avatar' => $this->from()->avatar ?? 'https://i.pravatar.cc/80'
+            'from' => $this->from,
+            'avatar' => $this->from->avatar ?? 'http://static.o2-fit.com/image/logo.png?imageView2/1/w/80/h/80/format/jpg'
         ];
     }
 }
