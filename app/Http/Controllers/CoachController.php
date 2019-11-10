@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Coach;
 use App\User;
 use App\Gym;
+use App\SalarySetting;
 use Auth;
 use Hash;
 use Illuminate\Http\Request;
@@ -26,6 +27,11 @@ class CoachController extends Controller
             ->where("status", "=", "1")
             ->get();
         if ($ret) {
+            foreach ($ret as $coach) {
+                if (empty(SalarySetting::where('coach_id', $coach->id)->first())) {
+                    event(new \App\Events\CoachAddEvent($coach));
+                }
+            }
             return response()->json($ret, 200);
         }
         return response()->json(array('message' => 'fail'), 500);
