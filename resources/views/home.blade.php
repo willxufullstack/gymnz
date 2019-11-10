@@ -37,7 +37,7 @@
     var username = "{{ Auth::user() ? Auth::user()->name : "
     GUEST " }}";
 </script>
-<script src="http://static.o2-fit.com/pro/js/manifest.js?v=1" defer></script>
-<script src="http://static.o2-fit.com/pro/js/vendor.js?v=1" defer></script>
-<script src="http://static.o2-fit.com/pro/js/app.js?v=1" defer></script>
+<script src="http://static.o2-fit.com/pro/js/manifest.js?v=2" defer></script>
+<script src="http://static.o2-fit.com/pro/js/vendor.js?v=2" defer></script>
+<script src="http://static.o2-fit.com/pro/js/app.js?v=2" defer></script>
 </html>
