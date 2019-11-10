@@ -40,6 +40,64 @@ class SalaryReceipt extends Model
         $this->tax = $setting->tax;
     }
 
+    public function updateKPI()
+    {
+        $average = [];
+
+        $monthFirstDay = strtotime($this->month . '-01');
+        // get 2 month all schedules
+        $end = strtotime('-1 second', strtotime('+1 month', $monthFirstDay));
+        $endDay = date('Y-m-d', $end);
+        $start = strtotime('-60 day', $end);
+        $startDay = date('Y-m-d', $start);
+        $schedules = Schedule::where('coach_id', $this->coach_id)
+            ->where('gym_id', $this->gym_id)
+            ->where('date', '>=', $startDay)
+            ->where('date', '<=', $endDay)
+            ->where('status', 2)
+            ->get();
+
+        $countHash = [];
+
+        for ($i = 0; $i < 30; $i++) {
+            $customers = [];
+            $courseCount = 0;
+
+            $ceil = strtotime($endDay);
+            $floor = strtotime('-30 day', $ceil);
+
+            foreach ($schedules as $s) {
+                $t = strtotime($s->date);
+
+                if ($t > $ceil && $t <= $floor) {
+                    continue;
+                }
+
+                if (!in_array($s->customer_id, $customers)) {
+                    $customers[] = $s->customer_id;
+                }
+            }
+            $courseCount = Schedule::where('gym_id', $this->gym_id)
+                ->where('date', '>=', date('Y-m-d', $floor))
+                ->where('date', '<=', date('Y-m-d', $ceil))
+                ->where('status', 2)
+                ->whereIn('customer_id', $customers)
+                ->count();
+
+            // move foward 1 day
+            $endDay = date('Y-m-d', strtotime('yesterday', strtotime($endDay)));
+
+            if (!empty($customers)) {
+                $average[] = $courseCount / count($customers);
+            }
+        }
+        if (empty($average)) {
+            return 0;
+        }
+        $this->kpi = round(max($average) * 0.95, 2);
+        return $this->kpi;
+    }
+
     public function updateTotal()
     {
         // get start/end
