@@ -66,6 +66,7 @@ Route::group([
 
     Route::resource('org', 'OrganizationController');
 
+    Route::get('gym/{gym}/sharecover', 'GymController@getShareCover');
     Route::resource('gym', 'GymController');
     Route::resource('gym.coach', 'CoachController');
     Route::get('gym/{gym}/coach/{coach}/reset', 'CoachController@reset');

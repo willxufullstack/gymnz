@@ -109,6 +109,14 @@ class GymController extends Controller
         //
     }
 
+    public function getShareCover(){
+        return [
+            'plan' => 'http://static.o2-fit.com/share_cover.png',
+            'register' => 'http://static.o2-fit.com/image/register.jpg',
+            'confirm' => 'http://static.o2-fit.com/confirm.png'
+        ];
+    }
+
 
     public function getCustomerList($id)
     {
