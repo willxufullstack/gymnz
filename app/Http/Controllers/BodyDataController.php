@@ -259,33 +259,8 @@ class BodyDataController extends Controller
                 'category' => 'basic'
             ],
             [
-                'option' => '体脂率',
-                'unit' => '%',
-                'category' => 'basic'
-            ],
-            [
-                'option' => '体脂肪重量',
+                'option' => '腰围',
                 'unit' => 'kg',
-                'category' => 'basic'
-            ],
-            [
-                'option' => '骨骼肌重量',
-                'unit' => 'kg',
-                'category' => 'basic'
-            ],
-            [
-                'option' => 'BMI',
-                'unit' => 'kg/m²',
-                'category' => 'basic'
-            ],
-            [
-                'option' => '腰臀比',
-                'unit' => '腰/臀',
-                'category' => 'basic'
-            ],
-            [
-                'option' => '基础代谢',
-                'unit' => 'Kcal/d',
                 'category' => 'basic'
             ],
             [
@@ -316,6 +291,36 @@ class BodyDataController extends Controller
             [
                 'option' => '大臂围R',
                 'unit' => 'cm',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '体脂率',
+                'unit' => '%',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '体脂肪重量',
+                'unit' => 'kg',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '骨骼肌重量',
+                'unit' => 'kg',
+                'category' => 'basic'
+            ],
+            [
+                'option' => 'BMI',
+                'unit' => 'kg/m²',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '腰臀比',
+                'unit' => '腰/臀',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '基础代谢',
+                'unit' => 'Kcal/d',
                 'category' => 'basic'
             ],
             [
