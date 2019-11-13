@@ -65,4 +65,27 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+
+    public function getCourseBalance($gymId)
+    {
+        $query = Order::where([
+                'customer_id' => $this->id,
+            ]);
+
+        $query = $query->where('gym_id', $gymId);
+        $orders = $query->get();
+        $ret = ['total' => 0, 'booked' => 0];
+        // calc
+        foreach ($orders as $order) {
+            if ($order->status === 1) {
+                $ret['total'] += $order->course_amount;
+            } else {
+                // calc total by the actual booked amount if refund
+                $ret['total'] += $order->booked_amount;
+            }
+            $ret['booked'] += $order->booked_amount;
+        }
+        return $ret;
+    }
 }

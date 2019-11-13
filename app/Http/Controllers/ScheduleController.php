@@ -74,6 +74,11 @@ class ScheduleController extends Controller
                $row->getBodyMeasurementTask();
             }
         }
+        if( $request->input('balance')){
+            foreach ($ret as &$row) {
+                $row['balance'] = $row->customer->getCourseBalance($row->gym_id);
+             }
+        }
 
         if ($ret) {
             return response()->json($ret, 200);
@@ -141,6 +146,7 @@ class ScheduleController extends Controller
         $order->save();
 
         $schedule->getBodyMeasurementTask();
+        $schedule['balance'] = $schedule->customer->getCourseBalance($schedule->gym_id);
         return response()->json($schedule, 201);
     }
 
