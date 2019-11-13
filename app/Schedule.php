@@ -36,31 +36,49 @@ class Schedule extends Model
         return $this->belongsTo('App\Coach');
     }
 
-    public function getPrice(){
+    public function getPrice()
+    {
         $orderId = $this->order_id;
         // get order
 
         $order = Order::find($orderId);
-        if(empty($order)){
+        if (empty($order)) {
             return 0;
         }
         // get course price
         return $order->price / $order->course_amount;
     }
 
-    public function saveActionDefaultValue(){
+    public function getBalance()
+    {
+        $ret = ['booked' => 0, 'total' => 0];
+        $orderId = $this->order_id;
+        // get order
+
+        $order = Order::find($orderId);
+        if (empty($order)) {
+            return $ret;
+        }
+        // get course price
+        $ret['booked'] = $order->booked_amount;
+        $ret['total'] = $order->course_amount;
+        return $ret;
+    }
+
+    public function saveActionDefaultValue()
+    {
         $detail = json_decode($this->detail, true);
-        if(empty($detail)){
+        if (empty($detail)) {
             return;
         }
-        $key = 'action_default_value_'.$this->customer_id;
+        $key = 'action_default_value_' . $this->customer_id;
         // to hash
         $hash = json_decode(Redis::get($key), true);
 
-        if(!$hash){
+        if (!$hash) {
             $hash = [];
         }
-        foreach($detail as $action) {
+        foreach ($detail as $action) {
             $action['lastUsed'] = $this->date;
             $hash[$action['id']] = $action;
         }
