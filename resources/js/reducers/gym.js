@@ -291,6 +291,20 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             })
 
+        case ActionTypes.MODIFY_ORDER:
+            return Object.assign({}, state, { loading: true })
+        case ActionTypes.MODIFY_ORDER_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                successMsg: 'Modify order successed'
+            })
+        case ActionTypes.MODIFY_ORDER_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Modify order failed, please try again',
+                loading: false
+            })
+
+
         case ActionTypes.PAY_REIMBURSEMENT:
             return Object.assign({}, state, { loading: true })
         case ActionTypes.PAY_REIMBURSEMENT_SUCCESS:

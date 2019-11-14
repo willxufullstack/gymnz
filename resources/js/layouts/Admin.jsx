@@ -111,23 +111,24 @@ class Admin extends React.Component {
                     <div className={classes.content}>
                         {(this.props.gym.loading || this.props.setting.loading) && <LoadingLayer />}
                         <Snackbar
-                            place="tc"
+                            place="br"
                             color="danger"
                             // icon={AddAlert}
+                            autoHideDuration={4000}
                             disableWindowBlurListener
-                            message={this.props.gym.errorMsg || this.props.setting.errorMsg}
-                            open={!!(this.props.gym.errorMsg || this.props.setting.errorMsg)}
+                            message={this.props.gym.errorMsg || this.props.organization.errorMsg || this.props.setting.errorMsg}
+                            open={!!(this.props.gym.errorMsg || this.props.organization.errorMsg ||this.props.setting.errorMsg)}
                             closeNotification={() => this.props.actions.closeErrMsg()}
                             close
                         />
                         <Snackbar
-                            place="tc"
+                            place="br"
                             color="success"
                             // icon={AddAlert}
-                            autoHideDuration={2000}
+                            autoHideDuration={4000}
                             disableWindowBlurListener
-                            message={this.props.gym.successMsg || this.props.setting.successMsg}
-                            open={!!(this.props.gym.successMsg || this.props.setting.successMsg)}
+                            message={this.props.gym.successMsg || this.props.organization.successMsg ||this.props.setting.successMsg}
+                            open={!!(this.props.gym.successMsg || this.props.organization.successMsg ||this.props.setting.successMsg)}
                             onClose={() => {
                                 this.props.actions.closeSuccessMsg()
                             }}
@@ -146,6 +147,7 @@ Admin.propTypes = {
 
 const mapStoreToProps = (store) => {
     return {
+        organization: store.organization,
         gyms: store.organization.gym,
         gym: store.gym,
         setting: store.setting

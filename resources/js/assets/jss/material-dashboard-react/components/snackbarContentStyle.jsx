@@ -30,8 +30,8 @@ const snackbarContentStyle = {
     backgroundColor: whiteColor,
     color: grayColor[7],
     borderRadius: "3px",
-    minWidth: "unset",
-    maxWidth: "unset",
+    maxWidth: '100%',
+    minWidth: '170px',
     boxShadow:
       "0 12px 20px -10px rgba(" +
       hexToRgb(whiteColor) +

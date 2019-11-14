@@ -183,15 +183,6 @@ class Organization extends React.Component {
                         <Button justIcon round color='transparentGray' className="new-org-btn" onClick={this.showAddOrg}><Add /></Button>
                     </GridContainer>
                 </div>
-                <Snackbar
-                    place="tc"
-                    color="danger"
-                    icon={AddAlert}
-                    message={this.props.organization.errorMsg}
-                    open={!!this.props.organization.errorMsg}
-                    closeNotification={() => this.props.actions.closeErrMsg()}
-                    close
-                />
             </React.Fragment>
         );
     }

@@ -129,9 +129,19 @@ class OrderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $gymId, $orderId)
     {
-        //
+        $order = Order::where([
+            'gym_id' => $gymId,
+            'id' => $orderId,
+        ])->first();
+        if (!$order) {
+            return response()->json(array('message' => 'cannot find the order'), 404);
+        }
+        $order->price = $request->input('price');
+        $order->course_amount = $request->input('course_amount');
+        $order->save();
+        return  response()->json($order, 200);
     }
 
     /**

@@ -25,3 +25,16 @@ export function refundOrder(order, data) {
         }
     }
 }
+
+export function modifyOrder(order, data) {
+    return {
+        type: ActionTypes.MODIFY_ORDER,
+        payload: {
+            request:{
+                method: 'patch',
+                url:'/gym/' + order.gym_id + '/order/' + order.id,
+                data
+            }
+        }
+    }
+}

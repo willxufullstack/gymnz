@@ -37,7 +37,8 @@ class Customer extends React.Component {
         this.customerId = parseInt(this.props.match.params.id)
         this.state = {
             cancelSchedule: null,
-            refundDialogue: false
+            refundDialogue: false,
+            modifyDialogue: false
         }
     }
 
@@ -64,6 +65,9 @@ class Customer extends React.Component {
     tapRefund = order => {
         this.setState({ refundDialogue: order })
     }
+    tapModify = order => {
+        this.setState({ modifyDialogue: order })
+    }
 
     refundOrder = (data, order) => {
         this.props.actions.refundOrder(order, data).then(() => {
@@ -72,6 +76,42 @@ class Customer extends React.Component {
                 gym: this.props.selectedGym.id
             })
         })
+    }
+    modifyOrder = (data, order) => {
+        this.props.actions.modifyOrder(order, data).then(() => {
+            this.setState({ modifyDialogue: false })
+            this.props.actions.loadCustomerOrders(this.customerId, {
+                gym: this.props.selectedGym.id
+            })
+        })
+    }
+
+    getModifyDialogue = order => {
+        let params = {
+            dialogue: true,
+            title: '修改',
+            onSave: data => this.modifyOrder(data, order),
+            onCancel: () => {
+                this.setState({ modifyDialogue : false })
+            },
+            subtitle: '！修改订单信息可能会影响统计数据',
+            inputFields: [
+                {
+                    name: 'price',
+                    label: '金额',
+                    type: 'number',
+                    placeholder: order.price + ''
+                },
+                {
+                    name: 'course_amount',
+                    label: '课程数量',
+                    type: 'number',
+                    placeholder: order.course_amount + ''
+                }
+            ]
+        }
+
+        return <CreateNewDialogue {...params} />
     }
 
     getRefundDialogue = order => {
@@ -118,13 +158,22 @@ class Customer extends React.Component {
         ]
         let tableData = orders.map(r => {
             const btn = (
-                <Button
-                    onClick={() => this.tapRefund(r)}
-                    size='sm'
-                    color='transparentGray'
-                >
-                    {L.refund}
-                </Button>
+                <React.Fragment>
+                    <Button
+                        onClick={() => this.tapRefund(r)}
+                        size='sm'
+                        color='transparentGray'
+                    >
+                        {L.refund}
+                    </Button>
+                    <Button
+                        onClick={() => this.tapModify(r)}
+                        size='sm'
+                        color='transparentGray'
+                    >
+                        修改
+                    </Button>
+                </React.Fragment>
             )
             return [
                 (r.price / r.course_amount).toFixed(0) + '/' + r.price,
@@ -255,6 +304,8 @@ class Customer extends React.Component {
                 )}
                 {this.state.refundDialogue &&
                     this.getRefundDialogue(this.state.refundDialogue)}
+                {this.state.modifyDialogue &&
+                    this.getModifyDialogue(this.state.modifyDialogue)}
                 <Paper square>
                     <Tabs
                         title={
