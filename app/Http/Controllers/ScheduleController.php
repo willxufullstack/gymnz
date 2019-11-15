@@ -111,7 +111,9 @@ class ScheduleController extends Controller
         $order = Order::where([
             'customer_id' => $scheduleData['customer'],
             'gym_id' => $scheduleData['gym'],
-        ])->whereRaw('booked_amount<course_amount')->first();
+        ])->whereRaw('booked_amount<course_amount')
+        ->orderBy('expiry', 'ASC')
+        ->first();
         //return 404 if no available order
         if (empty($order)) {
             return response()->json(['message' => 'no available order'], 404);

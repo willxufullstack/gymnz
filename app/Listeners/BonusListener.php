@@ -34,7 +34,7 @@ class BonusListener
         $order->created_by = $schedule->coach_id;
         $order->price = 0;
         $order->course_amount = 1;
-        $order->duration = 12;
+        $order->duration = 120;
         $order->customer_id = $schedule->customer_id;
         $order->gym_id = $schedule->gym_id;
         $order->coach_id = $schedule->coach_id;
