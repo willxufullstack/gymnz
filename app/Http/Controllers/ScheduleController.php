@@ -203,6 +203,7 @@ class ScheduleController extends Controller
             }
         }
         $success = $schedule->save();
+        $schedule['balance'] = $schedule->getBalance();
         if ($success) {
             return response()->json($schedule, 200);
         }
