@@ -6,6 +6,7 @@ use App\Coach;
 use App\User;
 use App\Gym;
 use App\Order;
+use App\Schedule;
 use Carbon\Carbon;
 use Auth;
 use Hash;
@@ -173,11 +174,19 @@ class OrderController extends Controller
     public function getCustomerOrders(Request $request, $customerId)
     {
         $query = Order::with('coach.user')
+            ->orderBy('created_at', 'DESC')
             ->where('customer_id', '=', $customerId);
         if ($request->input('gym')) {
             $query = $query->where('gym_id', '=', $request->input('gym'));
         }
         $ret = $query->get();
+        if ($request->input('schedule')) {
+            foreach($ret as &$order){
+                $order['schedules'] = Schedule::where('order_id', $order->id)
+                    ->orderBy('date', 'DESC')
+                    ->get();
+            }
+        }
         if ($ret) {
             return response()->json($ret, 200);
         }
