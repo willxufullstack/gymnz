@@ -39,8 +39,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group([], function () {
-     // it's a picture so should make it as public
-     Route::get('/user/{user}/bodydata/chart', 'BodyDataController@chart');
+    // it's a picture so should make it as public
+    Route::get('/user/{user}/bodydata/chart', 'BodyDataController@chart');
+    // allow visit the trial course so that user can access from wx app
+    Route::get('/gym/{gym}/trial/{id}', 'ScheduleController@show');
     // paste route here to skip auth when debug
 
 });
