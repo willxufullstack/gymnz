@@ -53,12 +53,12 @@ class Schedule extends Model
     {
         $ret = ['booked' => 0, 'total' => 0];
         $orderId = $this->order_id;
-        // get order
 
-        $order = Order::find($orderId);
-        if (empty($order)) {
-            return $ret;
+        if (empty($orderId)) {
+            return '体验课';
         }
+        // get order
+        $order = Order::find($orderId);
         // get course price
         $ret['booked'] = $order->booked_amount;
         $ret['total'] = $order->course_amount;

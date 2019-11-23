@@ -12,6 +12,7 @@ use App\Events\BonusEvent;
 use App\Order;
 use App\Schedule;
 use Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 
 class ScheduleController extends Controller
@@ -69,15 +70,15 @@ class ScheduleController extends Controller
                 }
             }
         }
-        if( $request->input('task')) {
+        if ($request->input('task')) {
             foreach ($ret as &$row) {
-               $row->getBodyMeasurementTask();
+                $row->getBodyMeasurementTask();
             }
         }
-        if( $request->input('balance')){
+        if ($request->input('balance')) {
             foreach ($ret as &$row) {
                 $row['balance'] = $row->getBalance();
-             }
+            }
         }
 
         if ($ret) {
@@ -96,6 +97,44 @@ class ScheduleController extends Controller
         //
     }
 
+    private function _createTrialSchedule(array $scheduleData, int $userId, User $customer = null)
+    {
+
+        $schedule = new Schedule();
+        $schedule->created_by = $userId;
+
+        $schedule->date = $scheduleData['date'];
+        $schedule->start = $scheduleData['start'];
+        $schedule->end = $scheduleData['end'];
+
+        $schedule->detail = '[]';
+
+        $schedule->status = 1;
+        $schedule->conclusion = '';
+
+        $gym = Gym::find($scheduleData['gym']);
+        // create trial customer
+        if ($customer == null) {
+            $customer = new User();
+            $customer->password = Hash::make('00000000');
+            $customer->email = time() . '';
+            $customer->name = $scheduleData['customer'];
+            $customer->sex = true;
+            $customer->avatar = 'http://static.o2-fit.com/image/logo.png?imageView2/1/w/60/h/60/format/jpg';
+            $customer->save();
+            $gym->addTrialCustomer($customer->id);
+        }
+
+        $schedule->customer()->associate($customer);
+        $schedule->coach()->associate(Coach::with('user')->find($scheduleData['coach']));
+        $schedule->gym()->associate($gym);
+
+        $schedule->save();
+        $schedule['balance'] = $schedule->getBalance();
+
+        return $schedule;
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -107,13 +146,32 @@ class ScheduleController extends Controller
         $userId = Auth::User()->id;
 
         $scheduleData = $request->only('customer', 'coach', 'gym', 'date', 'start', 'end');
+
+        // handle trial new
+        if ($request->has('trial')) {
+
+            $trial = $this->_createTrialSchedule($scheduleData, $userId);
+            return response()->json($trial, 201);
+        }
+        // handle trial old
+        $allOrders = Order::where([
+            'customer_id' => $scheduleData['customer'],
+            'gym_id' => $scheduleData['gym'],
+        ])->count();
+        if($allOrders === 0) {
+            $customer = User::find($scheduleData['customer']);
+            $trial = $this->_createTrialSchedule($scheduleData, $userId, $customer);
+            return response()->json($trial, 201);
+        }
+
+
         // 1. try to find avaiable orders
         $order = Order::where([
             'customer_id' => $scheduleData['customer'],
             'gym_id' => $scheduleData['gym'],
         ])->whereRaw('booked_amount<course_amount')
-        ->orderBy('expiry', 'ASC')
-        ->first();
+            ->orderBy('expiry', 'ASC')
+            ->first();
         //return 404 if no available order
         if (empty($order)) {
             return response()->json(['message' => 'no available order'], 404);
@@ -127,8 +185,8 @@ class ScheduleController extends Controller
         $schedule->end = $scheduleData['end'];
 
         // try to get detail from redis
-        $detail = Redis::get('tmp_schedule_plan_'.$scheduleData['customer']);
-        if(!$detail) {
+        $detail = Redis::get('tmp_schedule_plan_' . $scheduleData['customer']);
+        if (!$detail) {
             $detail = '[]';
         }
         $schedule->detail = $detail;
@@ -148,6 +206,9 @@ class ScheduleController extends Controller
         $order->save();
 
         $schedule->getBodyMeasurementTask();
+
+
+
         $schedule['balance'] = $schedule->getBalance();
         return response()->json($schedule, 201);
     }
@@ -198,7 +259,7 @@ class ScheduleController extends Controller
             $schedule->detail = $request->input('detail');
             // save action default value if it's the latest schedule
             $latest = Schedule::where(['customer_id' => $schedule->customer_id])->orderBy('date', 'DESC')->first();
-            if($latest->id === $id) {
+            if ($latest->id === $id) {
                 $schedule->saveActionDefaultValue();
             }
         }
@@ -224,17 +285,17 @@ class ScheduleController extends Controller
         }
 
         // keep the plan into cache
-        Redis::set('tmp_schedule_plan_'.$schedule->customer_id, $schedule->detail);
-
-
+        Redis::set('tmp_schedule_plan_' . $schedule->customer_id, $schedule->detail);
 
         $success = $schedule->delete();
         if ($success) {
-            // update order booked
+            // update order booked when it's non-trial schedule
             // TODO need to use event pattern
-            $order = Order::find($schedule['order_id']);
-            $order->booked_amount--;
-            $order->save();
+            if ($schedule['order_id']) {
+                $order = Order::find($schedule['order_id']);
+                $order->booked_amount--;
+                $order->save();
+            }
 
             return response()->json($schedule, 200);
         }
@@ -254,7 +315,7 @@ class ScheduleController extends Controller
         $schedule->status = 2;
         $success = $schedule->save();
 
-        Redis::del('tmp_schedule_plan_'.$schedule->customer_id);
+        Redis::del('tmp_schedule_plan_' . $schedule->customer_id);
 
         // check where have bonus setting
         $setting = $schedule->gym->setting;
@@ -265,16 +326,18 @@ class ScheduleController extends Controller
         }
 
         if ($success) {
+            $schedule['balance'] = $schedule->getBalance();
             return response()->json($schedule, 200);
         }
         return response()->json(array('message' => 'fail'), 500);
     }
 
-    public function history(Request $request){
+    public function history(Request $request)
+    {
         if (!$request->has('customer')) {
             return response()->json(array('message' => 'missing parameter'), 500);
         }
-        $customer = (int)$request->input('customer');
+        $customer = (int) $request->input('customer');
         return Schedule::where('customer_id', $customer)->orderBy('date', 'DESC')->get();
     }
 }

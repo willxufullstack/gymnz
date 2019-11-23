@@ -6,6 +6,7 @@ use App\Gym;
 use App\Order;
 use App\Coach;
 use App\Schedule;
+use App\User;
 use Auth;
 
 use Illuminate\Http\Request;
@@ -128,10 +129,20 @@ class GymController extends Controller
             ->pluck('customer')
             ->unique('id')
             ->toArray();
-        if (is_array($customers)) {
-            return response()->json(array_values($customers), 200);
+        $gym = Gym::find($id);
+        $trialIds = $gym->getTrialCustomers();
+        $trials = [];
+        if(!empty($trialIds)){
+            $trials = User::whereIn('id', $gym->getTrialCustomers())->get();
         }
-        return response()->json(array('message' => 'fail'), 500);
+        $ret = [];
+        if (is_array($customers)) {
+            $ret = array_values($customers);
+        }
+        foreach($trials as $c) {
+            $ret[] = $c->toArray();
+        }
+        return response()->json($ret, 200);
     }
 
     public function getAvailableTime(Request $request, $id)
