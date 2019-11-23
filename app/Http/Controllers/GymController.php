@@ -65,7 +65,7 @@ class GymController extends Controller
      */
     public function show($id)
     {
-        //
+        return Gym::find($id);
     }
 
     /**

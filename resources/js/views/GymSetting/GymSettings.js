@@ -51,6 +51,7 @@ class GymSettings extends React.Component {
             },
             bonus: props.setting && props.setting.bonus ? props.setting.bonus : 0,
             bodyMeasureDays: props.setting && props.setting.bodyMeasureDays ? props.setting.bodyMeasureDays : 0,
+            disableAppCompleteSchedule: props.setting ? props.setting.disableAppCompleteSchedule : false,
             workingHours: {
                 max:
                     props.setting &&
@@ -83,6 +84,15 @@ class GymSettings extends React.Component {
     saveBonus = () => {
         const setting = { ...this.props.selectedGym.setting,
             bonus: this.state.bonus
+        }
+        this.props.actions.updateGym(this.state.selectedGymId, {
+            setting
+        })
+    }
+
+    saveDisableAppCompleteSchedule = () => {
+        const setting = { ...this.props.selectedGym.setting,
+            disableAppCompleteSchedule: this.state.disableAppCompleteSchedule
         }
         this.props.actions.updateGym(this.state.selectedGymId, {
             setting
@@ -244,6 +254,36 @@ class GymSettings extends React.Component {
                             value={this.state.bonus}
                         />
                     )}
+                </GridItem>
+                <GridItem
+                    xs={12}
+                    sm={12}
+                    md={6}
+                    classes={{ grid: 'setting-option-block' }}
+                >
+                    <div className={this.props.classes.bonusSettingRow}>
+                        <Typography variant='subtitle1' paragraph className={this.props.classes.bounsLabel}>
+                            <Label fontSize='small' />
+                            禁用APP课程完成
+                        </Typography>
+                        <Switch
+                            onChange={(disableAppCompleteSchedule)=>{
+                                this.setState({disableAppCompleteSchedule}, this.saveDisableAppCompleteSchedule)
+                            }}
+                            className={this.props.classes.bonusSwitch}
+                            checked={!!this.state.disableAppCompleteSchedule}
+                            onColor='#ab47bc'
+                            onHandleColor='#ab47bc'
+                            handleDiameter={30}
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            boxShadow='0px 1px 5px rgba(0, 0, 0, 0.6)'
+                            activeBoxShadow='0px 0px 1px 10px rgba(0, 0, 0, 0.2)'
+                            height={20}
+                            width={48}
+                            className='react-switch'
+                        />
+                    </div>
                 </GridItem>
                 <GridItem
                     xs={12}
