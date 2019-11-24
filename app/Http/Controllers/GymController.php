@@ -125,6 +125,7 @@ class GymController extends Controller
         // TODO permission check
         $customers = Order::with('customer')
             ->where('gym_id', '=', $id)
+            ->orderBy('updated_at', 'DESC')
             ->get()
             ->pluck('customer')
             ->unique('id')
