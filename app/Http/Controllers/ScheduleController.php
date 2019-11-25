@@ -34,7 +34,7 @@ class ScheduleController extends Controller
             $query->select(DB::raw('count(id) as course_amount, ' . $group));
         }
 
-        $query->where('gym_id', $id);
+        $query->where('gym_id', $id)->where('status', 2);
         if ($request->input('start') && $request->input('end')) {
             $query->where('date', '>=', $request->input('start'));
             $query->where('date', '<=', $request->input('end'));
