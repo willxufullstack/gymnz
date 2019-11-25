@@ -192,12 +192,13 @@ class GymController extends Controller
         }
         // schedules
         $schedules = Schedule::where('gym_id', $id)
+            ->where('status', 2)
             ->where('date', '>=', $request->input('start'))
             ->where('date', '<=', $request->input('end'));
 
         $scheduleCount = $schedules->count();
 
-        $activeCustomerCount = $schedules->groupBy('customer_id')->count();
+        $activeCustomerCount = count($schedules->groupBy('customer_id')->get('customer_id'));
 
         $orders = Order::where('gym_id', $id)
             ->where('created_at', '>=', $request->input('start'))
