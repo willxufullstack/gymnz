@@ -201,6 +201,7 @@ class GymController extends Controller
         $activeCustomerCount = count($schedules->groupBy('customer_id')->get('customer_id'));
 
         $orders = Order::where('gym_id', $id)
+            ->where('price', '>', 0)
             ->where('created_at', '>=', $request->input('start'))
             ->where('created_at', '<=', $request->input('end'));
         // order count
