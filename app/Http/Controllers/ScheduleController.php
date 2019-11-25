@@ -58,8 +58,12 @@ class ScheduleController extends Controller
 
         $ret = $query->get();
 
-        foreach ($ret as &$row) {
-            $row->monthCount = $row->getMonthCount();
+        // update a month count when quering schedule list
+        // should skip the step when we do some group count operation
+        if(!empty($group)){
+            foreach ($ret as &$row) {
+                $row->monthCount = $row->getMonthCount();
+            }
         }
 
         if ($request->input('price')) {
