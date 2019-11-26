@@ -26,6 +26,8 @@ class MonthlyReport extends React.Component {
         this.refreshFunMap = [
             () => {
                 let params = utils.getMonthStartEnd(this.state.date)
+                // only include the completed class
+                params.status = 2
                 this.props.actions.loadGymSummary(
                     this.props.selectedGym.id,
                     params
@@ -36,6 +38,7 @@ class MonthlyReport extends React.Component {
                 //refresh coach
                 let params = utils.getMonthStartEnd(this.state.date)
                 params.count = 'coach_id'
+                params.status = 2
                 this.props.actions.loadGymScheduleCount(
                     this.props.selectedGym.id,
                     params
@@ -45,6 +48,7 @@ class MonthlyReport extends React.Component {
                 //refresh customer
                 let params = utils.getMonthStartEnd(this.state.date)
                 params.count = 'customer_id'
+                params.status = 2
                 this.props.actions.loadGymScheduleCount(
                     this.props.selectedGym.id,
                     params
