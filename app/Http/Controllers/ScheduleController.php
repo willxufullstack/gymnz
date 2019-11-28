@@ -192,6 +192,8 @@ class ScheduleController extends Controller
         $detail = Redis::get('tmp_schedule_plan_' . $scheduleData['customer']);
         if (!$detail) {
             $detail = '[]';
+        } else {
+            Redis::del('tmp_schedule_plan_' . $scheduleData['customer']);
         }
         $schedule->detail = $detail;
 
@@ -318,8 +320,6 @@ class ScheduleController extends Controller
 
         $schedule->status = 2;
         $success = $schedule->save();
-
-        Redis::del('tmp_schedule_plan_' . $schedule->customer_id);
 
         // check where have bonus setting
         $setting = $schedule->gym->setting;
