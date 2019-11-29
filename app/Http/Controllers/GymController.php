@@ -112,7 +112,7 @@ class GymController extends Controller
 
     public function getShareCover(){
         return [
-            'plan' => 'http://static.o2-fit.com/plan_share.png',
+            'plan' => 'http://static.o2-fit.com/image/plan_share_500x400.png',
             // 'register' => 'http://static.o2-fit.com/image/register_share.jpg',
             'register' => 'http://static.o2-fit.com/image/register2.jpg',
             'confirm' => 'http://static.o2-fit.com/confirm_share.png'
