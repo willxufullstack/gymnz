@@ -240,7 +240,7 @@ class BodyDataController extends Controller
         }
 
 
-        array_reverse($date2value);
+        $date2value = array_reverse($date2value);
         $values = [$date2value];
 
         $graph = $this->getGrap($min, $max);
