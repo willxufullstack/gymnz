@@ -156,6 +156,37 @@ class OrderController extends Controller
         //
     }
 
+    public function split(Request $request, $gymId, $orderId) {
+        $by = Auth::User()->id;
+        $oriOrder = Order::find($orderId);
+        $data = $request->only('customer_phone', 'course_amount');
+        $customer = User::where('email', $data['customer_phone'])->first();
+        if(empty($customer)){
+            return response()->json(array('message' => 'cannot find the customer'), 404);
+        }
+
+        $childOrderPrice = $oriOrder->price / $oriOrder->course_amount *  $data['course_amount'];
+        // 1. create a new order
+        $childOrder = new Order();
+        $childOrder->course_amount = $data['course_amount'];
+        $childOrder->price = $childOrderPrice;
+        $childOrder->gym_id = $oriOrder->gym_id;
+        $childOrder->created_by = $by;
+        $childOrder->customer_id = $customer->id;
+        $childOrder->coach_id = $oriOrder->coach_id;
+        $childOrder->created_at = $oriOrder->created_at;
+        $childOrder->duration = $oriOrder->duration;
+        $childOrder->expiry = $oriOrder->expiry;
+        $childOrder->save();
+
+        // 2. modify current order price amount
+        $oriOrder->price -= $childOrderPrice;
+        $oriOrder->course_amount -= $data['course_amount'];
+        $oriOrder->save();
+
+        return $childOrder;
+    }
+
     public function refund(Request $request, $gymId, $orderId)
     {
         $order = Order::where([

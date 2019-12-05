@@ -29,7 +29,7 @@ class OrderAccountingAction
         $order = $event->order;
         // generate detail
         $cate = '订单收入';
-     
+
         if($event->action == 'refund') {
             $cate = '退款支出';
         }

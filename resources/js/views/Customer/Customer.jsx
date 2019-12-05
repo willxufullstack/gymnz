@@ -38,7 +38,8 @@ class Customer extends React.Component {
         this.state = {
             cancelSchedule: null,
             refundDialogue: false,
-            modifyDialogue: false
+            modifyDialogue: false,
+            splitOrderDialogue: false
         }
     }
 
@@ -68,6 +69,9 @@ class Customer extends React.Component {
     tapModify = order => {
         this.setState({ modifyDialogue: order })
     }
+    tapSplit = order => {
+        this.setState({splitOrderDialogue: order})
+    }
 
     refundOrder = (data, order) => {
         this.props.actions.refundOrder(order, data).then(() => {
@@ -84,6 +88,41 @@ class Customer extends React.Component {
                 gym: this.props.selectedGym.id
             })
         })
+    }
+    splitOrder = (data, order) => {
+        this.props.actions.splitOrder(order, data).then(() => {
+            this.setState({ splitOrderDialogue: false })
+            this.props.actions.loadCustomerOrders(this.customerId, {
+                gym: this.props.selectedGym.id
+            })
+        })
+    }
+
+    getSplitDialogue = order => {
+        let params = {
+            dialogue: true,
+            title: '拆分订单',
+            onSave: data => {
+                this.splitOrder(data, order)
+            },
+            onCancel: () => {
+                this.setState({ splitOrderDialogue : false })
+            },
+            inputFields: [
+                {
+                    name: 'course_amount',
+                    label: '转出数量',
+                    type: 'number'
+                },
+                {
+                    name: 'customer_phone',
+                    label: '转入客户（电话号码）',
+                    type: 'phone'
+                }
+            ]
+        }
+
+        return <CreateNewDialogue {...params} />
     }
 
     getModifyDialogue = order => {
@@ -173,6 +212,13 @@ class Customer extends React.Component {
                     >
                         修改
                     </Button>
+                    <Button
+                        onClick={() => this.tapSplit(r)}
+                        size='sm'
+                        color='transparentGray'
+                    >
+                        拆分
+                    </Button>
                 </React.Fragment>
             )
             return [
@@ -181,7 +227,7 @@ class Customer extends React.Component {
                 r.coach.user.name,
                 r.created_at,
                 utils.getOrderStatus(r),
-                r.status === 1 ? btn : '--'
+                r.status === 1 && r.course_amount > r.booked_amount ? btn : '--'
             ]
         })
 
@@ -306,6 +352,8 @@ class Customer extends React.Component {
                     this.getRefundDialogue(this.state.refundDialogue)}
                 {this.state.modifyDialogue &&
                     this.getModifyDialogue(this.state.modifyDialogue)}
+                {this.state.splitOrderDialogue &&
+                    this.getSplitDialogue(this.state.splitOrderDialogue)}
                 <Paper square>
                     <Tabs
                         title={

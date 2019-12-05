@@ -291,6 +291,20 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             })
 
+        case ActionTypes.SPLIT_ORDER:
+            return Object.assign({}, state, { loading: true })
+        case ActionTypes.SPLIT_ORDER_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                successMsg: '拆分订单成功'
+            })
+        case ActionTypes.SPLIT_ORDER_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '拆分订单失败，请重试',
+                loading: false
+            })
+
+
         case ActionTypes.MODIFY_ORDER:
             return Object.assign({}, state, { loading: true })
         case ActionTypes.MODIFY_ORDER_SUCCESS:
