@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +32,6 @@ Route::group([
     Route::post('refresh', 'AuthController@refresh');
     Route::post('reset', 'AuthController@reset');
     Route::get('me', 'AuthController@me');
-
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -60,6 +60,7 @@ Route::group([
     Route::get('gym/{gym}/customer', 'GymController@getCustomerList');
     Route::get('gym/{gym}/available', 'GymController@getAvailableTime');
     Route::get('gym/{gym}/summary', 'GymController@getSummary');
+    Route::get('gym/{gym}/workload', 'ScheduleController@workload');
 
     Route::get('user/{user}/coursebalance', 'OrderController@getCustomerCourseBalance');
     Route::get('user/{user}/order', 'OrderController@getCustomerOrders');

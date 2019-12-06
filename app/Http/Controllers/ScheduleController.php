@@ -12,6 +12,9 @@ use App\Events\BonusEvent;
 use App\Order;
 use App\Schedule;
 use Auth;
+use DateInterval;
+use DatePeriod;
+use DateTime;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 
@@ -60,7 +63,7 @@ class ScheduleController extends Controller
 
         // update a month count when quering schedule list
         // should skip the step when we do some group count operation
-        if(empty($group)){
+        if (empty($group)) {
             foreach ($ret as &$row) {
                 $row->monthCount = $row->getMonthCount();
             }
@@ -89,6 +92,51 @@ class ScheduleController extends Controller
             return response()->json($ret, 200);
         }
         return response()->json(['message' => 'failed'], 500);
+    }
+
+    private function getWorkloadExpr()
+    {
+        $str = '';
+        for ($i = 0; $i <= 24 * 60; $i+=15) {
+            $str .= 0;
+        }
+        return $str;
+    }
+    public function workload(Request $request, $id)
+    {
+        // 1. get schedules
+        $query = Schedule::where('gym_id', $id);
+        if ($request->input('start') && $request->input('end')) {
+            $query->where('date', '>=', $request->input('start'));
+            $query->where('date', '<=', $request->input('end'));
+        }
+        if ($request->input('date')) {
+            $query->where('date', $request->input('date'));
+        }
+        $schedules = $query->get();
+
+        // 2. get workload expr
+        $begin = $end = '';
+        if ($request->input('date')) {
+            $begin = new DateTime($request->input('date'));
+            $end = new DateTime($request->input('date'));
+        }
+        if ($request->input('start') && $request->input('end')) {
+            $begin = new DateTime($request->input('start'));
+            $end = new DateTime($request->input('end'));
+        }
+        $workloadStr = [];
+        for ($i = $begin; $i <= $end; $i->modify('+1 day')) {
+            $workloadStr[$i->format("Y-m-d")] = $this->getWorkloadExpr();
+        }
+
+        // 3. mark workload
+        foreach ($schedules as $s) {
+            for ($i = $s->start; $i <= $s->end; $i++) {
+                $workloadStr[$s->date][$i] = (int)$workloadStr[$s->date][$i] + 1;
+            }
+        }
+        return $workloadStr;
     }
 
     /**
@@ -162,7 +210,7 @@ class ScheduleController extends Controller
             'customer_id' => $scheduleData['customer'],
             'gym_id' => $scheduleData['gym'],
         ])->count();
-        if($allOrders === 0) {
+        if ($allOrders === 0) {
             $customer = User::find($scheduleData['customer']);
             $trial = $this->_createTrialSchedule($scheduleData, $userId, $customer);
             return response()->json($trial, 201);
