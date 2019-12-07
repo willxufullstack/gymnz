@@ -62,6 +62,9 @@ Route::group([
     Route::get('gym/{gym}/summary', 'GymController@getSummary');
     Route::get('gym/{gym}/workload', 'ScheduleController@workload');
 
+    Route::resource('user/{user}/task', 'TaskController');
+    Route::patch('task/{task}/complete', 'TaskController@complete');
+
     Route::get('user/{user}/coursebalance', 'OrderController@getCustomerCourseBalance');
     Route::get('user/{user}/order', 'OrderController@getCustomerOrders');
     Route::resource('user.bodydata', 'BodyDataController');

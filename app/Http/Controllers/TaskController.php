@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -12,9 +13,13 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, $userId)
     {
-        //
+        $query = Task::where('user_id', $userId);
+        if($request->input('gym')){
+            $query->where('gym_id', $request->input('gym'));
+        }
+        return $query->where('status', 1)->get();
     }
 
     /**
@@ -81,5 +86,13 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         //
+    }
+
+    public function complete($taskId)
+    {
+        $task = Task::find($taskId);
+        $task->status = 2;
+        $task->save();
+        return $task;
     }
 }

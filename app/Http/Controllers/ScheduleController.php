@@ -77,11 +77,6 @@ class ScheduleController extends Controller
                 }
             }
         }
-        if ($request->input('task')) {
-            foreach ($ret as &$row) {
-                $row->getBodyMeasurementTask();
-            }
-        }
         if ($request->input('balance')) {
             foreach ($ret as &$row) {
                 $row['balance'] = $row->getBalance();
@@ -259,10 +254,6 @@ class ScheduleController extends Controller
         $order->booked_amount++;
         $order->save();
 
-        $schedule->getBodyMeasurementTask();
-
-
-
         $schedule['balance'] = $schedule->getBalance();
         return response()->json($schedule, 201);
     }
@@ -277,8 +268,7 @@ class ScheduleController extends Controller
     {
         return Schedule::with(['coach.user', 'customer'])
             ->where(['id' => $id, 'gym_id' => $gymId])
-            ->first()
-            ->getBodyMeasurementTask();
+            ->first();
     }
 
     /**
