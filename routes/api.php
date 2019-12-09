@@ -47,6 +47,11 @@ Route::group([], function () {
 
 });
 
+// route for helper
+Route::group([], function () {
+    Route::resource('/helper/demand', 'HelperDemandController');
+});
+
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
