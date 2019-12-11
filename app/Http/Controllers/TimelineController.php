@@ -39,7 +39,9 @@ class TimelineController extends Controller
         $ret = [];
         foreach ($schedules as $s) {
             $ret[] = $s->toTrainCard();
-            if ($s->conclusion) {
+
+            // only display completed schedule's conclusion
+            if ($s->status === 2 ) {
                 $ret[] = $s->toConclusionCard();
             }
         }
