@@ -39,9 +39,7 @@ class TimelineController extends Controller
         $ret = [];
         foreach ($schedules as $s) {
             $ret[] = $s->toTrainCard();
-
-            // only display completed schedule's conclusion
-            if ($s->status === 2 ) {
+            if ($s->status === 2) {
                 $ret[] = $s->toConclusionCard();
             }
         }
@@ -144,21 +142,32 @@ class TimelineController extends Controller
     public function message()
     {
         $userId = Auth::user()->id;
-        // get latest schedule
-        $schedule = Schedule::with('gym')->where('customer_id', $userId)->orderBy('date', 'DESC')->first();
 
-        if (empty($schedule)) {
-            return response()->json([message => 'cannot find the schedule'], 404);
-        }
-        $expectedDays = $schedule->gym->setting['bodyMeasureDays'];
-        if(empty($expectedDays)) {
-            return response()->json(['message' => '']);
-        }
-        $days = BodyData::getDaysFromLastRecord($userId);
-        $nextMeasureDays = $expectedDays - $days;
-        if($days === -1 || $nextMeasureDays < 0 ) {
-            $nextMeasureDays = 0;
-        }
-        return response()->json(['message' => '距离下次测量还有' . $nextMeasureDays . '天']);
+        $scheduleCount = Schedule::with('gym')
+            ->where('customer_id', $userId)
+            ->where('date', '>=', date('Y-m-01'))
+            ->where('status', 2)
+            ->orderBy('date', 'DESC')
+            ->count();
+
+        return response()->json(['message' => '本月已完成' . $scheduleCount . '节课']);
+
+        // OBSOLETE
+        // get latest schedule
+        // $schedule = Schedule::with('gym')->where('customer_id', $userId)->orderBy('date', 'DESC')->first();
+
+        // if (empty($schedule)) {
+        //     return response()->json(['message' => 'cannot find the schedule'], 404);
+        // }
+        // $expectedDays = $schedule->gym->setting['bodyMeasureDays'];
+        // if(empty($expectedDays)) {
+        //     return response()->json(['message' => '']);
+        // }
+        // $days = BodyData::getDaysFromLastRecord($userId);
+        // $nextMeasureDays = $expectedDays - $days;
+        // if($days === -1 || $nextMeasureDays < 0 ) {
+        //     $nextMeasureDays = 0;
+        // }
+        // return response()->json(['message' => '距离下次测量还有' . $nextMeasureDays . '天']);
     }
 }
