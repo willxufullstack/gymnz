@@ -1,26 +1,28 @@
 import React from 'react';
-import Dashboard from "@material-ui/icons/Dashboard";
+import DashboardIcon from "@material-ui/icons/Dashboard";
 import LibraryBooks from "@material-ui/icons/LibraryBooks";
 import CustomerIcon from '@material-ui/icons/SupervisorAccount';
 import SettingsIcon from '@material-ui/icons/Settings';
 import MoneyIcon from '@material-ui/icons/Money';
-import LinkedDashboard from "-views/Dashboard/Dashboard.jsx";
-import Customers from "-views/Customer/Customers";
-import Customer from "-views/Customer/Customer"
-import GymSettings from "-views/GymSetting/GymSettings";
-import LinkedMonthlyReport from '-views/Report/MonthlyReport';
-import AccountingPage from '-views/Accounting/AccountingPage';
 import i18N from './lang'
 
 const L = i18N('Routes')
+
+const LazyDashboard = React.lazy(()=> import("-views/Dashboard/Dashboard.jsx"))
+const LazyCustomers = React.lazy(()=> import("-views/Customer/Customers"))
+const LazyMonthlyReport = React.lazy(()=> import("-views/Report/MonthlyReport"))
+const LazyAccountingPage = React.lazy(()=> import("-views/Accounting/AccountingPage"))
+const LazyCustomer = React.lazy(()=> import("-views/Customer/Customer"))
+const LazyGymSettings = React.lazy(()=> import("-views/GymSetting/GymSettings"))
+
 
 const dashboardRoutes = [
     {
         path: "/dashboard",
         name: L.dashboard,
         rtlName: "لوحة القيادة",
-        icon: Dashboard,
-        component: () => <LinkedDashboard/>,
+        icon: DashboardIcon,
+        component: () => <LazyDashboard />,
         layout: "/admin"
     },
     {
@@ -28,7 +30,7 @@ const dashboardRoutes = [
         name: L.customer,
         rtlName: "",
         icon: CustomerIcon,
-        component: props => <Customers {...props}/>,
+        component: props => <LazyCustomers {...props}/>,
         layout: "/admin"
     },
     {
@@ -36,7 +38,7 @@ const dashboardRoutes = [
         name: L.report,
         rtlName: "",
         icon: LibraryBooks,
-        component: props => <LinkedMonthlyReport {...props}/>,
+        component: props => <LazyMonthlyReport {...props}/>,
         layout: "/admin"
     },
     {
@@ -44,7 +46,7 @@ const dashboardRoutes = [
         name: L.finance,
         rtlName: "财务",
         icon: MoneyIcon,
-        component: ()=><AccountingPage/>,
+        component: ()=><LazyAccountingPage/>,
         layout: "/admin"
     },
     {
@@ -54,7 +56,7 @@ const dashboardRoutes = [
         hideMenu: true,
         icon: '',
         // props is to pass the url
-        component: props => <Customer {...props}/>,
+        component: props => <LazyCustomer {...props}/>,
         layout: "/admin"
     },
     {
@@ -62,7 +64,7 @@ const dashboardRoutes = [
         name: L.manage,
         rtlName: "健身房管理页",
         icon: SettingsIcon,
-        component: ()=><GymSettings/>,
+        component: ()=><LazyGymSettings/>,
         layout: "/admin"
     },
 ];

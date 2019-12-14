@@ -21,7 +21,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/app-release.css') }}" rel="stylesheet">
     <style>
         @-webkit-keyframes linear-bg {
             0% {

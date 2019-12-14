@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React from "react";
+import React, { Suspense } from "react";
 import PropTypes from "prop-types";
 import { Switch, Route, Redirect } from "react-router-dom";
 // creates a beautiful scrollbar
@@ -18,6 +18,11 @@ import dashboardStyle from "-assets/jss/material-dashboard-react/layouts/dashboa
 import Snackbar from "-components/Snackbar/Snackbar";
 import AddAlert from "@material-ui/icons/AddAlert";
 import LoadingLayer from "-components/LoadingLayer/LoadingLayer"
+
+const LoadingMessage = () => (
+    "I'm loading..."
+)
+
 const switchRoutes = (
     <Switch>
         {routes.map((prop, key) => {
@@ -133,7 +138,11 @@ class Admin extends React.Component {
                                 this.props.actions.closeSuccessMsg()
                             }}
                         />
-                        <div className={classes.container}>{switchRoutes}</div>
+                        <div className={classes.container}>
+                            <Suspense fallback={<LoadingMessage />}>
+                            {switchRoutes}
+                            </Suspense>
+                        </div>
                     </div>
                 </div>
             </div>

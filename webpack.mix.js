@@ -15,10 +15,13 @@ const config = require('./webpack.config');
 
 mix.webpackConfig(config);
 
-mix.webpackConfig({
-  devtool: 'inline-source-map'
-});
+if ( ! mix.inProduction()) {
+  mix.webpackConfig({
+      devtool: 'inline-source-map'
+  })
+}
 
 mix.react('resources/js/app.js', 'public/js')
+  // TODO https://github.com/JeffreyWay/laravel-mix/issues/1914
   .extract(['react', 'redux', '@material-ui/core'])
   .sass('resources/sass/app.scss', 'public/css');
