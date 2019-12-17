@@ -46,6 +46,13 @@ export function getMonthStartEnd(date, format = 'YYYY-MM-DD') {
         end: d.endOf('month').format(format),
     }
 }
+export function getYearStartEnd(date, format = 'YYYY-MM-DD') {
+    const d = dayjs(date)
+    return {
+        start: d.startOf('year').format(format),
+        end: d.endOf('year').format(format),
+    }
+}
 
 export function b64toBlob(b64Data, contentType, sliceSize) {
     contentType = contentType || '';

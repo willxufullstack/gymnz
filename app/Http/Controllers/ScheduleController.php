@@ -37,6 +37,8 @@ class ScheduleController extends Controller
             $query->select(DB::raw('count(id) as course_amount, ' . $group));
         }
 
+        /* select count(id) as c, coach_name, month(date) from schedule group by coach_name,  */
+        // ?gym_id=2&count=coach_name,month(date)&start=2019-01-01&end=2019-12-31
         $query->where('gym_id', $id);
         if ($request->input('start') && $request->input('end')) {
             $query->where('date', '>=', $request->input('start'));
@@ -56,7 +58,7 @@ class ScheduleController extends Controller
         }
 
         if (!empty($group)) {
-            $query->groupBy($group)->orderBy('course_amount', 'DESC');
+            $query->groupBy(explode(',', $group))->orderBy('course_amount', 'DESC');
         }
 
         $ret = $query->get();

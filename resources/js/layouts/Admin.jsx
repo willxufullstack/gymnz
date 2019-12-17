@@ -16,7 +16,6 @@ import * as Actions from "../actions";
 import connect from "react-redux/es/connect/connect";
 import dashboardStyle from "-assets/jss/material-dashboard-react/layouts/dashboardStyle.jsx"
 import Snackbar from "-components/Snackbar/Snackbar";
-import AddAlert from "@material-ui/icons/AddAlert";
 import LoadingLayer from "-components/LoadingLayer/LoadingLayer"
 
 const LoadingMessage = () => (

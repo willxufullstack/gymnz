@@ -16,6 +16,7 @@ const initState = {
         orders: [],
         scheduleCountByCoach: [],
         scheduleCountByCustomer: [],
+        scheduleCountByMonthPerCoachOfYear: {},
         summary: {
             orderCount: 0,
             scheduleCount: 0,
@@ -619,6 +620,19 @@ const gym = (state = initState, action = NonAction) => {
                 case 'customer_id':
                     report.scheduleCountByCustomer = action.payload.data
                     break
+                case 'coach_id,month(date)':
+                    const {data} = action.payload
+                    let grouped = []
+                    data.forEach(row => {
+                        const name = row.coach.user.name
+                        const month = row['month(date)']
+                        if(!grouped[row.coach.user.name]) {
+                            grouped[name] = []
+                        }
+                        grouped[name][month] = row.course_amount
+                    })
+                    report.scheduleCountByMonthPerCoachOfYear = grouped
+                    break;
             }
             return Object.assign({}, state, { loading: false, report })
         }
