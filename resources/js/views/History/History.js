@@ -53,7 +53,17 @@ class History extends React.Component {
             const monthName = month + '月'
             return [monthName, ...byCoaches, sum]
         })
-        console.log(tableData)
+        // add the sum row
+        const lastRow = ['总计']
+        let total = 0
+        coaches.forEach( coach => {
+            const data = this.props.gym.report.scheduleCountByMonthPerCoachOfYear
+            const coachSum = data[coach].reduce((a, b) => a + b, 0)
+            total += coachSum
+            lastRow.push(coachSum)
+        })
+        lastRow.push(total)
+        tableData.push(lastRow)
 
         return (
             <Table
