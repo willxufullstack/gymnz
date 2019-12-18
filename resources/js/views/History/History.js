@@ -7,6 +7,7 @@ import Table from '-components/Table/Table.jsx'
 import * as utils from '-utils'
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import DayjsUtils from '@date-io/dayjs'
+import dayjs from 'dayjs'
 
 class History extends React.Component {
     constructor(props) {
@@ -19,14 +20,23 @@ class History extends React.Component {
 
     tapTab = tabIndex => {
         this.setState({ selectedTabIndex: tabIndex }, () => {
-            // this.refresh()
-            this.refershMonthSchedule()
+            this.refresh()
+            // this.refershMonthSchedule()
         })
+    }
+
+    refresh = () => {
+        const refreshFunc = [
+            this.refershMonthSchedule,
+            this.refreshMonthSale
+        ]
+        refreshFunc[this.state.selectedTabIndex]()
     }
 
     handleDateChange = date => {
         this.setState({ date }, () => {
-            this.refershMonthSchedule()
+            // this.refershMonthSchedule()
+            this.refresh()
         })
     }
 
@@ -41,6 +51,75 @@ class History extends React.Component {
             this.props.selectedGym.id,
             params
         )
+    }
+
+    refreshMonthSale = () => {
+        const dateRange = utils.getYearStartEnd(this.state.date)
+        const params = {
+            start: dateRange.start,
+            end: dateRange.end
+        }
+        this.props.actions.loadGymOrders(
+            this.props.selectedGym.id,
+            params
+        )
+    }
+
+    groupOrderByMonth = (orders) => {
+
+        const baseRow = {
+
+            orderCount: 0,
+            courseCount: 0,
+            totalPrice: 0,
+            bonusOrderCount: 0
+        }
+        const ret = utils.range(1,13).map(month => {
+            return {
+                month: month + '月',
+                ...baseRow
+            }
+        })
+
+        orders.forEach(order => {
+            const month = parseInt(dayjs(order.created_at).format('MM'))
+            if(!order.course_amount){
+                return
+            }
+            if(order.price === 0) {
+                ret[month-1].bonusOrderCount ++
+            } else {
+                ret[month-1].courseCount += order.course_amount
+                ret[month-1].orderCount ++
+            }
+            ret[month-1].totalPrice += order.price
+        })
+
+        const sumRow = {
+            month: '总计',
+            ...baseRow
+        }
+        ret.forEach( row =>  {
+            sumRow.orderCount += row.orderCount
+            sumRow.courseCount += row.courseCount
+            sumRow.totalPrice += row.totalPrice
+            sumRow.bonusOrderCount += row.bonusOrderCount
+        })
+
+        return [...ret.map(item => Object.values(item)), Object.values(sumRow)]
+    }
+
+    getMonthSaleTab = () => {
+       const headers = ['月份', '订单数量', '课程数量', '订单总价', '赠送课程数量']
+       const tableData = this.groupOrderByMonth(this.props.gym.report.orders)
+
+       return (
+        <Table
+            classes={{ tableResponsive: 'no-margin-top' }}
+            tableHeaderColor='primary'
+            tableHead={headers}
+            tableData={tableData}
+        />)
     }
 
     getMonthScheduleTab = () => {
@@ -102,6 +181,10 @@ class History extends React.Component {
                     {
                         tabName: '月度耗课',
                         tabContent: this.getMonthScheduleTab()
+                    },
+                    {
+                        tabName: '月度销售',
+                        tabContent: this.getMonthSaleTab()
                     }
                 ]}
             />
