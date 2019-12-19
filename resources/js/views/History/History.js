@@ -7,7 +7,8 @@ import Table from '-components/Table/Table.jsx'
 import * as utils from '-utils'
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import DayjsUtils from '@date-io/dayjs'
-import dayjs from 'dayjs'
+import dayjs, {Dayjs} from 'dayjs'
+import HeatMap from 'react-heatmap-grid'
 
 class History extends React.Component {
     constructor(props) {
@@ -28,9 +29,10 @@ class History extends React.Component {
     refresh = () => {
         const refreshFunc = [
             this.refershMonthSchedule,
-            this.refreshMonthSale
+            this.refreshMonthSale,
+            this.refreshDayHotMap
         ]
-        refreshFunc[this.state.selectedTabIndex]()
+        refreshFunc[this.state.selectedTabIndex] && refreshFunc[this.state.selectedTabIndex]()
     }
 
     handleDateChange = date => {
@@ -38,6 +40,19 @@ class History extends React.Component {
             // this.refershMonthSchedule()
             this.refresh()
         })
+    }
+
+    refreshDayHotMap = () => {
+        const dateRange = utils.getYearStartEnd(this.state.date)
+        const params = {
+            start: dateRange.start,
+            end: dateRange.end,
+            count: 'date'
+        }
+        this.props.actions.loadGymScheduleCount(
+            this.props.selectedGym.id,
+            params
+        )
     }
 
     refershMonthSchedule = () => {
@@ -66,9 +81,7 @@ class History extends React.Component {
     }
 
     groupOrderByMonth = (orders) => {
-
         const baseRow = {
-
             orderCount: 0,
             courseCount: 0,
             totalPrice: 0,
@@ -120,6 +133,46 @@ class History extends React.Component {
             tableHead={headers}
             tableData={tableData}
         />)
+    }
+
+    getDayHotMap = () => {
+        const mappedWithDate = {}
+        this.props.gym.report.scheduleCountByDate.forEach(item => {
+            mappedWithDate[item.date] = item.course_amount
+        })
+
+        const {start, end} = utils.getYearStartEnd(this.state.date)
+        const xLabels = new Array(53).fill('')
+        const yLabels = new Array(7).fill('')
+
+        const data = utils.range(0, 7).map( () => [])
+        let startDay = dayjs(start)
+        let i = 0
+        while(i< 53 * 7){
+           const dayStr = startDay.add(i, 'day').format('YYYY-MM-DD')
+           const courseCount = mappedWithDate[dayStr] ? mappedWithDate[dayStr] : 0
+           data[i%7].push(courseCount)
+           i ++
+        }
+
+        return <HeatMap
+                background={'#8e24aa'}
+                height={20}
+                yLabelWidth={0}
+                xLabels={xLabels}
+                yLabels={yLabels}
+                data={data}
+                cellStyle={(background, value, min, max, data, x, y) => {
+                    const style = { 'max-width': '20px', background: '#ececec', 'border-radius': '2px' }
+                    if(value) {
+                        return { ...style,
+                            background: background,
+                            opacity: value / (max - min)
+                        }
+                    }
+                    return style
+                }}
+            />
     }
 
     getMonthScheduleTab = () => {
@@ -185,6 +238,10 @@ class History extends React.Component {
                     {
                         tabName: '月度销售',
                         tabContent: this.getMonthSaleTab()
+                    },
+                    {
+                        tabName: '热力图',
+                        tabContent: this.getDayHotMap()
                     }
                 ]}
             />

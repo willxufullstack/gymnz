@@ -16,6 +16,7 @@ const initState = {
         orders: [],
         scheduleCountByCoach: [],
         scheduleCountByCustomer: [],
+        scheduleCountByDate: [],
         scheduleCountByMonthPerCoachOfYear: {},
         summary: {
             orderCount: 0,
@@ -619,6 +620,9 @@ const gym = (state = initState, action = NonAction) => {
                     break
                 case 'customer_id':
                     report.scheduleCountByCustomer = action.payload.data
+                    break
+                case 'date':
+                    report.scheduleCountByDate = action.payload.data
                     break
                 case 'coach_id,month(date)':
                     const {data} = action.payload
