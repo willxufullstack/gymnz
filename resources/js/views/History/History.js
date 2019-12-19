@@ -12,6 +12,11 @@ import dayjs, {Dayjs} from 'dayjs'
 import HeatMap from 'react-heatmap-grid'
 
 const styles = {
+    hotMapTitle: {
+        marginTop: 16,
+        fontSize: 20,
+        color: '#333',
+    },
     monthLabelsContainer: {
         width: 900,
         display: 'flex',
@@ -61,7 +66,7 @@ class History extends React.Component {
         const params = {
             start: dateRange.start,
             end: dateRange.end,
-            count: 'date'
+            count: 'coach_id,date'
         }
         this.props.actions.loadGymScheduleCount(
             this.props.selectedGym.id,
@@ -148,13 +153,33 @@ class History extends React.Component {
             tableData={tableData}
         />)
     }
-
     getDayHotMap = () => {
-        const mappedWithDate = {}
-        this.props.gym.report.scheduleCountByDate.forEach(item => {
-            mappedWithDate[item.date] = item.course_amount
+        const sumMappedWithDate = {}
+        const sumMappedWithDatePerCoach = {}
+        this.props.gym.report.scheduleCountByDate.forEach(row => {
+            // handle gym statistic
+            if(!sumMappedWithDate[row.date]) {
+                sumMappedWithDate[row.date] = 0
+            }
+            sumMappedWithDate[row.date] += row.course_amount
+            // handle coach statistic
+            if(!sumMappedWithDatePerCoach[row.coach.user.name]) {
+                sumMappedWithDatePerCoach[row.coach.user.name] = []
+            }
+            if(!sumMappedWithDatePerCoach[row.coach.user.name][row.date]) {
+                sumMappedWithDatePerCoach[row.coach.user.name][row.date] = 0
+            }
+            sumMappedWithDatePerCoach[row.coach.user.name][row.date] += row.course_amount
         })
+        const hotmapPerCoach = Object.keys(sumMappedWithDatePerCoach)
+            .map(coach => this.generateDayHotMap(coach, sumMappedWithDatePerCoach[coach]))
+        return [
+            this.generateDayHotMap('总计', sumMappedWithDate),
+            ...hotmapPerCoach
+        ]
+    }
 
+    generateDayHotMap = (title, mappedWithDate) => {
         const {start, end} = utils.getYearStartEnd(this.state.date)
         const xLabels = new Array(53).fill('')
         const yLabels = new Array(7).fill('')
@@ -170,8 +195,9 @@ class History extends React.Component {
         }
         const monthLabels = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
         return <React.Fragment>
+            <p className={this.props.classes.hotMapTitle}>{title}</p>
             <div className={this.props.classes.monthLabelsContainer}>
-                {monthLabels.map( m => <div className={this.props.classes.monthLabel}>{m}</div> )}
+                {monthLabels.map( m => <div key={m} className={this.props.classes.monthLabel}>{m}</div> )}
             </div>
             <HeatMap
                 background={'#8e24aa'}

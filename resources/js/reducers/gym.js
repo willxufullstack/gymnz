@@ -621,7 +621,7 @@ const gym = (state = initState, action = NonAction) => {
                 case 'customer_id':
                     report.scheduleCountByCustomer = action.payload.data
                     break
-                case 'date':
+                case 'coach_id,date':
                     report.scheduleCountByDate = action.payload.data
                     break
                 case 'coach_id,month(date)':
