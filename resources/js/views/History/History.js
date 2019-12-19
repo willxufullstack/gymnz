@@ -4,12 +4,26 @@ import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import Tabs from '-components/CustomTabs/CustomTabs.jsx'
 import Table from '-components/Table/Table.jsx'
+import { withStyles } from "@material-ui/core";
 import * as utils from '-utils'
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import DayjsUtils from '@date-io/dayjs'
 import dayjs, {Dayjs} from 'dayjs'
 import HeatMap from 'react-heatmap-grid'
 
+const styles = {
+    monthLabelsContainer: {
+        width: 900,
+        display: 'flex',
+        textAlign: 'center',
+        color: '#8e24aa',
+        fontWeight: '400',
+        marginBottom: 6
+    },
+    monthLabel: {
+        flex: 1
+    }
+}
 class History extends React.Component {
     constructor(props) {
         super(props)
@@ -154,16 +168,22 @@ class History extends React.Component {
            data[i%7].push(courseCount)
            i ++
         }
-
-        return <HeatMap
+        const monthLabels = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+        return <React.Fragment>
+            <div className={this.props.classes.monthLabelsContainer}>
+                {monthLabels.map( m => <div className={this.props.classes.monthLabel}>{m}</div> )}
+            </div>
+            <HeatMap
                 background={'#8e24aa'}
-                height={20}
+                height={16}
+                squares
                 yLabelWidth={0}
+                xLabelWidth={24}
                 xLabels={xLabels}
                 yLabels={yLabels}
                 data={data}
                 cellStyle={(background, value, min, max, data, x, y) => {
-                    const style = { 'max-width': '20px', background: '#ececec', 'border-radius': '2px' }
+                    const style = { 'maxWidth': '20px', background: '#ececec', 'borderRadius': '2px' }
                     if(value) {
                         return { ...style,
                             background: background,
@@ -173,6 +193,7 @@ class History extends React.Component {
                     return style
                 }}
             />
+            </React.Fragment>
     }
 
     getMonthScheduleTab = () => {
@@ -240,7 +261,7 @@ class History extends React.Component {
                         tabContent: this.getMonthSaleTab()
                     },
                     {
-                        tabName: '热力图',
+                        tabName: '深度分析',
                         tabContent: this.getDayHotMap()
                     }
                 ]}
@@ -267,4 +288,4 @@ const LinkedHistory = connect(
     mapDispatchToProps
 )(History)
 
-export default LinkedHistory
+export default withStyles(styles)(LinkedHistory)
