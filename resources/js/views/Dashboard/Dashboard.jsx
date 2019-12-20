@@ -436,8 +436,10 @@ class Dashboard extends React.Component {
                             <p className={classes.cardCategory}>课程总价</p>
                             <h3 className={classes.cardTitle}>
                                 ¥
-                                {this.props.gym.schedules.reduce(
-                                    (prev, cur) => prev + cur.price, 0
+                                {Math.floor(
+                                    this.props.gym.schedules.reduce(
+                                        (prev, cur) => prev + cur.price, 0
+                                    )
                                 )}
                             </h3>
                         </CardHeader>
