@@ -4,12 +4,17 @@ import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import Tabs from '-components/CustomTabs/CustomTabs.jsx'
 import Table from '-components/Table/Table.jsx'
-import { withStyles } from "@material-ui/core";
+import { withStyles, Avatar } from "@material-ui/core";
 import * as utils from '-utils'
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import DayjsUtils from '@date-io/dayjs'
 import dayjs from 'dayjs'
+import Card from '@material-ui/core/Card';
 import HeatMap from 'react-heatmap-grid'
+import GridItem from '-components/Grid/GridItem.jsx'
+import GridContainer from '-components/Grid/GridContainer.jsx'
+import Primary from '-components/Typography/Primary.jsx'
+import Typography from '@material-ui/core/Typography'
 import {XYPlot, XAxis, YAxis, MarkSeries}from 'react-vis';
 
 const styles = {
@@ -28,6 +33,10 @@ const styles = {
     },
     monthLabel: {
         flex: 1
+    },
+    customerDetail: {
+        minWidth: 400,
+        padding: 20
     }
 }
 class History extends React.Component {
@@ -35,7 +44,8 @@ class History extends React.Component {
         super(props)
         this.state = {
             date: new Date(),
-            selectedTabIndex: 0
+            selectedTabIndex: 0,
+            displayCustomer: null
         }
     }
 
@@ -250,7 +260,8 @@ class History extends React.Component {
                 const frequency = row.course_amount / liveDays * 100;
                 return  {
                     x: frequency,
-                    y: liveDays
+                    y: liveDays,
+                    extra: row
                 }
         })
 
@@ -260,17 +271,89 @@ class History extends React.Component {
             bottom: 36,
             top: 36
         }
-        return  <XYPlot margin={MARGIN} xDomain={[0, 40]} yDomain={[0,365]} width={536} height={536}>
-                    <XAxis top={268} hideTicks/>
-                    <XAxis title="频率" />
-                    <YAxis left={232}  hideTicks/>
-                    <YAxis title="生命" />
-                    <MarkSeries
-                        data={data}
-                        opacity={1}
-                        opacityType="linear"
-                    />
-                </XYPlot>
+        const onValueClick = (dataPoint) => {
+            this.setState({displayCustomer: dataPoint.extra})
+        }
+
+        return  (<GridContainer>
+                    <GridItem
+                        xs={12}
+                        sm={12}
+                        md={6}
+                        container
+                        alignItems='center'
+                        classes={{ grid: 'gym-summary-row' }}
+                    >
+                        <XYPlot margin={MARGIN} xDomain={[0, 40]} yDomain={[0,365]} width={536} height={536}>
+                            <XAxis top={268} hideTicks/>
+                            <XAxis title="频率" />
+                            <YAxis left={232}  hideTicks/>
+                            <YAxis title="生命" />
+                            <MarkSeries
+                                data={data}
+                                opacity={1}
+                                opacityType="linear"
+                                onValueClick={onValueClick}
+                            />
+                        </XYPlot>
+                    </GridItem>
+                    <GridItem  container
+                        alignItems='center' xs={12} sm={12} md={6}>
+                        {this.state.displayCustomer ? this.getCustomerDetail() :  <Typography
+                            variant='button'
+                            display='block'
+                            gutterBottom
+                            className='gym-summary-label'
+                        >
+                            <Primary>请在左侧选择选择客户点</Primary>
+                        </Typography>}
+                    </GridItem>
+            </GridContainer>)
+    }
+
+    getCustomerDetail = () => {
+        let row = (label, value) => {
+            return (
+                <GridItem
+                    xs={12}
+                    sm={12}
+                    md={12}
+                    container
+                    alignItems='flex-start'
+                    classes={{ grid: 'gym-summary-row' }}
+                >
+                    <GridItem xs={4} sm={4} md={4}>
+                        <Typography
+                            variant='button'
+                            display='block'
+                            gutterBottom
+                            className='gym-summary-label'
+                        >
+                            <Primary>{label}</Primary>
+                        </Typography>
+                    </GridItem>
+                    <GridItem xs={8} sm={8} md={8}>
+                        <Typography
+                            variant='subtitle2'
+                            display='block'
+                            gutterBottom
+                            className='gym-summary-value'
+                        >
+                            {value}
+                        </Typography>
+                    </GridItem>
+                </GridItem>
+            )
+        }
+        return (
+            <Card className={this.props.classes.customerDetail}>
+                {row(<Avatar alt="Remy Sharp" src={this.state.displayCustomer.customer.avatar} />, this.state.displayCustomer.customer.name)}
+                {row('上课数量', this.state.displayCustomer.course_amount)}
+                {row('首次训练', this.state.displayCustomer.min_date)}
+                {row('上次训练', this.state.displayCustomer.max_date)}
+            </Card>
+        )
+
     }
 
     getMonthScheduleTab = () => {
