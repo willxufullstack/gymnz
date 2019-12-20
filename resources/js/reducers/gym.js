@@ -18,6 +18,7 @@ const initState = {
         scheduleCountByCustomer: [],
         scheduleCountByDate: [],
         scheduleCountByMonthPerCoachOfYear: {},
+        scheduleCountAnaylseCustomer: [],
         summary: {
             orderCount: 0,
             scheduleCount: 0,
@@ -614,6 +615,12 @@ const gym = (state = initState, action = NonAction) => {
             return Object.assign({}, state, { loading: true })
         case ActionTypes.LOAD_GYM_SCHEDULE_COUNT_SUCCESS: {
             let report = { ...state.report }
+            // analyse
+            if(action.payload.config.params.analyse === 'customer'){
+                report.scheduleCountAnaylseCustomer = action.payload.data
+                return Object.assign({}, state, { loading: false, report })
+            }
+            // count
             switch (action.payload.config.params.count) {
                 case 'coach_id':
                     report.scheduleCountByCoach = action.payload.data

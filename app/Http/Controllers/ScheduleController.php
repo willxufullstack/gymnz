@@ -27,6 +27,14 @@ class ScheduleController extends Controller
      */
     public function index(Request $request, $id)
     {
+
+        if($request->has('analyse')) {
+            if($request->input('analyse') === 'customer') {
+                return $this->anaylzeCustomer($request, $id);
+            }
+            return response()->json(array('message' => 'invalid analyse type'), 500);
+        }
+
         $foreignKeys = ['coach.user', 'customer'];
         $query = Schedule::with($foreignKeys);
 
@@ -89,6 +97,25 @@ class ScheduleController extends Controller
             return response()->json($ret, 200);
         }
         return response()->json(['message' => 'failed'], 500);
+    }
+
+        // frequency = 1 / ((firstSchedule.date - lastSchedule.date) / scheduleCount)
+
+    public function anaylzeCustomer(Request $request, $id)
+    {
+
+        if (!$request->has('start') || !$request->has('end')) {
+            return response()->json(array('message' => 'missing time range'), 500);
+        }
+        $query = Schedule::with(['customer'])
+            ->select(DB::raw('customer_id, count(id) as course_amount, min(date) as min_date, max(date) as max_date'))
+            ->where('gym_id', $id)
+            ->where('status', 2)
+            ->where('date', '>=', $request->input('start'))
+            ->where('date', '<=', $request->input('end'))
+            ->groupBy('customer_id');
+
+        return $query->get();
     }
 
     private function getWorkloadExpr()

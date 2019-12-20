@@ -8,8 +8,9 @@ import { withStyles } from "@material-ui/core";
 import * as utils from '-utils'
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import DayjsUtils from '@date-io/dayjs'
-import dayjs, {Dayjs} from 'dayjs'
+import dayjs from 'dayjs'
 import HeatMap from 'react-heatmap-grid'
+import {XYPlot, XAxis, YAxis, MarkSeries}from 'react-vis';
 
 const styles = {
     hotMapTitle: {
@@ -49,7 +50,8 @@ class History extends React.Component {
         const refreshFunc = [
             this.refershMonthSchedule,
             this.refreshMonthSale,
-            this.refreshDayHotMap
+            this.refreshDayHotMap,
+            this.refreshCustomerQuadrantData
         ]
         refreshFunc[this.state.selectedTabIndex] && refreshFunc[this.state.selectedTabIndex]()
     }
@@ -59,6 +61,19 @@ class History extends React.Component {
             // this.refershMonthSchedule()
             this.refresh()
         })
+    }
+
+    refreshCustomerQuadrantData = () => {
+        const dateRange = utils.getYearStartEnd(this.state.date)
+        const params = {
+            start: dateRange.start,
+            end: dateRange.end,
+            analyse: 'customer'
+        }
+        this.props.actions.loadGymScheduleCount(
+            this.props.selectedGym.id,
+            params
+        )
     }
 
     refreshDayHotMap = () => {
@@ -222,6 +237,42 @@ class History extends React.Component {
             </React.Fragment>
     }
 
+    getCustomerQuadrantChat = () => {
+
+        const oneDay = 24 * 60 * 60 * 1000;
+        const data = this.props.gym.report.scheduleCountAnaylseCustomer
+            .filter(row => row.course_amount > 2)
+            .map(row => {
+                const min = new Date(row.min_date)
+                const max = new Date(row.max_date)
+
+                const liveDays = (max - min)/oneDay;
+                const frequency = row.course_amount / liveDays * 100;
+                return  {
+                    x: frequency,
+                    y: liveDays
+                }
+        })
+
+        const MARGIN = {
+            left: 36,
+            right: 36,
+            bottom: 36,
+            top: 36
+        }
+        return  <XYPlot margin={MARGIN} xDomain={[0, 40]} yDomain={[0,365]} width={536} height={536}>
+                    <XAxis top={268} hideTicks/>
+                    <XAxis title="频率" />
+                    <YAxis left={232}  hideTicks/>
+                    <YAxis title="生命" />
+                    <MarkSeries
+                        data={data}
+                        opacity={1}
+                        opacityType="linear"
+                    />
+                </XYPlot>
+    }
+
     getMonthScheduleTab = () => {
         let coaches = Object.keys(this.props.gym.report.scheduleCountByMonthPerCoachOfYear)
         let headers = ['月份', ...coaches, '总计']
@@ -287,8 +338,12 @@ class History extends React.Component {
                         tabContent: this.getMonthSaleTab()
                     },
                     {
-                        tabName: '深度分析',
+                        tabName: '教练分析',
                         tabContent: this.getDayHotMap()
+                    },
+                    {
+                        tabName: '客户分析',
+                        tabContent: this.getCustomerQuadrantChat()
                     }
                 ]}
             />

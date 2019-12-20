@@ -67,6 +67,7 @@ Route::group([
     Route::get('gym/{gym}/available', 'GymController@getAvailableTime');
     Route::get('gym/{gym}/summary', 'GymController@getSummary');
     Route::get('gym/{gym}/workload', 'ScheduleController@workload');
+    Route::get('gym/{gym}/anaylze/customer', 'GymController@anaylzeCustomer');
 
     Route::resource('user/{user}/task', 'TaskController');
     Route::patch('task/{task}/complete', 'TaskController@complete');

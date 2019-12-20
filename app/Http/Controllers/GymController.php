@@ -10,6 +10,7 @@ use App\User;
 use Auth;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GymController extends Controller
 {
@@ -183,7 +184,6 @@ class GymController extends Controller
         }
         return response()->json($coaches, 200);
     }
-
 
     public function getSummary(Request $request, $id)
     {
