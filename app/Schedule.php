@@ -94,7 +94,7 @@ class Schedule extends Model
     public function getEndDateTime()
     {
         $mins = ($this->end + 1) * 15;
-        return  strftime('%Y-%m-%d %H:%M', strtotime($this->date . " +$mins minutes"));
+        return strftime('%Y-%m-%d %H:%M', strtotime($this->date . " +$mins minutes"));
     }
 
     public function getMonthCount()
@@ -133,6 +133,7 @@ class Schedule extends Model
             'avatar' => $this->coach->user->avatar ?? 'http://static.o2-fit.com/image/logo.png?imageView2/1/w/80/h/80/format/jpg'
         ];
     }
+
     public function toConclusionCard()
     {
         return [
@@ -145,5 +146,57 @@ class Schedule extends Model
             'user_id' => $this->coach->user->id,
             'avatar' => $this->coach->user->avatar ?? 'http://static.o2-fit.com/image/logo.png?imageView2/1/w/80/h/80/format/jpg'
         ];
+    }
+
+    /**
+     * check whether two time range have overlap
+     *
+     * two time periods P1 and P2 overlaps if, and only if, at least one of these conditions hold:
+     * P1 starts between the start and end of P2 (P2.from <= P1.from <= P2.to)
+     * P2 starts between the start and end of P1 (P1.from <= P2.from <= P1.to)
+     *
+     *                      START         END
+     *                       |             |
+     *     1      FROM---TO  |             |
+     *                       |             |
+     *     2           FROM--|--TO         |
+     *                       |             |
+     *     3                 |  FROM---TO  |
+     *                       |             |
+     *     4          FROM---|-------------|---TO
+     *                       |             |
+     *     5                 |       FROM--|--TO
+     *                       |             |
+     *     6                 |             |  FROM---TO
+     */
+    private function _isTimeOverlap($form, $to, $start, $end)
+    {
+        if ($form >= $start && $form <= $end ||
+            $start >= $form && $start <= $to
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * check whether the schedule conflict with other schedules of the same coach
+     */
+    public function hasTimeConflicts()
+    {
+        // get all schedule at the same day
+        $schedules = Schedule::where('gym_id', $this->gym_id)
+            ->where('coach_id', $this->coach_id)
+            ->where('date', '=', $this->date)
+            ->get();
+
+        foreach ($schedules as $schedule) {
+            $fromTime = $schedule['start'];
+            $endTime = $schedule['end'];
+            if ($this->_isTimeOverlap($this->start, $this->end, $fromTime, $endTime)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

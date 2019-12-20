@@ -195,7 +195,6 @@ class ScheduleController extends Controller
         $userId = Auth::User()->id;
 
         $scheduleData = $request->only('customer', 'coach', 'gym', 'date', 'start', 'end');
-
         // handle trial new
         if ($request->has('trial')) {
 
@@ -214,7 +213,7 @@ class ScheduleController extends Controller
         }
 
 
-        // 1. try to find avaiable orders
+        // 1. try to find available orders
         $order = Order::where([
             'customer_id' => $scheduleData['customer'],
             'gym_id' => $scheduleData['gym'],
@@ -249,6 +248,9 @@ class ScheduleController extends Controller
         $schedule->coach()->associate(Coach::with('user')->find($scheduleData['coach']));
         $schedule->gym()->associate(Gym::find($scheduleData['gym']));
 
+        if($schedule->hasTimeConflicts()){
+            return response()->json(['message' => 'conflict with other schedules'], 400);
+        }
         $schedule->save();
         event(new \App\Events\ScheduleCreateEvent($schedule));
         // TODO handle save error
