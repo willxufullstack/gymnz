@@ -328,7 +328,8 @@ class History extends React.Component {
         const maxX = 40
         const maxY = 365
         const groupedData = []
-        const colors = ['#8e24aa', '#f48024', '#aaa', 'rgb(221, 192, 229)', 'rgb(252, 224, 205)', 'rgb(211,211,211)']
+        // const colors = ['#8e24aa', '#f48024', '#aaa', 'rgb(221, 192, 229)', 'rgb(252, 224, 205)', 'rgb(211,211,211)']
+        const colors = ['#8e24aa', '#f48024', '#aaa', '#8e24aa', '#f48024', '#aaa']
         const opacitySet = [0.7, 0.8, 0.5]
 
         this.state.customerList

@@ -30,6 +30,7 @@ class QuadrantChart extends React.Component {
                         colorType="literal"
                         strokeType="literal"
                         strokeWidth={3}
+                        opacityType="literal"
                         onValueMouseOver={this.props.onHover}
                         onValueMouseOut={this.props.onBlur}
                     />
