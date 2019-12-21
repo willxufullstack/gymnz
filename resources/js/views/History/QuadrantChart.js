@@ -25,7 +25,7 @@ class QuadrantChart extends React.Component {
                     <MarkSeries
                         key={colorRange[i]}
                         data={dataGroup}
-                        opacity={1}
+                        opacity={1 - 0.2*i}
                         sizeRange={sizeRange}
                         opacityType="linear"
                         onValueClick={this.props.onValueClick}
@@ -49,7 +49,6 @@ class QuadrantChart extends React.Component {
                         style={{display:'inline-block', position: 'relative', left: this.props.margin}}
                         orientation="horizontal"
                         width={this.props.width/2}
-
                         items={legends.map( (l,i) => ({strokeWidth: 13, title: l,  color: colorRange[i]}))}
                     />
                 <div style={{position: 'relative', paddingTop: 6, paddingLeft: this.props.margin, display:'inline-block'}}>

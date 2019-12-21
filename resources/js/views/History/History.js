@@ -321,7 +321,7 @@ class History extends React.Component {
 
     getCustomerQuadrantChat = () => {
         const days30before = dayjs().add(-30, 'day')
-        const days60before = dayjs().add(-30, 'day')
+        const days60before = dayjs().add(-60, 'day')
         const inactive30 = (row) => dayjs(row.max_date).isBefore(days30before)
         const inactive60 = (row) => dayjs(row.max_date).isBefore(days60before)
         const oneDay = 24 * 60 * 60 * 1000;
