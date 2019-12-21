@@ -12,7 +12,7 @@ class QuadrantChart extends React.Component {
         const top = this.props.width/2
         const left = top - this.props.margin/2
         const legends = this.props.legends ? this.props.legends : []
-        const sizeRange = this.props.sizeRange ? this.props.sizeRange: [6, 12]
+        const sizeRange = this.props.sizeRange ? this.props.sizeRange: [4, 14]
         const strokeWidthRange=this.props.strokeWidthRange ? this.props.strokeWidthRange: [sizeRange[0]/3, sizeRange[1]/3]
         const colorRange = this.props.colorRange ? this.props.colorRange : ['#8e24aa', '#f48024', '#aaa', '#4fd2c2', '#999', 'red']
         return (<div>
@@ -55,7 +55,7 @@ class QuadrantChart extends React.Component {
                         items={Object.values(legends).map( (l,i) => ({strokeWidth: 13, title: l,  color: colorRange[i]}))}
                     />
                 <div style={{position: 'relative', paddingTop: 6, paddingLeft: this.props.margin, display:'inline-block'}}>
-                    <ContinuousSizeLegend width={this.props.width/3}  startSize={sizeRange[0]} endSize={18} circlesTotal={8} startTitle="18次" endTitle="36次" />
+                    <ContinuousSizeLegend width={this.props.width/3}  startSize={sizeRange[0]} endSize={18} circlesTotal={8} startTitle="12次" endTitle="42次" />
                 </div>
             </div>
             </div>)

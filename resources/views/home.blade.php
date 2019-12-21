@@ -40,7 +40,7 @@
 <!-- <script src="http://static.o2-fit.com/pro/js/manifest.js?v=9" defer></script>
 <script src="http://static.o2-fit.com/pro/js/vendor.js?v=9" defer></script>
 <script src="http://static.o2-fit.com/pro/js/app.js?v=9" defer></script> -->
-<script src="{{ asset('js/manifest.js') }}?v=20" defer></script>
-<script src="{{ asset('js/vendor.js') }}?v=20" defer></script>
-<script src="{{ asset('js/app.js') }}?v=20" defer></script>
+<script src="{{ asset('js/manifest.js') }}?v=21" defer></script>
+<script src="{{ asset('js/vendor.js') }}?v=21" defer></script>
+<script src="{{ asset('js/app.js') }}?v=21" defer></script>
 </html>
