@@ -114,8 +114,15 @@ class ScheduleController extends Controller
             ->where('date', '>=', $request->input('start'))
             ->where('date', '<=', $request->input('end'))
             ->groupBy('customer_id');
+        $ret = $query->get();
 
-        return $query->get();
+        foreach($ret as &$row) {
+            // plug first order create time
+            // plug available balance
+            $row['balance'] =  $row['customer']->getCourseBalance($id);
+        }
+
+        return $ret;
     }
 
     private function getWorkloadExpr()

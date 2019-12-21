@@ -73,11 +73,14 @@ class User extends Authenticatable implements JWTSubject
                 'customer_id' => $this->id,
             ]);
 
-        $query = $query->where('gym_id', $gymId);
+        $query = $query->where('gym_id', $gymId)->orderBy('created_at', 'ASC');
         $orders = $query->get();
-        $ret = ['total' => 0, 'booked' => 0];
+        $ret = ['total' => 0, 'booked' => 0, 'created_at' => 0];
         // calc
         foreach ($orders as $order) {
+            if($ret['created_at'] === 0) {
+                $ret['created_at'] = substr($order->created_at, 0, 10);
+            }
             if ($order->status === 1) {
                 $ret['total'] += $order->course_amount;
             } else {

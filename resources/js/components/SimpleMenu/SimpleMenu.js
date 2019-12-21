@@ -27,7 +27,7 @@ function SimpleMenu({ ...props }) {
                         aria-haspopup='true'
                         onClick={handleClick}
                         style={{
-                            color: 'white'
+                            color: props.textColor ? props.textColor : 'white'
                         }}
                     >
                         {props.displayText || ''}

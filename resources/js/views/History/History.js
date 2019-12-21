@@ -16,6 +16,10 @@ import GridContainer from '-components/Grid/GridContainer.jsx'
 import Primary from '-components/Typography/Primary.jsx'
 import Typography from '@material-ui/core/Typography'
 import {XYPlot, XAxis, YAxis, MarkSeries}from 'react-vis';
+import SimpleMenu from "-components/SimpleMenu/SimpleMenu";
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import Button from '-components/CustomButtons/Button.jsx'
+import MaterialTable from 'material-table';
 
 const styles = {
     hotMapTitle: {
@@ -45,7 +49,19 @@ class History extends React.Component {
         this.state = {
             date: new Date(),
             selectedTabIndex: 0,
-            displayCustomer: null
+            displayCustomer: null,
+            filter: {
+                activeStatus: '所有活跃客户',  //所有/30天未活跃/60天未活跃/30天有活跃/60天有活跃/
+                orderStatus: '所有活跃客户' //所有/无余课/余课>5/余课>20/余课<5/余课<20
+            }
+        }
+        this.filterOptions = {
+            activeStatus: [
+                "所有活跃客户","近30天未活跃","近60天未活跃","近30天有活跃","近60天有活跃"
+            ],
+            orderStatus: [
+                "所有活跃客户","无余课","余课>5","余课>20","余课<5","余课<20"
+            ]
         }
     }
 
@@ -247,11 +263,59 @@ class History extends React.Component {
             </React.Fragment>
     }
 
-    getCustomerQuadrantChat = () => {
+    customFilter = (data) => {
+        const days30before = dayjs().add(-30, 'day')
+        const days60before = dayjs().add(-60, 'day')
+        const filterFunc = {
+            activeStatus: {
+                "所有活跃客户": (row) => true,
+                "近30天未活跃": (row) => dayjs(row.max_date).isBefore(days30before),
+                "近60天未活跃": (row) => dayjs(row.max_date).isBefore(days60before),
+                "近30天有活跃": (row) => dayjs(row.max_date).isAfter(days30before),
+                "近60天有活跃": (row) => dayjs(row.max_date).isAfter(days60before),
+            },
+            orderStatus: {
+                "所有活跃客户": (row) => true,
+                "无余课": (row) => row.balance.booked === row.balance.total,
+                "余课>5": (row) => row.balance.total - row.balance.booked > 5,
+                "余课>20": (row) => row.balance.total - row.balance.booked > 20,
+                "余课<5": (row) => row.balance.total - row.balance.booked < 5,
+                "余课<20": (row) => row.balance.total - row.balance.booked < 20,
+            }
+        }
 
+        return filterFunc.activeStatus[this.state.filter.activeStatus](data) &&
+                filterFunc.orderStatus[this.state.filter.orderStatus](data)
+    }
+
+    getCustomerQuadrantFilter = () => {
+        return Object.keys(this.filterOptions)
+                    .map( opt => {
+                        const opts = this.filterOptions[opt].map( item => ({
+                            text: item,
+                            onSelect: () => {
+                                const filter = {
+                                    ...this.state.filter,
+                                    [opt]: item
+                                }
+                                this.setState({filter})
+                            }
+                            }))
+                        return <GridItem
+                                xs={4}
+                                sm={4}
+                                md={4}
+                            >
+                            <SimpleMenu key={opt} icon={<ExpandMore/>} textColor={'#999'} displayText={this.state.filter[opt]} items={opts} />
+                        </GridItem>
+                    })
+    }
+
+    getCustomerQuadrantChat = () => {
         const oneDay = 24 * 60 * 60 * 1000;
+        console.log('rebuilding')
         const data = this.props.gym.report.scheduleCountAnaylseCustomer
-            .filter(row => row.course_amount > 2)
+            .filter(row => row.course_amount > 1 && this.customFilter(row))
             .map(row => {
                 const min = new Date(row.min_date)
                 const max = new Date(row.max_date)
@@ -275,7 +339,17 @@ class History extends React.Component {
             this.setState({displayCustomer: dataPoint.extra})
         }
 
+        const right =  this.state.displayCustomer ? this.getCustomerDetail() : this.getCustomerList()
+
         return  (<GridContainer>
+                    <GridItem
+                        container
+                        xs={12}
+                        sm={12}
+                        md={12}>
+                        {this.getCustomerQuadrantFilter()}
+                    </GridItem>
+
                     <GridItem
                         xs={12}
                         sm={12}
@@ -284,10 +358,10 @@ class History extends React.Component {
                         alignItems='center'
                         classes={{ grid: 'gym-summary-row' }}
                     >
-                        <XYPlot margin={MARGIN} xDomain={[0, 40]} yDomain={[0,365]} width={536} height={536}>
-                            <XAxis top={268} hideTicks/>
+                        <XYPlot margin={MARGIN} xDomain={[0, 40]} yDomain={[0,365]} width={486} height={486}>
+                            <XAxis top={243} hideTicks/>
                             <XAxis title="频率" />
-                            <YAxis left={232}  hideTicks/>
+                            <YAxis left={225}  hideTicks/>
                             <YAxis title="生命" />
                             <MarkSeries
                                 data={data}
@@ -297,18 +371,29 @@ class History extends React.Component {
                             />
                         </XYPlot>
                     </GridItem>
-                    <GridItem  container
-                        alignItems='center' xs={12} sm={12} md={6}>
-                        {this.state.displayCustomer ? this.getCustomerDetail() :  <Typography
-                            variant='button'
-                            display='block'
-                            gutterBottom
-                            className='gym-summary-label'
-                        >
-                            <Primary>请在左侧选择选择客户点</Primary>
-                        </Typography>}
-                    </GridItem>
+                    <GridItem alignItems='center' xs={12} sm={12} md={6}>{right}</GridItem>
             </GridContainer>)
+    }
+    getCustomerList = () => {
+        const data = this.props.gym.report.scheduleCountAnaylseCustomer
+            .filter(row => row.course_amount > 1 && this.customFilter(row))
+        const columns = [
+            { title: '姓名', render: row => row && row.customer && row.customer.name },
+            { title: '余额', render: row => row && row.balance && `${row.balance.booked}/${row.balance.total}`}
+        ]
+
+        return (<MaterialTable
+                search={false}
+                title={'客户'}
+                columns={columns}
+                data={data}
+                onRowClick={this.onRowClick}
+                options={{
+                    pageSize: 6,
+                    pageSizeOptions: [],
+                    search: false
+                }}
+            />);
     }
 
     getCustomerDetail = () => {
@@ -347,10 +432,13 @@ class History extends React.Component {
         }
         return (
             <Card className={this.props.classes.customerDetail}>
-                {row(<Avatar alt="Remy Sharp" src={this.state.displayCustomer.customer.avatar} />, this.state.displayCustomer.customer.name)}
+                {row(<Avatar src={this.state.displayCustomer.customer.avatar} />, this.state.displayCustomer.customer.name)}
                 {row('上课数量', this.state.displayCustomer.course_amount)}
                 {row('首次训练', this.state.displayCustomer.min_date)}
                 {row('上次训练', this.state.displayCustomer.max_date)}
+                {row('加入日期', this.state.displayCustomer.balance.created_at)}
+                {row('课程数量', this.state.displayCustomer.balance.booked + '/' + this.state.displayCustomer.balance.total)}
+                <Button style={{ float: 'right' }} color='transparentGray' onClick={()=>this.setState({displayCustomer: null})}>关闭</Button>
             </Card>
         )
 
