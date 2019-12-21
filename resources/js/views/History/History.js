@@ -388,15 +388,17 @@ class History extends React.Component {
 
         return (<MaterialTable
                 search={false}
-                style={{position:'relative', top: -24}}
+                style={{position:'relative', top: -28}}
                 title={'客户'}
                 columns={columns}
                 data={this.state.customerList}
                 onRowClick={this.onRowClick}
                 options={{
-                    pageSize: 7,
+                    pageSize: 8,
                     pageSizeOptions: [],
-                    search: false
+                    search: false,
+                    showTitle: false,
+                    toolbar: false
                 }}
             />);
     }
