@@ -339,8 +339,8 @@ class History extends React.Component {
 
                 const liveDays = (max - min)/oneDay;
                 const frequency = row.course_amount / liveDays * 100;
-                // const color = inactive30(row) + inactive60(row)
-                const color = liveDays % 3
+                const color = inactive30(row) + inactive60(row)
+                // const color = liveDays % 3
                 groupedData.push({
                     x: frequency > maxX ? maxX : frequency,
                     y: liveDays > maxY ? maxY : liveDays,
