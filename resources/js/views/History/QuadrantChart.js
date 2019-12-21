@@ -15,9 +15,9 @@ class QuadrantChart extends React.Component {
         const sizeRange = this.props.sizeRange ? this.props.sizeRange: [4, 14]
         const strokeWidthRange=this.props.strokeWidthRange ? this.props.strokeWidthRange: [sizeRange[0]/3, sizeRange[1]/3]
         const colorRange = this.props.colorRange ? this.props.colorRange : ['#8e24aa', '#f48024', '#aaa', '#4fd2c2', '#999', 'red']
-        return (<div>
+        return (<div style={{position: 'relative', top: -16}}>
+                <div style={{position: 'absolute', top: 16, margin: 'auto',textAlign: 'center', color:'#333', fontSize:'700', width: this.props.width + this.props.margin}}>{this.props.title}</div>
                 <XYPlot colorRange={colorRange} margin={MARGIN} xDomain={this.props.xRange} yDomain={this.props.yRange} width={this.props.width + this.props.margin} height={this.props.width}>
-
                 <XAxis top={top} hideTicks/>
                 <XAxis title={this.props.xTitle} />
                 <YAxis left={left}  hideTicks/>
@@ -31,6 +31,7 @@ class QuadrantChart extends React.Component {
                         strokeType="literal"
                         strokeWidth={3}
                         opacityType="literal"
+                        onValueClick={this.props.onValueClick}
                         onValueMouseOver={this.props.onHover}
                         onValueMouseOut={this.props.onBlur}
                     />

@@ -91,10 +91,16 @@ class History extends React.Component {
     }
 
     refreshCustomerQuadrantData = () => {
-        const dateRange = utils.getYearStartEnd(this.state.date)
+        let {start, end} = utils.getYearStartEnd(this.state.date)
+        const today = dayjs()
+        if(today.isBefore(dayjs(end))){
+            const endDay = dayjs(today)
+            start = endDay.add(-1, 'year').format('YYYY-MM-DD')
+            end = endDay.format('YYYY-MM-DD')
+        }
         const params = {
-            start: dateRange.start,
-            end: dateRange.end,
+            start: start,
+            end: end,
             analyse: 'customer'
         }
         this.props.actions.loadGymScheduleCount(
@@ -310,8 +316,8 @@ class History extends React.Component {
                     }))
                 return <GridItem
                         key={opt}
-                        xs={4}
-                        sm={4}
+                        xs={6}
+                        sm={6}
                         md={2}
                     >
                     <SimpleMenu icon={<ExpandMore/>} textColor={'#999'} displayText={this.state.filter[opt]} items={opts} />
@@ -320,8 +326,11 @@ class History extends React.Component {
     }
 
     getCustomerQuadrantChat = () => {
-        const days30before = dayjs().add(-30, 'day')
-        const days60before = dayjs().add(-60, 'day')
+        const dateRange = utils.getYearStartEnd(this.state.date)
+        const piv =  dayjs(dateRange.end).isBefore(dayjs()) ? dayjs(dateRange.end) : dayjs()
+
+        const days30before = piv.add(-30, 'day')
+        const days60before = piv.add(-60, 'day')
         const inactive30 = (row) => dayjs(row.max_date).isBefore(days30before)
         const inactive60 = (row) => dayjs(row.max_date).isBefore(days60before)
         const oneDay = 24 * 60 * 60 * 1000;
@@ -351,11 +360,20 @@ class History extends React.Component {
                     extra: row
                 })
         })
+        const onValueClick = (dataPoint) => {
+            this.setState({fixCustomerModal: true, displayCustomer: dataPoint.extra})
+        }
 
         const onHover = (dataPoint) => {
+            if(this.state.fixCustomerModal) {
+                return
+            }
             this.setState({displayCustomer: dataPoint.extra})
         }
         const onBlur = () => {
+            if(this.state.fixCustomerModal) {
+                return
+            }
             this.setState({displayCustomer: null})
         }
 
@@ -366,6 +384,7 @@ class History extends React.Component {
                         {this.getCustomerQuadrantFilter()}
                     </GridItem>
                     <QuadrantChart
+                        title={piv.add(-1, 'year').format('YYYY/MM/DD') + '-' + piv.format('YYYY/MM/DD')}
                         dataSet={groupedData}
                         margin={36}
                         width={450}
@@ -376,6 +395,7 @@ class History extends React.Component {
                         legends={{[colors[0]]:'活跃', [colors[1]]: '30天未活跃', [colors[2]]: '60天未活跃'}}
                         onHover={onHover}
                         onBlur={onBlur}
+                        onValueClick={onValueClick}
                     />
                     <GridItem xs={12} sm={12} md={6}>{right}</GridItem>
             </GridContainer>)
@@ -445,7 +465,7 @@ class History extends React.Component {
                 {row('上次训练', this.state.displayCustomer.max_date)}
                 {row('加入日期', this.state.displayCustomer.balance.created_at)}
                 {row('课程数量', this.state.displayCustomer.balance.booked + '/' + this.state.displayCustomer.balance.total)}
-                <Button style={{ float: 'right' }} color='transparentGray' onClick={()=>this.setState({displayCustomer: null})}>关闭</Button>
+                <Button style={{ float: 'right' }} color='transparentGray' onClick={()=>this.setState({displayCustomer: null, fixCustomerModal: false})}>关闭</Button>
             </Card>
         )
 
