@@ -15,11 +15,11 @@ import GridItem from '-components/Grid/GridItem.jsx'
 import GridContainer from '-components/Grid/GridContainer.jsx'
 import Primary from '-components/Typography/Primary.jsx'
 import Typography from '@material-ui/core/Typography'
-import {XYPlot, XAxis, YAxis, MarkSeries}from 'react-vis';
 import SimpleMenu from "-components/SimpleMenu/SimpleMenu";
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Button from '-components/CustomButtons/Button.jsx'
 import MaterialTable from 'material-table';
+import QuadrantChart from './QuadrantChart'
 
 const styles = {
     hotMapTitle: {
@@ -53,7 +53,8 @@ class History extends React.Component {
             filter: {
                 activeStatus: '所有活跃客户',  //所有/30天未活跃/60天未活跃/30天有活跃/60天有活跃/
                 orderStatus: '所有活跃客户' //所有/无余课/余课>5/余课>20/余课<5/余课<20
-            }
+            },
+            customerList: []
         }
         this.filterOptions = {
             activeStatus: [
@@ -99,7 +100,7 @@ class History extends React.Component {
         this.props.actions.loadGymScheduleCount(
             this.props.selectedGym.id,
             params
-        )
+        ).then(this.refreshCustomerList)
     }
 
     refreshDayHotMap = () => {
@@ -263,6 +264,12 @@ class History extends React.Component {
             </React.Fragment>
     }
 
+    refreshCustomerList = () => {
+        const customerList = this.props.gym.report.scheduleCountAnaylseCustomer
+            .filter(row => row.course_amount > 1 && this.customFilter(row))
+        this.setState({customerList})
+    }
+
     customFilter = (data) => {
         const days30before = dayjs().add(-30, 'day')
         const days60before = dayjs().add(-60, 'day')
@@ -290,51 +297,55 @@ class History extends React.Component {
 
     getCustomerQuadrantFilter = () => {
         return Object.keys(this.filterOptions)
-                    .map( opt => {
-                        const opts = this.filterOptions[opt].map( item => ({
-                            text: item,
-                            onSelect: () => {
-                                const filter = {
-                                    ...this.state.filter,
-                                    [opt]: item
-                                }
-                                this.setState({filter})
-                            }
-                            }))
-                        return <GridItem
-                                xs={4}
-                                sm={4}
-                                md={4}
-                            >
-                            <SimpleMenu key={opt} icon={<ExpandMore/>} textColor={'#999'} displayText={this.state.filter[opt]} items={opts} />
-                        </GridItem>
-                    })
+            .map( opt => {
+                const opts = this.filterOptions[opt].map( item => ({
+                    text: item,
+                    onSelect: () => {
+                        const filter = {
+                            ...this.state.filter,
+                            [opt]: item
+                        }
+                        this.setState({filter}, this.refreshCustomerList)
+                    }
+                    }))
+                return <GridItem
+                        key={opt}
+                        xs={4}
+                        sm={4}
+                        md={2}
+                    >
+                    <SimpleMenu icon={<ExpandMore/>} textColor={'#999'} displayText={this.state.filter[opt]} items={opts} />
+                </GridItem>
+            })
     }
 
     getCustomerQuadrantChat = () => {
+        const days30before = dayjs().add(-30, 'day')
+        const days60before = dayjs().add(-30, 'day')
+        const inactive30 = (row) => dayjs(row.max_date).isBefore(days30before)
+        const inactive60 = (row) => dayjs(row.max_date).isBefore(days60before)
         const oneDay = 24 * 60 * 60 * 1000;
-        console.log('rebuilding')
-        const data = this.props.gym.report.scheduleCountAnaylseCustomer
-            .filter(row => row.course_amount > 1 && this.customFilter(row))
-            .map(row => {
+        const maxX = 40
+        const maxY = 365
+        const groupedData = [[], [], []]
+
+        this.state.customerList
+            .forEach(row => {
                 const min = new Date(row.min_date)
                 const max = new Date(row.max_date)
 
                 const liveDays = (max - min)/oneDay;
                 const frequency = row.course_amount / liveDays * 100;
-                return  {
-                    x: frequency,
-                    y: liveDays,
+                const color = inactive30(row) + inactive60(row)
+                // const color = liveDays % 3
+                groupedData[color].push({
+                    x: frequency > maxX ? maxX : frequency,
+                    y: liveDays > maxY ? maxY : liveDays,
+                    size: row.course_amount / 3,
                     extra: row
-                }
+                })
         })
 
-        const MARGIN = {
-            left: 36,
-            right: 36,
-            bottom: 36,
-            top: 36
-        }
         const onValueClick = (dataPoint) => {
             this.setState({displayCustomer: dataPoint.extra})
         }
@@ -342,41 +353,24 @@ class History extends React.Component {
         const right =  this.state.displayCustomer ? this.getCustomerDetail() : this.getCustomerList()
 
         return  (<GridContainer>
-                    <GridItem
-                        container
-                        xs={12}
-                        sm={12}
-                        md={12}>
+                    <GridItem container xs={12}>
                         {this.getCustomerQuadrantFilter()}
                     </GridItem>
-
-                    <GridItem
-                        xs={12}
-                        sm={12}
-                        md={6}
-                        container
-                        alignItems='center'
-                        classes={{ grid: 'gym-summary-row' }}
-                    >
-                        <XYPlot margin={MARGIN} xDomain={[0, 40]} yDomain={[0,365]} width={486} height={486}>
-                            <XAxis top={243} hideTicks/>
-                            <XAxis title="频率" />
-                            <YAxis left={225}  hideTicks/>
-                            <YAxis title="生命" />
-                            <MarkSeries
-                                data={data}
-                                opacity={1}
-                                opacityType="linear"
-                                onValueClick={onValueClick}
-                            />
-                        </XYPlot>
-                    </GridItem>
-                    <GridItem alignItems='center' xs={12} sm={12} md={6}>{right}</GridItem>
+                    <QuadrantChart
+                        dataSet={groupedData}
+                        margin={36}
+                        width={450}
+                        xRange={[0, 40]}
+                        yRange={[0,365]}
+                        xTitle={"频率"}
+                        yTitle={"生命"}
+                        legends={['活跃','30天未活跃','60天未活跃']}
+                        onValueClick={onValueClick}
+                    />
+                    <GridItem xs={12} sm={12} md={6}>{right}</GridItem>
             </GridContainer>)
     }
     getCustomerList = () => {
-        const data = this.props.gym.report.scheduleCountAnaylseCustomer
-            .filter(row => row.course_amount > 1 && this.customFilter(row))
         const columns = [
             { title: '姓名', render: row => row && row.customer && row.customer.name },
             { title: '余额', render: row => row && row.balance && `${row.balance.booked}/${row.balance.total}`}
@@ -384,12 +378,13 @@ class History extends React.Component {
 
         return (<MaterialTable
                 search={false}
+                style={{position:'relative', top: -24}}
                 title={'客户'}
                 columns={columns}
-                data={data}
+                data={this.state.customerList}
                 onRowClick={this.onRowClick}
                 options={{
-                    pageSize: 6,
+                    pageSize: 7,
                     pageSizeOptions: [],
                     search: false
                 }}
