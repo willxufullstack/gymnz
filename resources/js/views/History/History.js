@@ -327,7 +327,9 @@ class History extends React.Component {
         const oneDay = 24 * 60 * 60 * 1000;
         const maxX = 40
         const maxY = 365
-        const groupedData = [[], [], []]
+        const groupedData = []
+        const colors = ['#8e24aa', '#f48024', '#aaa', 'rgb(221, 192, 229)', 'rgb(252, 224, 205)', 'rgb(211,211,211)']
+        const opacitySet = [0.7, 0.8, 0.5]
 
         this.state.customerList
             .forEach(row => {
@@ -336,18 +338,24 @@ class History extends React.Component {
 
                 const liveDays = (max - min)/oneDay;
                 const frequency = row.course_amount / liveDays * 100;
-                const color = inactive30(row) + inactive60(row)
-                // const color = liveDays % 3
-                groupedData[color].push({
+                // const color = inactive30(row) + inactive60(row)
+                const color = liveDays % 3
+                groupedData.push({
                     x: frequency > maxX ? maxX : frequency,
                     y: liveDays > maxY ? maxY : liveDays,
                     size: row.course_amount / 3,
+                    stroke: colors[color+3],
+                    opacity: opacitySet[color],
+                    color: colors[color],
                     extra: row
                 })
         })
 
-        const onValueClick = (dataPoint) => {
+        const onHover = (dataPoint) => {
             this.setState({displayCustomer: dataPoint.extra})
+        }
+        const onBlur = () => {
+            this.setState({displayCustomer: null})
         }
 
         const right =  this.state.displayCustomer ? this.getCustomerDetail() : this.getCustomerList()
@@ -364,8 +372,9 @@ class History extends React.Component {
                         yRange={[0,365]}
                         xTitle={"频率"}
                         yTitle={"生命"}
-                        legends={['活跃','30天未活跃','60天未活跃']}
-                        onValueClick={onValueClick}
+                        legends={{[colors[0]]:'活跃', [colors[1]]: '30天未活跃', [colors[2]]: '60天未活跃'}}
+                        onHover={onHover}
+                        onBlur={onBlur}
                     />
                     <GridItem xs={12} sm={12} md={6}>{right}</GridItem>
             </GridContainer>)
