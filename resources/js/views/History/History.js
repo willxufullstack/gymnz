@@ -127,7 +127,7 @@ class History extends React.Component {
         const params = {
             start: dateRange.start,
             end: dateRange.end,
-            count: 'coach_id,month(date)'
+            count: 'coach_id,year(date),month(date)'
         }
         this.props.actions.loadGymScheduleCount(
             this.props.selectedGym.id,

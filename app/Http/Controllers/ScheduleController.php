@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\BodyData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Gym;
@@ -12,8 +11,6 @@ use App\Events\BonusEvent;
 use App\Order;
 use App\Schedule;
 use Auth;
-use DateInterval;
-use DatePeriod;
 use DateTime;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
@@ -42,7 +39,7 @@ class ScheduleController extends Controller
         // could be [customer_id, coach_id]
         if ($request->input('count')) {
             $group = $request->input('count');
-            $query->select(DB::raw('count(id) as course_amount, ' . $group));
+            $query->select(DB::raw('count(distinct(customer_id)) as customer_amount, count(id) as course_amount, ' . $group));
         }
 
         /* select count(id) as c, coach_name, month(date) from schedule group by coach_name,  */

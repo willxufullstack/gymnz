@@ -23,6 +23,10 @@ export function getTimeStr(i) {
     return TimeStrMap[i];
 };
 
+export function getMonthLabel(i) {
+    return ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'][i]
+}
+
 export function getTimeRange(start, end, step = 1) {
     let ret = [];
     for (let i = start; i < end; i += step) {

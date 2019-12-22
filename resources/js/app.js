@@ -35,7 +35,7 @@ ReactDOM.render(
             <Switch>
                 <Route path="/admin" component={ (props) => <LinkedAdmin {...props} />}/>
                 {/* <Route path="/rtl" component={RTL}/> */}
-                <Redirect from="/" to="/admin/dashboard"/>
+                <Redirect from="/" to="/admin/overview"/>
             </Switch>
         </Router>
     </Provider>,

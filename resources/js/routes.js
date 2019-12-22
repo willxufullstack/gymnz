@@ -4,6 +4,7 @@ import LibraryBooks from "@material-ui/icons/LibraryBooks";
 import CustomerIcon from '@material-ui/icons/SupervisorAccount';
 import SettingsIcon from '@material-ui/icons/Settings';
 import AllInboxIcon from '@material-ui/icons/AllInbox';
+import BubbleChartIcon from '@material-ui/icons/BubbleChart';
 import MoneyIcon from '@material-ui/icons/Money';
 import i18N from './lang'
 
@@ -16,12 +17,21 @@ const LazyAccountingPage = React.lazy(()=> import("-views/Accounting/AccountingP
 const LazyCustomer = React.lazy(()=> import("-views/Customer/Customer"))
 const LazyGymSettings = React.lazy(()=> import("-views/GymSetting/GymSettings"))
 const LazyHistory = React.lazy(()=> import("-views/History/History"))
+const LazyOverview = React.lazy(()=> import("-views/Overview/Overview"))
 
 
 const dashboardRoutes = [
     {
+        path: "/overview",
+        name: '纵览',
+        rtlName: "لوحة القيادة",
+        icon: BubbleChartIcon,
+        component: () => <LazyOverview />,
+        layout: "/admin"
+    },
+    {
         path: "/dashboard",
-        name: L.dashboard,
+        name: '日程',
         rtlName: "لوحة القيادة",
         icon: DashboardIcon,
         component: () => <LazyDashboard />,
@@ -37,7 +47,7 @@ const dashboardRoutes = [
     },
     {
         path: "/report/monthly",
-        name: L.report,
+        name: '月报',
         rtlName: "",
         icon: LibraryBooks,
         component: props => <LazyMonthlyReport {...props}/>,
@@ -45,7 +55,7 @@ const dashboardRoutes = [
     },
     {
         path: "/report/history",
-        name: '历史',
+        name: '年报',
         rtlName: "",
         icon: AllInboxIcon,
         component: props => <LazyHistory {...props}/>,
