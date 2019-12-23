@@ -23,9 +23,15 @@ import Typography from '@material-ui/core/Typography';
 import QuadrantChart from '../History/QuadrantChart'
 
 const styles = {
+    durationFilter: {
+        position: 'absolute',
+        top: 2,
+        right: 2,
+        zIndex: 1000
+    },
     coachQuadrantFilter: {
         position: 'absolute',
-        top: 4,
+        top: 6,
         right: 6,
         zIndex: 1000
     },
@@ -60,6 +66,7 @@ const styles = {
         marginLeft: 4
     },
     yearChartCard: {
+        position: 'relative',
         maxWidth: 740,
         marginTop: 20,
         paddingLeft: 0,
@@ -89,7 +96,8 @@ class Overview extends React.Component {
             coachQuadrantFilter: {
                 year: dayjs().format('YYYY'),
                 month: dayjs().format('M')
-            }
+            },
+            duration: 6
         }
     }
 
@@ -97,12 +105,33 @@ class Overview extends React.Component {
         this.refreshYearData()
     }
 
+    durationFilter = () => {
+        const filters = {
+            6: '6个月',
+            12: '12个月',
+            24: '24个月',
+        }
+        const opts = Object.keys(filters).map((k)=>({
+            text: filters[k],
+            onSelect: () => {
+                this.setState({
+                    duration: k
+                }, this.refreshYearData)
+            }
+        }))
+        return <SimpleMenu
+            icon={<ExpandMore/>}
+            textColor={'#999'}
+            displayText={filters[this.state.duration]}
+            items={opts} />
+    }
+
 
     aggregateYearData = (filter) => {
         const {_, end} = utils.getMonthStartEnd(this.state.date)
         const endDay = dayjs(end)
         const data = {}
-        utils.range(0, 6).forEach(i => {
+        utils.range(0, this.state.duration).forEach(i => {
             const day = endDay.add(-i, 'month')
             const k = day.format('YYYY') + '-' + day.format('M')
             data[k] = {
@@ -116,6 +145,9 @@ class Overview extends React.Component {
         const {scheduleCountByMonthPerCoach} = this.props.gym.report
         scheduleCountByMonthPerCoach.forEach(row => {
             const k = row['year(date)'] + '-' + row['month(date)']
+            if(!data[k]) {
+                return
+            }
             data[k].courseCount += row.course_amount
             data[k].customerCount += row.customer_amount
         })
@@ -123,7 +155,7 @@ class Overview extends React.Component {
     }
     refreshYearData = () => {
         const {_, end} = utils.getMonthStartEnd(this.state.date)
-        const start = dayjs(end).add(-6, 'month').add(1, 'day').format('YYYY-MM-DD')
+        const start = dayjs(end).add(-this.state.duration, 'month').add(1, 'day').format('YYYY-MM-DD')
         const params = {
             start,
             end,
@@ -156,7 +188,7 @@ class Overview extends React.Component {
     coachYearMonthDropdown = () => {
         const {classes} = this.props
         const {scheduleCountByMonthPerCoach} = this.props.gym.report
-        const displayText = (year, month) => year + '-' + month
+        const displayText = (year, month) => dayjs(year + '-' + month + '-1').format('YYYY-MM')
         const yearMonthSet = {}
         scheduleCountByMonthPerCoach.forEach(row => {
             const k = displayText(row['year(date)'], row['month(date)'])
@@ -171,6 +203,9 @@ class Overview extends React.Component {
                     })
                 }
             }
+        })
+        opts.sort((a,b)=>{
+            return new Date(a.text +'-01').getTime() - new Date(b.text +'-01').getTime()
         })
 
         return <SimpleMenu
@@ -285,6 +320,7 @@ class Overview extends React.Component {
             }]
         }
         return <Card className={classes.yearChartCard}>
+                <div className={classes.durationFilter}>{this.durationFilter()}</div>
                 <Typography className={classes.chartTitle}>
                    <span className={activeIndex === 1 ? classes.titleInactive : ''} onClick={()=>this.setState({chart0ActiveIndex: 0})}>
                         {dataSet[0][dataSet[0].length-1].y}
@@ -297,7 +333,7 @@ class Overview extends React.Component {
                     </span>
                 </Typography>
                 <Typography className={classes.chartSubTitle} color="textSecondary">
-                    6个月统计
+                    {/* {this.state.duration}个月统计 */}
                 </Typography>
                 <div style={{ position: 'relative' }}>
                     <div>
