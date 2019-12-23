@@ -1,5 +1,5 @@
 import React from 'react'
-import {XYPlot, XAxis, YAxis, MarkSeries, DiscreteColorLegend, ContinuousSizeLegend} from 'react-vis';
+import {XYPlot, XAxis, YAxis, MarkSeries, DiscreteColorLegend, ContinuousSizeLegend, Hint} from 'react-vis';
 
 class QuadrantChart extends React.Component {
     render() {
@@ -22,32 +22,21 @@ class QuadrantChart extends React.Component {
                 <XAxis title={this.props.xTitle} />
                 <YAxis left={left}  hideTicks/>
                 <YAxis title={this.props.yTitle} />
-                {/* {this.props.dataSet.map((dataGroup, i) => */}
-                    <MarkSeries
-                        data={this.props.dataSet}
-                        sizeRange={sizeRange}
-                        strokeWidthRange={strokeWidthRange}
-                        colorType="literal"
-                        strokeType="literal"
-                        strokeWidth={3}
-                        opacityType="literal"
-                        onValueClick={this.props.onValueClick}
-                        onValueMouseOver={this.props.onHover}
-                        onValueMouseOut={this.props.onBlur}
-                    />
-                {/* )} */}
+                <MarkSeries
+                    data={this.props.dataSet}
+                    sizeRange={sizeRange}
+                    strokeWidthRange={strokeWidthRange}
+                    colorType="literal"
+                    strokeType="literal"
+                    strokeWidth={3}
+                    opacityType="literal"
+                    onValueClick={this.props.onValueClick}
+                    onValueMouseOver={this.props.onHover}
+                    onValueMouseOut={this.props.onBlur}
+                />
+                {this.props.hint}
             </XYPlot>
-            {/* <div>
-            <svg height={0} width={0}>
-                <GradientDefs>
-                    {colorRange.map((color, i) => <pattern keyid={'stripes-' + i} width="4" height="4" patternUnits="userSpaceOnUse">
-                            <path d="M 0, 0 l 5, 5" stroke={color} strokeLinecap="square" />
-                        </pattern>)
-                    }
-                </GradientDefs>
-            </svg>
-            </div> */}
-            <div style={{display: 'flex'}}>
+            {legends.length> 0 && <div style={{display: 'flex'}}>
                 <DiscreteColorLegend
                         colors={Object.keys(legends)}
                         style={{display:'inline-block', position: 'relative', left: this.props.margin}}
@@ -58,7 +47,7 @@ class QuadrantChart extends React.Component {
                 <div style={{position: 'relative', paddingTop: 6, paddingLeft: this.props.margin, display:'inline-block'}}>
                     <ContinuousSizeLegend width={this.props.width/3}  startSize={sizeRange[0]} endSize={18} circlesTotal={8} startTitle="12次" endTitle="42次" />
                 </div>
-            </div>
+            </div>}
             </div>)
     }
 }
