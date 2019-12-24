@@ -138,6 +138,7 @@ class Overview extends React.Component {
                 year: day.year(),
                 month: day.month(),
                 monthLabel: utils.getMonthLabel(day.month()),
+                customers: [],
                 courseCount: 0,
                 customerCount: 0
             }
@@ -149,8 +150,9 @@ class Overview extends React.Component {
                 return
             }
             data[k].courseCount += row.course_amount
-            data[k].customerCount += row.customer_amount
+            data[k].customers[row.customer_id] = 1
         })
+        Object.keys(data).forEach(k => data[k].customerCount = Object.keys(data[k].customers).length)
         return data
     }
     refreshYearData = () => {
@@ -159,7 +161,7 @@ class Overview extends React.Component {
         const params = {
             start,
             end,
-            count: 'coach_id,year(date),month(date)'
+            count: 'coach_id,year(date),month(date),customer_id'
         }
         this.props.actions.loadGymScheduleCount(
             this.props.selectedGym.id,
@@ -171,18 +173,22 @@ class Overview extends React.Component {
         const {scheduleCountByMonthPerCoach} = this.props.gym.report
         const year = this.state.coachQuadrantFilter.year
         const month = this.state.coachQuadrantFilter.month
-        const data = []
+        const data = {}
         scheduleCountByMonthPerCoach.forEach( row => {
             if(row['year(date)'] == year && row['month(date)'] == month) {
-                data.push({
-                    x: row.course_amount,
-                    y: row.customer_amount,
-                    coach: row.coach,
-                    color: '#8e24aa'
-                })
+                if(!data[row.coach_id]) {
+                    data[row.coach_id] = {
+                        x: 0,
+                        y: 0,
+                        coach: row.coach,
+                        color: '#8e24aa'
+                    }
+                }
+                data[row.coach_id].x += row.course_amount
+                data[row.coach_id].y += row.customer_amount
             }
         })
-        return data
+        return Object.values(data)
     }
 
     coachYearMonthDropdown = () => {

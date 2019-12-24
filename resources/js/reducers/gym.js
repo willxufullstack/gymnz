@@ -623,6 +623,9 @@ const gym = (state = initState, action = NonAction) => {
             }
             // count
             switch (action.payload.config.params.count) {
+                case 'coach_id,year(date),month(date),customer_id':
+                    report.scheduleCountByMonthPerCoach = action.payload.data
+                    break
                 case 'coach_id,year(date),month(date)':
                     report.scheduleCountByMonthPerCoach = action.payload.data
                     break
