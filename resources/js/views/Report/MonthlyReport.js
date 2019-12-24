@@ -154,10 +154,17 @@ class MonthlyReport extends React.Component {
             labels: [],
             series: []
         }
-        groups.forEach(r => {
-            tableData.push([r.coach.user.name + '', r.course_amount + ''])
-            chartData.labels.push(r.coach.user.name)
-            chartData.series.push(r.course_amount)
+        const grouped = {}
+        groups.forEach(g => {
+            if(grouped[g.coach.user.name] === undefined) {
+                grouped[g.coach.user.name] = 0
+            }
+            grouped[g.coach.user.name] += g.course_amount
+        })
+        Object.keys(grouped).forEach(k => {
+            tableData.push([k + '', grouped[k] + ''])
+            chartData.labels.push(k)
+            chartData.series.push(grouped[k])
         })
 
         let chartOptions = {

@@ -644,10 +644,14 @@ const gym = (state = initState, action = NonAction) => {
                         if(!grouped[row.coach.user.name]) {
                             grouped[name] = []
                         }
-                        grouped[name][month] = row.course_amount
+                        grouped[name][month] = 0
+                        grouped[name][month] += row.course_amount
                     })
                     report.scheduleCountByMonthPerCoachOfYear = grouped
                     break;
+                default:
+                    console.log('unknown group:', action.payload.config.params.count)
+                    break
             }
             return Object.assign({}, state, { loading: false, report })
         }
