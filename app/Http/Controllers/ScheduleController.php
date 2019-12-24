@@ -40,6 +40,7 @@ class ScheduleController extends Controller
         if ($request->input('count')) {
             $group = $request->input('count');
             $query->select(DB::raw('count(distinct(customer_id)) as customer_amount,count(distinct(customer_id)) as customer_amount, count(id) as course_amount, ' . $group));
+            $query->where('order_id', '>', 0);
         }
 
         /* select count(id) as c, coach_name, month(date) from schedule group by coach_name,  */
