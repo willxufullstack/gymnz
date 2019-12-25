@@ -27,6 +27,18 @@ export function getMonthLabel(i) {
     return ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'][i]
 }
 
+export function getRange(data, delta=0.3) {
+    if(!data || !data.length) {
+        return [0, 0]
+    }
+    const max = Math.max(...data)
+    const min = Math.min(...data)
+
+    const deltaValue = Math.floor(max - min) * delta
+    return [ min - deltaValue,  max + deltaValue]
+
+}
+
 export function getPointEdge(pointData, delta = 0.3){
     if(!pointData || !pointData.length) {
         return {

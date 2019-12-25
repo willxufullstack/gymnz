@@ -21,6 +21,7 @@ import {
 import {CardContent} from '@material-ui/core'
 import Typography from '@material-ui/core/Typography';
 import QuadrantChart from '../History/QuadrantChart'
+import DoubleAreaChart from './DoubleAreaChart'
 
 const styles = {
     durationFilter: {
@@ -274,57 +275,35 @@ class Overview extends React.Component {
         const rawData = this.aggregateYearData()
 
         const ascKeys = Object.keys(rawData).reverse()
-        const xTickers = []
-        let maxCourseCount = 0
-        let minCourseCount = Number.MAX_SAFE_INTEGER;
+        const xTickers = ascKeys.map(k => rawData[k].monthLabel)
 
-        let maxCustomerCount = 0
-        let minCustomerCount = Number.MAX_SAFE_INTEGER;
+        const dataCourseCount = ascKeys.map( (k, i) => ({
+            x: i,
+            y: rawData[k].courseCount
+        }))
+        const dataCustomerCount = ascKeys.map( (k, i) => ({
+            x: i,
+            y: rawData[k].customerCount
+        }))
 
-        const dataCourseCount = ascKeys.map( (k, i) => {
-            xTickers.push(rawData[k].monthLabel)
-            const value = rawData[k].courseCount
-            maxCourseCount = maxCourseCount < value ? value : maxCourseCount
-            minCourseCount = minCourseCount > value ? value : minCourseCount
-            return {
-                x: i,
-                y: value
-            }
-        })
-        const dataCustomerCount = ascKeys.map( (k, i) => {
-            const value = rawData[k].customerCount
-            maxCustomerCount = maxCustomerCount < value ? value : maxCustomerCount
-            minCustomerCount = minCustomerCount > value ? value : minCustomerCount
-            return {
-                x: i,
-                y: value
-            }
-        })
-
-
-        const deltaCourseCount = Math.floor(maxCourseCount - minCourseCount) * 0.3
-        const deltaCustomerCount = Math.floor(maxCustomerCount - minCustomerCount) * 0.3
         const dataSet = [dataCourseCount, dataCustomerCount]
-        const domainSet = [
-            [minCourseCount - deltaCourseCount, maxCourseCount + deltaCourseCount],
-            [minCustomerCount - deltaCustomerCount, maxCustomerCount + deltaCustomerCount]]
         const yTitle = ['课程', '客户']
-
-        const activeIndex = this.state.chart0ActiveIndex ? this.state.chart0ActiveIndex: 0
-        const inactiveIndex = 1 - activeIndex
-        const _onHover = (v) => {
-            this.setState({chart0Value: v})
-        }
-        const _onBlur = () => this.setState({chart0Value: null})
-        const _hintFormat = () => {
+        const hintFormat = (p) => {
             return [{
+                title: '时间',
+                value: xTickers[p.x]
+
+            },{
                 title: '课程',
-                value: dataCourseCount[this.state.chart0Value.x].y
+                value: dataCourseCount[p.x].y
             },{
                 title: '客户',
-                value: dataCustomerCount[this.state.chart0Value.x].y
+                value: dataCustomerCount[p.x].y
             }]
         }
+        const activeIndex = this.state.chart0ActiveIndex
+        const inactiveIndex = 1 - activeIndex
+        const dataSetForRender = activeIndex === 0 ? [dataCourseCount, dataCustomerCount] : [dataCustomerCount, dataCourseCount]
         return <Card className={classes.yearChartCard}>
                 <div className={classes.durationFilter}>{this.durationFilter()}</div>
                 <Typography className={classes.chartTitle}>
@@ -341,57 +320,14 @@ class Overview extends React.Component {
                 <Typography className={classes.chartSubTitle} color="textSecondary">
                     {/* {this.state.duration}个月统计 */}
                 </Typography>
-                <div style={{ position: 'relative' }}>
-                    <div>
-                        <XYPlot margin={{right: 30}} width={700} height={200} yDomain={domainSet[inactiveIndex]} className={classes.yearChart}>
-                            <YAxis width={40} tickSize={2} tickTotal={5} orientation="right" title={yTitle[inactiveIndex]}/>
-                            <GradientDefs>
-                                <linearGradient id="blueGradient" x1="0" x2="0" y1="0" y2="1">
-                                <stop offset="0%" stopColor="#aaa" stopOpacity={0.3}/>
-                                <stop offset="80%" stopColor="#aaa" stopOpacity={0.05} />
-                                <stop offset="100%" stopColor="#fff" stopOpacity={0} />
-                                </linearGradient>
-                            </GradientDefs>
-                            <AreaSeries
-                                color={'url(#blueGradient)'}
-                                data={dataSet[inactiveIndex]}
-                            />
-                        </XYPlot>
-                    </div>
-                    <div style={{ position: 'absolute', top: 0 }} onClick={()=>this.setState({chart0ActiveIndex: 1-activeIndex})}>
-                        <XYPlot margin={{right: 30}} width={700} height={200} yDomain={domainSet[activeIndex]} className={classes.yearChart}>
-                            <XAxis tickSize={2} tickFormat={v => xTickers[v]} />
-                            <HorizontalGridLines tickTotal={5} style={{strokeDasharray:"2"}}/>
-                            <YAxis tickSize={2} tickTotal={5} title={yTitle[activeIndex]}/>
-                            <GradientDefs>
-                                <linearGradient id="CoolGradient" x1="0" x2="0" y1="0" y2="1">
-                                <stop offset="0%" stopColor="#8e24aa" stopOpacity={0.3}/>
-                                <stop offset="80%" stopColor="#8e24aa" stopOpacity={0.05} />
-                                <stop offset="100%" stopColor="#fff" stopOpacity={0} />
-                                </linearGradient>
-                            </GradientDefs>
-                            <AreaSeries
-                                color={'url(#CoolGradient)'}
-                                data={dataSet[activeIndex]}
-                            />
-                            <LineMarkSeries
-                                lineStyle={{
-                                    strokeWidth: '2px',
-                                    stroke: '#8e24aa'
-                                }}
-                                markStyle={{
-                                    stroke: 'rgba(141,44,168, 0.4)',
-                                    strokeWidth: '6px',
-                                    fill: '#8e24aa',
-                                }}
-                                onValueMouseOver={_onHover}
-                                onValueMouseOut={_onBlur}
-                                data={dataSet[activeIndex]}
-                            />
-                            {this.state.chart0Value ? <Hint value={this.state.chart0Value} format={_hintFormat} /> : null}
-                        </XYPlot>
-                    </div>
-                </div>
+                <DoubleAreaChart
+                    dataSet={dataSetForRender}
+                    yTitle={yTitle}
+                    xTickers={xTickers}
+                    chartClassName={classes.yearChart}
+                    hintFormat={hintFormat}
+                    toggle={()=>this.setState({chart0ActiveIndex: 1 - activeIndex})}
+                 />
             </Card>
     }
 

@@ -6,6 +6,8 @@ use App\Order;
 use Carbon\Carbon;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Redis;
+
 
 class BonusListener
 {
@@ -29,6 +31,15 @@ class BonusListener
     {
         $schedule = $event->schedule;
 
+        $date = explode('-', $schedule->date);
+        $year = $date[0];
+        $month = $date[1];
+        $key = `bonus_{$schedule->customer_id}_{$year}_{$month}`;
+        if(Redis::get($key)) {
+            return;
+        }
+
+
         // 2. create order
         $order = new Order();
         $order->created_by = $schedule->coach_id;
@@ -48,6 +59,7 @@ class BonusListener
         // $order->coach()->associate($coach);
         // 6. return
         $order->save();
+        Redis::set($key, 1);
 
     }
 }
