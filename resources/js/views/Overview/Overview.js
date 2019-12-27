@@ -1,48 +1,59 @@
-import React from 'react'
-import connect from 'react-redux/es/connect/connect'
-import { bindActionCreators } from 'redux'
-import * as Actions from '../../actions'
-import * as utils from '-utils'
-import dayjs from 'dayjs'
-import Card from '@material-ui/core/Card';
+import React from "react";
+import connect from "react-redux/es/connect/connect";
+import { bindActionCreators } from "redux";
+import * as Actions from "../../actions";
+import * as utils from "-utils";
+import dayjs from "dayjs";
+import Card from "@material-ui/core/Card";
 import { withStyles } from "@material-ui/core";
-import ExpandMore from '@material-ui/icons/ExpandMore';
+import ExpandMore from "@material-ui/icons/ExpandMore";
 import SimpleMenu from "-components/SimpleMenu/SimpleMenu";
-import {CardContent} from '@material-ui/core'
-import Typography from '@material-ui/core/Typography';
-import QuadrantChart from '../History/QuadrantChart'
-import DoubleAreaChart from './DoubleAreaChart'
-import AreaChart from './AreaChart'
-import { Hint } from 'react-vis'
+import Typography from "@material-ui/core/Typography";
+import QuadrantChart from "../History/QuadrantChart";
+import DoubleAreaChart from "./DoubleAreaChart";
+import AreaChart from "./AreaChart";
+import { Hint } from "react-vis";
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
+import DayjsUtils from '@date-io/dayjs'
 
 const styles = {
-    durationFilter: {
-        position: 'absolute',
-        top: 2,
-        right: 2,
-        zIndex: 1000
+    filterBar: {
+        display:'flex',
+        height: 36
+    },
+    filterItem: {
+        display: "flex",
+        maxWidth: 150,
+        flex: 1
+    },
+    filterTitle: {
+        width: 60,
+        lineHeight: "36px",
+        textAlign: "center",
+        fontSize: 13,
+        fontWeight: "800"
     },
     coachQuadrantFilter: {
-        position: 'absolute',
+        position: "absolute",
         top: 6,
         right: 6,
         zIndex: 1000
     },
     chartTitle: {
-        color: '#8e24aa',
+        color: "#8e24aa",
         paddingTop: 0,
         paddingLeft: 38,
-        fontWeight: '900',
-        fontSize: 32,
+        fontWeight: "900",
+        fontSize: 32
     },
     chartSubTitle: {
         paddingLeft: 38,
-        fontWeight: '400',
+        fontWeight: "400",
         fontSize: 12,
         marginTop: 6
     },
     titleSeparator: {
-        color: '#ccc',
+        color: "#ccc",
         fontWeight: 100,
         margin: 10
     },
@@ -51,15 +62,15 @@ const styles = {
         marginLeft: 4
     },
     titleInactive: {
-        color: '#aaa',
+        color: "#aaa"
     },
     titleUnitInactive: {
         fontSize: 12,
-        color: '#aaa',
+        color: "#aaa",
         marginLeft: 4
     },
     yearChartCard: {
-        position: 'relative',
+        position: "relative",
         maxWidth: 740,
         marginTop: 20,
         paddingLeft: 0,
@@ -69,63 +80,157 @@ const styles = {
         maxWidth: 300,
         marginTop: 20,
         paddingTop: 16,
-        position: 'relative'
+        position: "relative"
     },
     yearChart: {
         // margin: 'auto'
-
-    },
-}
+    }
+};
 
 class Overview extends React.Component {
-    constructor(props){
-        super(props)
+    constructor(props) {
+        super(props);
         this.state = {
             chart0ActiveIndex: 0,
             chart0Value: null,
             chart1Value: null,
             date: dayjs(),
+            coach: 0,
             yearChartData: [],
             coachQuadrantFilter: {
-                year: dayjs().format('YYYY'),
-                month: dayjs().format('M')
+                year: dayjs().format("YYYY"),
+                month: dayjs().format("M")
             },
             duration: 6
-        }
+        };
     }
 
     componentWillMount() {
-        this.refreshYearData()
+        this.props.actions.loadCoach(this.props.selectedGym.id)
+        this.refreshYearData();
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (
+            nextProps.selectedGym.id &&
+            nextProps.selectedGym.id !== this.props.selectedGym.id
+        ) {
+            this.props.actions.loadCoach(nextProps.selectedGym.id)
+            this.refreshYearData();
+        }
+        return true
+        // return nextProps.gym !== this.props.gym || this.state.showDeleteConfirmation !== nextState.showDeleteCoachConfirmation;
+    }
+
+    filterBar = () => {
+        const { classes } = this.props;
+        return <Card className={classes.filterBar}>
+            {this.monthFilter()}
+            {this.durationFilter()}
+            {this.coachFilter()}
+            </Card>;
+    }
+
+    coachFilter = () => {
+        const { classes } = this.props;
+        const filters = {
+            0: '所有'
+        }
+        this.props.gym.coaches.map( coach => {
+            filters[coach.id] = coach.user.name
+        })
+        const opts = Object.keys(filters).map(k => ({
+            text: filters[k],
+            onSelect: () => {
+                this.setState(
+                    {
+                        coach: k
+                    }
+                );
+            }
+        }));
+        return (
+            <div className={classes.filterItem}>
+                <div className={classes.filterTitle}>教练</div>
+                <SimpleMenu
+                    icon={<ExpandMore />}
+                    textColor={"#999"}
+                    displayText={filters[this.state.coach]}
+                    items={opts}
+                />
+            </div>
+        );
+    }
+
+
+    monthFilter = () => {
+        const { classes } = this.props;
+        return (
+            <div className={classes.filterItem}>
+            <MuiPickersUtilsProvider utils={DayjsUtils} locale={"zh-cn"}>
+                <DatePicker
+                    format="MM/YYYY"
+                    className={classes.dateFilter}
+                    style={{
+                        maxWidth: 60,
+                        position: 'relative',
+                        bottom: -2,
+                        marginLeft: 20
+                    }}
+                    openTo="month"
+                    views={["year", "month"]}
+                    value={this.state.date}
+                    onChange={this.handleDateChange}
+                />
+            </MuiPickersUtilsProvider>
+            </div>
+        );
+    };
+
+    handleDateChange = (date) => {
+        this.setState({ date }, () => {
+            this.refreshYearData()
+        })
     }
 
     durationFilter = () => {
+        const { classes } = this.props;
         const filters = {
-            6: '6个月',
-            12: '12个月',
-            24: '24个月',
-        }
-        const opts = Object.keys(filters).map((k)=>({
+            6: "6个月",
+            12: "12个月",
+            24: "24个月"
+        };
+        const opts = Object.keys(filters).map(k => ({
             text: filters[k],
             onSelect: () => {
-                this.setState({
-                    duration: k
-                }, this.refreshYearData)
+                this.setState(
+                    {
+                        duration: k
+                    },
+                    this.refreshYearData
+                );
             }
-        }))
-        return <SimpleMenu
-            icon={<ExpandMore/>}
-            textColor={'#999'}
-            displayText={filters[this.state.duration]}
-            items={opts} />
-    }
+        }));
+        return (
+            <div className={classes.filterItem}>
+                <div className={classes.filterTitle}>间隔</div>
+                <SimpleMenu
+                    icon={<ExpandMore />}
+                    textColor={"#999"}
+                    displayText={filters[this.state.duration]}
+                    items={opts}
+                />
+            </div>
+        );
+    };
 
-    aggregateYearData = (filter) => {
-        const {_, end} = utils.getMonthStartEnd(this.state.date)
-        const endDay = dayjs(end)
-        const data = {}
+    aggregateYearData = filter => {
+        const { _, end } = utils.getMonthStartEnd(this.state.date);
+        const endDay = dayjs(end);
+        const data = {};
         utils.range(0, this.state.duration).forEach(i => {
-            const day = endDay.add(-i, 'month')
-            const k = day.format('YYYY') + '-' + day.format('M')
+            const day = endDay.add(-i, "month");
+            const k = day.format("YYYY") + "-" + day.format("M");
             data[k] = {
                 year: day.year(),
                 month: day.month(),
@@ -135,125 +240,158 @@ class Overview extends React.Component {
                 customerCount: 0,
                 customerLiveDays: 0,
                 avgCustomerLiveDays: 0
-            }
-        })
-        const {scheduleCountByMonthPerCoach} = this.props.gym.report
-        scheduleCountByMonthPerCoach.forEach(row => {
-            const k = row['year(date)'] + '-' + row['month(date)']
-            if(!data[k]) {
-                return
-            }
-            if(!data[k].customers[row.customer_id]) {
-                data[k].customerLiveDays += row.liveDays
-            }
-            data[k].customers[row.customer_id] = 1
-            data[k].courseCount += row.course_amount
+            };
+        });
+        const { scheduleCountByMonthPerCoach } = this.props.gym.report;
 
+        const filtered = scheduleCountByMonthPerCoach.filter(row => {
+            if(this.state.coach == 0) {
+                return true
+            }
+            return row.coach_id == this.state.coach
         })
+
+        filtered.forEach(row => {
+            const k = row["year(date)"] + "-" + row["month(date)"];
+            if (!data[k]) {
+                return;
+            }
+            if (!data[k].customers[row.customer_id]) {
+                data[k].customerLiveDays += row.liveDays;
+            }
+            data[k].customers[row.customer_id] = 1;
+            data[k].courseCount += row.course_amount;
+        });
         Object.keys(data).forEach(k => {
-                data[k].customerCount = Object.keys(data[k].customers).length
-                data[k].avgCustomerLiveDays  += Math.floor(data[k].customerLiveDays / data[k].customerCount)
-        })
-        return data
-    }
+            data[k].customerCount = Object.keys(data[k].customers).length;
+            data[k].avgCustomerLiveDays += Math.floor(
+                data[k].customerLiveDays / data[k].customerCount
+            );
+        });
+        return data;
+    };
     refreshYearData = () => {
-        const {_, end} = utils.getMonthStartEnd(this.state.date)
-        const start = dayjs(end).add(-this.state.duration, 'month').add(1, 'day').format('YYYY-MM-DD')
+        const { _, end } = utils.getMonthStartEnd(this.state.date);
+        const start = dayjs(end)
+            .add(-this.state.duration, "month")
+            .add(1, "day")
+            .format("YYYY-MM-DD");
         const params = {
             start,
             end,
-            count: 'coach_id,year(date),month(date),customer_id'
-        }
+            count: "coach_id,year(date),month(date),customer_id"
+        };
         this.props.actions.loadGymScheduleCount(
             this.props.selectedGym.id,
             params
-        )
-    }
+        );
+    };
 
     getCoachQuadrantData = () => {
-        const {scheduleCountByMonthPerCoach} = this.props.gym.report
-        const year = this.state.coachQuadrantFilter.year
-        const month = this.state.coachQuadrantFilter.month
-        const data = {}
-        scheduleCountByMonthPerCoach.forEach( row => {
-            if(row['year(date)'] == year && row['month(date)'] == month) {
-                if(!data[row.coach_id]) {
+        const { scheduleCountByMonthPerCoach } = this.props.gym.report;
+        const year = this.state.coachQuadrantFilter.year;
+        const month = this.state.coachQuadrantFilter.month;
+        const data = {};
+        scheduleCountByMonthPerCoach.forEach(row => {
+            if (row["year(date)"] == year && row["month(date)"] == month) {
+                if (!data[row.coach_id]) {
                     data[row.coach_id] = {
                         x: 0,
                         y: 0,
                         coach: row.coach,
-                        color: '#8e24aa'
-                    }
+                        color: "#8e24aa"
+                    };
                 }
-                data[row.coach_id].x += row.course_amount
-                data[row.coach_id].y += row.customer_amount
+                data[row.coach_id].x += row.course_amount;
+                data[row.coach_id].y += row.customer_amount;
             }
-        })
-        return Object.values(data)
-    }
+        });
+        return Object.values(data);
+    };
 
     coachYearMonthDropdown = () => {
-        const {classes} = this.props
-        const {scheduleCountByMonthPerCoach} = this.props.gym.report
-        const displayText = (year, month) => dayjs(year + '-' + month + '-1').format('YYYY-MM')
-        const yearMonthSet = {}
+        const { classes } = this.props;
+        const { scheduleCountByMonthPerCoach } = this.props.gym.report;
+        const displayText = (year, month) =>
+            dayjs(year + "-" + month + "-1").format("YYYY-MM");
+        const yearMonthSet = {};
         scheduleCountByMonthPerCoach.forEach(row => {
-            const k = displayText(row['year(date)'], row['month(date)'])
-            yearMonthSet[k] = {year: row['year(date)'], month: row['month(date)']}
-        })
-        const opts = Object.values(yearMonthSet).map( item =>{
+            const k = displayText(row["year(date)"], row["month(date)"]);
+            yearMonthSet[k] = {
+                year: row["year(date)"],
+                month: row["month(date)"]
+            };
+        });
+        const opts = Object.values(yearMonthSet).map(item => {
             return {
                 text: displayText(item.year, item.month),
                 onSelect: () => {
                     this.setState({
                         coachQuadrantFilter: item
-                    })
+                    });
                 }
-            }
-        })
-        opts.sort((a,b)=>{
-            return new Date(a.text +'-01').getTime() - new Date(b.text +'-01').getTime()
-        })
+            };
+        });
+        opts.sort((a, b) => {
+            return (
+                new Date(a.text + "-01").getTime() -
+                new Date(b.text + "-01").getTime()
+            );
+        });
 
-        return <SimpleMenu
-            icon={<ExpandMore/>}
-            textColor={'#999'}
-            displayText={displayText(this.state.coachQuadrantFilter.year, this.state.coachQuadrantFilter.month)}
-            items={opts} />
-    }
+        return (
+            <SimpleMenu
+                icon={<ExpandMore />}
+                textColor={"#999"}
+                displayText={displayText(
+                    this.state.coachQuadrantFilter.year,
+                    this.state.coachQuadrantFilter.month
+                )}
+                items={opts}
+            />
+        );
+    };
 
     coachQuadrant = () => {
-        const {classes} = this.props
-        const data = this.getCoachQuadrantData()
-        const {xRange, yRange} = utils.getPointEdge(data)
-        xRange[0] = 0
-        yRange[0] = 0
+        const { classes } = this.props;
+        const data = this.getCoachQuadrantData();
+        const { xRange, yRange } = utils.getPointEdge(data);
+        xRange[0] = 0;
+        yRange[0] = 0;
 
-        const _onHover = (v) => {
-            this.setState({chart1Value: v})
-        }
-        const _onBlur = () => this.setState({chart1Value: null})
-        const _hintFormat = (v) => {
+        const _onHover = v => {
+            this.setState({ chart1Value: v });
+        };
+        const _onBlur = () => this.setState({ chart1Value: null });
+        const _hintFormat = v => {
             return [
-            {
-                title: '教练',
-                value: this.state.chart1Value.coach.user.name
-            },
-            {
-                title: '课程',
-                value: this.state.chart1Value.x
-            },{
-                title: '客户',
-                value: this.state.chart1Value.y
-            }]
-        }
+                {
+                    title: "教练",
+                    value: this.state.chart1Value.coach.user.name
+                },
+                {
+                    title: "课程",
+                    value: this.state.chart1Value.x
+                },
+                {
+                    title: "客户",
+                    value: this.state.chart1Value.y
+                }
+            ];
+        };
 
-
-        return<Card className={classes.coachQuadrantCard}>
-                <Typography className={classes.titleUnit + ' ' + classes.chartTitle}>教练分析</Typography>
-                <div className={classes.coachQuadrantFilter}>{this.coachYearMonthDropdown()}</div>
+        return (
+            <Card className={classes.coachQuadrantCard}>
+                <Typography
+                    className={classes.titleUnit + " " + classes.chartTitle}
+                >
+                    教练分析
+                </Typography>
+                <div className={classes.coachQuadrantFilter}>
+                    {this.coachYearMonthDropdown()}
+                </div>
                 <QuadrantChart
-                    title={''}
+                    title={""}
                     dataSet={data}
                     margin={36}
                     width={250}
@@ -263,101 +401,151 @@ class Overview extends React.Component {
                     yTitle={"客户"}
                     onHover={_onHover}
                     onBlur={_onBlur}
-                    hint={this.state.chart1Value ? <Hint value={this.state.chart1Value} format={_hintFormat} /> : null}
+                    hint={
+                        this.state.chart1Value ? (
+                            <Hint
+                                value={this.state.chart1Value}
+                                format={_hintFormat}
+                            />
+                        ) : null
+                    }
                 />
-
-             </Card>
-    }
+            </Card>
+        );
+    };
 
     lifeChart = () => {
-        const {classes} = this.props
-        const rawData = this.aggregateYearData()
+        const { classes } = this.props;
+        const rawData = this.aggregateYearData();
 
-        const ascKeys = Object.keys(rawData).reverse()
-        const xTickers = ascKeys.map(k => rawData[k].monthLabel)
+        const ascKeys = Object.keys(rawData).reverse();
+        const xTickers = ascKeys.map(k => rawData[k].monthLabel);
 
-        const avgCustomerLiveDays = ascKeys.map( (k, i) => ({
+        const avgCustomerLiveDays = ascKeys.map((k, i) => ({
             x: i,
             y: rawData[k].avgCustomerLiveDays || 0
-        }))
-        const yTitle='天'
-        const hintFormat = (p) => {
-            return [{
-                title: '平均年龄',
-                value: p.y
-            }]
-        }
+        }));
+        const yTitle = "天";
+        const hintFormat = p => {
+            return [
+                {
+                    title: "平均年龄",
+                    value: p.y
+                }
+            ];
+        };
 
-        return <Card className={classes.yearChartCard}>
-            <Typography className={classes.chartTitle}>
-                <span>
-                    {avgCustomerLiveDays[avgCustomerLiveDays.length-1].y}
-                    <span className={classes.titleUnit}>{yTitle}</span>
-                </span>
-                <span className={classes.titleUnitInactive}>{'活跃客户平均年龄'}</span>
-            </Typography>
-            <Typography className={classes.chartSubTitle} color="textSecondary">
-                {/* {this.state.duration}个月统计 */}
-            </Typography>
-            <AreaChart
-                data={avgCustomerLiveDays}
-                yTitle={yTitle}
-                xTickers={xTickers}
-                chartClassName={classes.yearChart}
-                hintFormat={hintFormat}
-            />
-        </Card>
-    }
-
-
-    yearChart = () => {
-        const {classes} = this.props
-        const rawData = this.aggregateYearData()
-
-        const ascKeys = Object.keys(rawData).reverse()
-        const xTickers = ascKeys.map(k => rawData[k].monthLabel)
-
-        const dataCourseCount = ascKeys.map( (k, i) => ({
-            x: i,
-            y: rawData[k].courseCount
-        }))
-        const dataCustomerCount = ascKeys.map( (k, i) => ({
-            x: i,
-            y: rawData[k].customerCount
-        }))
-
-        const dataSet = [dataCourseCount, dataCustomerCount]
-        const yTitle = ['课程', '客户']
-        const hintFormat = (p) => {
-            return [{
-                title: '时间',
-                value: xTickers[p.x]
-
-            },{
-                title: '课程',
-                value: dataCourseCount[p.x].y
-            },{
-                title: '客户',
-                value: dataCustomerCount[p.x].y
-            }]
-        }
-        const activeIndex = this.state.chart0ActiveIndex
-        const inactiveIndex = 1 - activeIndex
-        const dataSetForRender = activeIndex === 0 ? [dataCourseCount, dataCustomerCount] : [dataCustomerCount, dataCourseCount]
-        return <Card className={classes.yearChartCard}>
-                <div className={classes.durationFilter}>{this.durationFilter()}</div>
+        return (
+            <Card className={classes.yearChartCard}>
                 <Typography className={classes.chartTitle}>
-                   <span className={activeIndex === 1 ? classes.titleInactive : ''} onClick={()=>this.setState({chart0ActiveIndex: 0})}>
-                        {dataSet[0][dataSet[0].length-1].y}
-                        <span className={activeIndex === 1 ? classes.titleUnitInactive : classes.titleUnit}>{yTitle[0]}</span>
+                    <span>
+                        {avgCustomerLiveDays[avgCustomerLiveDays.length - 1].y}
+                        <span className={classes.titleUnit}>{yTitle}</span>
                     </span>
-                    <span className={classes.titleSeparator}>|</span>
-                    <span className={activeIndex === 0 ? classes.titleInactive : ''} onClick={()=>this.setState({chart0ActiveIndex: 1})}>
-                        {dataSet[1][dataSet[1].length-1].y}
-                        <span className={activeIndex === 0 ? classes.titleUnitInactive : classes.titleUnit}>{yTitle[1]}</span>
+                    <span className={classes.titleUnitInactive}>
+                        {"活跃客户平均年龄"}
                     </span>
                 </Typography>
-                <Typography className={classes.chartSubTitle} color="textSecondary">
+                <Typography
+                    className={classes.chartSubTitle}
+                    color="textSecondary"
+                >
+                    {/* {this.state.duration}个月统计 */}
+                </Typography>
+                <AreaChart
+                    data={avgCustomerLiveDays}
+                    yTitle={yTitle}
+                    xTickers={xTickers}
+                    chartClassName={classes.yearChart}
+                    hintFormat={hintFormat}
+                />
+            </Card>
+        );
+    };
+
+    yearChart = () => {
+        const { classes } = this.props;
+        const rawData = this.aggregateYearData();
+
+        const ascKeys = Object.keys(rawData).reverse();
+        const xTickers = ascKeys.map(k => rawData[k].monthLabel);
+
+        const dataCourseCount = ascKeys.map((k, i) => ({
+            x: i,
+            y: rawData[k].courseCount
+        }));
+        const dataCustomerCount = ascKeys.map((k, i) => ({
+            x: i,
+            y: rawData[k].customerCount
+        }));
+
+        const dataSet = [dataCourseCount, dataCustomerCount];
+        const yTitle = ["课程", "客户"];
+        const hintFormat = p => {
+            return [
+                {
+                    title: "时间",
+                    value: xTickers[p.x]
+                },
+                {
+                    title: "课程",
+                    value: dataCourseCount[p.x].y
+                },
+                {
+                    title: "客户",
+                    value: dataCustomerCount[p.x].y
+                }
+            ];
+        };
+        const activeIndex = this.state.chart0ActiveIndex;
+        const inactiveIndex = 1 - activeIndex;
+        const dataSetForRender =
+            activeIndex === 0
+                ? [dataCourseCount, dataCustomerCount]
+                : [dataCustomerCount, dataCourseCount];
+        return (
+            <Card className={classes.yearChartCard}>
+                <Typography className={classes.chartTitle}>
+                    <span
+                        className={
+                            activeIndex === 1 ? classes.titleInactive : ""
+                        }
+                        onClick={() => this.setState({ chart0ActiveIndex: 0 })}
+                    >
+                        {dataSet[0][dataSet[0].length - 1].y}
+                        <span
+                            className={
+                                activeIndex === 1
+                                    ? classes.titleUnitInactive
+                                    : classes.titleUnit
+                            }
+                        >
+                            {yTitle[0]}
+                        </span>
+                    </span>
+                    <span className={classes.titleSeparator}>|</span>
+                    <span
+                        className={
+                            activeIndex === 0 ? classes.titleInactive : ""
+                        }
+                        onClick={() => this.setState({ chart0ActiveIndex: 1 })}
+                    >
+                        {dataSet[1][dataSet[1].length - 1].y}
+                        <span
+                            className={
+                                activeIndex === 0
+                                    ? classes.titleUnitInactive
+                                    : classes.titleUnit
+                            }
+                        >
+                            {yTitle[1]}
+                        </span>
+                    </span>
+                </Typography>
+                <Typography
+                    className={classes.chartSubTitle}
+                    color="textSecondary"
+                >
                     {/* {this.state.duration}个月统计 */}
                 </Typography>
                 <DoubleAreaChart
@@ -366,17 +554,23 @@ class Overview extends React.Component {
                     xTickers={xTickers}
                     chartClassName={classes.yearChart}
                     hintFormat={hintFormat}
-                    toggle={()=>this.setState({chart0ActiveIndex: 1 - activeIndex})}
-                 />
+                    toggle={() =>
+                        this.setState({ chart0ActiveIndex: 1 - activeIndex })
+                    }
+                />
             </Card>
-    }
+        );
+    };
 
-    render(){
-        return <React.Fragment>
-            {this.yearChart()}
-            {this.lifeChart()}
-            {this.coachQuadrant()}
-        </React.Fragment>
+    render() {
+        return (
+            <React.Fragment>
+                {this.filterBar()}
+                {this.yearChart()}
+                {this.lifeChart()}
+                {this.coachQuadrant()}
+            </React.Fragment>
+        );
     }
 }
 
@@ -384,18 +578,18 @@ const mapStoreToProps = store => {
     return {
         selectedGym: store.setting.selectedGym,
         gym: store.gym
-    }
-}
+    };
+};
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(Actions, dispatch)
-    }
+    };
 }
 
 const LinkedOverview = connect(
     mapStoreToProps,
     mapDispatchToProps
-)(Overview)
+)(Overview);
 
-export default withStyles(styles)(LinkedOverview)
+export default withStyles(styles)(LinkedOverview);
