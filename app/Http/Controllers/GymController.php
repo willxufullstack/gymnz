@@ -120,6 +120,27 @@ class GymController extends Controller
         ];
     }
 
+    public function refreshCustomerCreatedAt($id){
+        $customers = Order::with('customer')
+            ->where('gym_id', '=', $id)
+            ->orderBy('updated_at', 'DESC')
+            ->get()
+            ->pluck('customer')
+            ->unique('id')
+            ->toArray();
+        $i = 0;
+        foreach($customers as $c){
+            $customer = User::find($c['id']);
+            $firstOrder = $customer->getFirstOrder($id);
+            if(!empty($firstOrder)){
+                $customer->created_at = $firstOrder->created_at;
+                $customer->save();
+                $i ++;
+            }
+        }
+        return response()->json(['updated' => $i], 200);
+    }
+
 
     public function getCustomerList($id)
     {

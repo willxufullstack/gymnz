@@ -39,7 +39,7 @@ class ScheduleController extends Controller
         // could be [customer_id, coach_id]
         if ($request->input('count')) {
             $group = $request->input('count');
-            $query->select(DB::raw('count(distinct(customer_id)) as customer_amount,count(distinct(customer_id)) as customer_amount, count(id) as course_amount, ' . $group));
+            $query->select(DB::raw('count(distinct(customer_id)) as customer_amount, count(id) as course_amount, ' . $group));
             $query->where('order_id', '>', 0);
         }
 

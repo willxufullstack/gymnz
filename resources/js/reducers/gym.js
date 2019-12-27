@@ -625,6 +625,14 @@ const gym = (state = initState, action = NonAction) => {
             switch (action.payload.config.params.count) {
                 case 'coach_id,year(date),month(date),customer_id':
                     report.scheduleCountByMonthPerCoach = action.payload.data
+                    // calc live time each row
+                    report.scheduleCountByMonthPerCoach.forEach(row => {
+                        const date1 = new Date(row['year(date)'] + '-' + row['month(date)'] + '-' + '01')
+                        const date2 = new Date(row.customer.created_at)
+                        const diffTime = Math.abs(date1 - date2)
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                        row.liveDays = diffDays
+                    })
                     break
                 case 'coach_id,year(date),month(date)':
                     report.scheduleCountByMonthPerCoach = action.payload.data

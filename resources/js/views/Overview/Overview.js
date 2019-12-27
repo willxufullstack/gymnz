@@ -8,20 +8,11 @@ import Card from '@material-ui/core/Card';
 import { withStyles } from "@material-ui/core";
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import SimpleMenu from "-components/SimpleMenu/SimpleMenu";
-import {
-    XYPlot,
-    XAxis,
-    YAxis,
-    AreaSeries,
-    HorizontalGridLines,
-    LineMarkSeries,
-    GradientDefs,
-    Hint
-  } from 'react-vis'
 import {CardContent} from '@material-ui/core'
 import Typography from '@material-ui/core/Typography';
 import QuadrantChart from '../History/QuadrantChart'
 import DoubleAreaChart from './DoubleAreaChart'
+import AreaChart from './AreaChart'
 
 const styles = {
     durationFilter: {
@@ -127,7 +118,6 @@ class Overview extends React.Component {
             items={opts} />
     }
 
-
     aggregateYearData = (filter) => {
         const {_, end} = utils.getMonthStartEnd(this.state.date)
         const endDay = dayjs(end)
@@ -139,9 +129,11 @@ class Overview extends React.Component {
                 year: day.year(),
                 month: day.month(),
                 monthLabel: utils.getMonthLabel(day.month()),
-                customers: [],
+                customers: {},
                 courseCount: 0,
-                customerCount: 0
+                customerCount: 0,
+                customerLiveDays: 0,
+                avgCustomerLiveDays: 0
             }
         })
         const {scheduleCountByMonthPerCoach} = this.props.gym.report
@@ -150,10 +142,17 @@ class Overview extends React.Component {
             if(!data[k]) {
                 return
             }
-            data[k].courseCount += row.course_amount
+            if(!data[k].customers[row.customer_id]) {
+                data[k].customerLiveDays += row.liveDays
+            }
             data[k].customers[row.customer_id] = 1
+            data[k].courseCount += row.course_amount
+
         })
-        Object.keys(data).forEach(k => data[k].customerCount = Object.keys(data[k].customers).length)
+        Object.keys(data).forEach(k => {
+                data[k].customerCount = Object.keys(data[k].customers).length
+                data[k].avgCustomerLiveDays  += data[k].customerLiveDays / data[k].customerCount
+        })
         return data
     }
     refreshYearData = () => {
@@ -269,6 +268,46 @@ class Overview extends React.Component {
              </Card>
     }
 
+    lifeChart = () => {
+        const {classes} = this.props
+        const rawData = this.aggregateYearData()
+
+        const ascKeys = Object.keys(rawData).reverse()
+        const xTickers = ascKeys.map(k => rawData[k].monthLabel)
+
+        const avgCustomerLiveDays = ascKeys.map( (k, i) => ({
+            x: i,
+            y: rawData[k].avgCustomerLiveDays || 0
+        }))
+        const yTitle='天'
+        const hintFormat = (p) => {
+            return [{
+                title: '平均年龄',
+                value: p.y
+            }]
+        }
+
+        return <Card className={classes.yearChartCard}>
+            <Typography className={classes.chartTitle}>
+                <span>
+                    {avgCustomerLiveDays[avgCustomerLiveDays.length-1].y}
+                    <span className={classes.titleUnit}>{yTitle}</span>
+                </span>
+                <span className={classes.titleUnitInactive}>{'活跃客户平均年龄'}</span>
+            </Typography>
+            <Typography className={classes.chartSubTitle} color="textSecondary">
+                {/* {this.state.duration}个月统计 */}
+            </Typography>
+            <AreaChart
+                data={avgCustomerLiveDays}
+                yTitle={yTitle}
+                xTickers={xTickers}
+                chartClassName={classes.yearChart}
+                hintFormat={hintFormat}
+            />
+        </Card>
+    }
+
 
     yearChart = () => {
         const {classes} = this.props
@@ -334,6 +373,7 @@ class Overview extends React.Component {
     render(){
         return <React.Fragment>
             {this.yearChart()}
+            {this.lifeChart()}
             {this.coachQuadrant()}
         </React.Fragment>
     }

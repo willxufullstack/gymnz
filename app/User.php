@@ -32,7 +32,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'updated_at', 'created_at', 'email_verified_at',
+        'password', 'remember_token', 'updated_at', 'email_verified_at',
     ];
 
     /**
@@ -90,5 +90,14 @@ class User extends Authenticatable implements JWTSubject
             $ret['booked'] += $order->booked_amount;
         }
         return $ret;
+    }
+
+    public function getFirstOrder($gymId){
+        $query = Order::where([
+            'customer_id' => $this->id,
+            'gym_id' =>$gymId
+        ]);
+
+        return $query->orderBy('created_at', 'ASC')->first();
     }
 }

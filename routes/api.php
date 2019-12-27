@@ -44,6 +44,7 @@ Route::group([], function () {
     // allow visit the trial course so that user can access from wx app
     Route::get('/gym/{gym}/trial/{id}', 'ScheduleController@show');
     // paste route here to skip auth when debug
+    Route::get('gym/{gym}/refreshCustomerCreatedAt', 'GymController@refreshCustomerCreatedAt');
 
 });
 
