@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import QuadrantChart from '../History/QuadrantChart'
 import DoubleAreaChart from './DoubleAreaChart'
 import AreaChart from './AreaChart'
+import { Hint } from 'react-vis'
 
 const styles = {
     durationFilter: {
