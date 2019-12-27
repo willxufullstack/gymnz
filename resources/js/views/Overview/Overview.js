@@ -151,7 +151,7 @@ class Overview extends React.Component {
         })
         Object.keys(data).forEach(k => {
                 data[k].customerCount = Object.keys(data[k].customers).length
-                data[k].avgCustomerLiveDays  += data[k].customerLiveDays / data[k].customerCount
+                data[k].avgCustomerLiveDays  += Math.floor(data[k].customerLiveDays / data[k].customerCount)
         })
         return data
     }
