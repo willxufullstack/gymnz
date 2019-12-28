@@ -27,6 +27,12 @@ export function getMonthLabel(i) {
     return ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'][i]
 }
 
+export function sum(items, prop){
+    return items.reduce( function(a, b){
+        return a + b[prop];
+    }, 0);
+}
+
 export function getRange(data, delta=0.3) {
     if(!data || !data.length) {
         return [0, 0]

@@ -631,6 +631,8 @@ const gym = (state = initState, action = NonAction) => {
                         const date2 = new Date(row.customer.created_at)
                         const diffTime = Math.abs(date1 - date2)
                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                        row.year = row['year(date)']
+                        row.month = row['month(date)']
                         row.liveDays = diffDays
                     })
                     break
