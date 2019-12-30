@@ -41,8 +41,9 @@ const styles = {
     tabDescription: {
         textAlign: 'center',
         fontSize: 12,
-        marginTop: 6,
-        color: '#666'
+        marginTop: 4,
+        color: '#666',
+        marginBottom:6
     },
     dotTab: {
         flex: 1,
@@ -151,7 +152,8 @@ class Overview extends React.Component {
                 year: dayjs().format("YYYY"),
                 month: dayjs().format("M")
             },
-            duration: 6
+            duration: 6,
+            selectedDate: null
         };
     }
 
@@ -256,10 +258,11 @@ class Overview extends React.Component {
     };
 
     getNewCustomers = () => {
-        const lastMonth = this.state.date.add(-1, "month");
+        const selectedDate = this.state.selectedDate ? this.state.selectedDate : this.state.date
+        const lastMonth = selectedDate.add(-1, "month");
 
         const currentMonthCustomersMap = this.getCustomerMapByMonth(
-            this.state.date
+            selectedDate
         );
         const lastMonthCustomersMap = this.getCustomerMapByMonth(lastMonth);
         if (!Object.keys(lastMonthCustomersMap).length) {
@@ -277,16 +280,14 @@ class Overview extends React.Component {
 
 
     getHotCustomers = () => {
+        const selectedDate = this.state.selectedDate ? this.state.selectedDate : this.state.date
         const currentMonthCustomersMap = this.getCustomerMapByMonth(
-            this.state.date
+            selectedDate
         )
         const customerScheduleCountMap = {}
         Object.keys(currentMonthCustomersMap).forEach( customerId => {
             customerScheduleCountMap[customerId] = utils.sum(currentMonthCustomersMap[customerId], 'course_amount')
         })
-
-        console.log(customerScheduleCountMap)
-
         const ret = []
         Object.keys(currentMonthCustomersMap).forEach(customerId => {
             if(customerScheduleCountMap[customerId] >= 8){
@@ -297,10 +298,11 @@ class Overview extends React.Component {
     }
 
     getCoolCustomers = () => {
-        const lastMonth = this.state.date.add(-1, "month");
+        const selectedDate = this.state.selectedDate ? this.state.selectedDate : this.state.date
+        const lastMonth = selectedDate.add(-1, "month");
 
         const currentMonthCustomersMap = this.getCustomerMapByMonth(
-            this.state.date
+            selectedDate
         );
         const lastMonthCustomersMap = this.getCustomerMapByMonth(lastMonth);
         if (!Object.keys(lastMonthCustomersMap).length) {
@@ -331,8 +333,6 @@ class Overview extends React.Component {
         });
         return ret;
     };
-
-
 
     handleDateChange = date => {
         this.setState({ date }, () => {
@@ -698,6 +698,12 @@ class Overview extends React.Component {
                     dataSet={dataSetForRender}
                     yTitle={yTitle}
                     xTickers={xTickers}
+                    onValueClick={(dataPoint) => {
+                        const delta = xTickers.length - dataPoint.x - 1
+                        const selected = this.state.date.add(-delta,'month')
+                        // console.log(selected.format('YYYY-MM-DD'))
+                        this.setState({selectedDate: selected})
+                    }}
                     chartClassName={classes.yearChart}
                     hintFormat={hintFormat}
                     toggle={() =>
@@ -710,6 +716,7 @@ class Overview extends React.Component {
 
     customerListTab = () => {
         const { classes } = this.props;
+        const selectedDate = this.state.selectedDate ? this.state.selectedDate : this.state.date
         const dots = [
             {
                 name: "新活跃",
@@ -750,6 +757,7 @@ class Overview extends React.Component {
                         </div>
                     ))}
                 </div>
+                <p className={classes.tabDescription}>{selectedDate.format('YYYY-MM')}</p>
                 <p className={classes.tabDescription}>{dots[this.state.activeCustomerTab].description}</p>
                 <List>{dots[this.state.activeCustomerTab].getCustomers()}</List>
             </React.Fragment>

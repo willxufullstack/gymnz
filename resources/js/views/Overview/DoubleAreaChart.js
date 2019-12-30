@@ -33,6 +33,13 @@ export default class DoubleAreaChart extends React.Component {
     }
     _onBlur = () => this.setState({current: null})
 
+    _onValueClick = (dataPoint, e) => {
+        if(this.props.onValueClick) {
+            this.props.onValueClick(dataPoint)
+            e.event.stopPropagation()
+        }
+    }
+
     render(){
         const {dataSet, yTitle, xTickers, chartClassName, hintFormat} = this.props
         const yDomainSet = [
@@ -87,6 +94,7 @@ export default class DoubleAreaChart extends React.Component {
                                 onValueMouseOver={this._onHover}
                                 onValueMouseOut={this._onBlur}
                                 data={dataSet[activeIndex]}
+                                onValueClick={this._onValueClick}
                             />
                             {this.state.current ? <Hint value={this.state.current} format={hintFormat} /> : null}
                         </XYPlot>
