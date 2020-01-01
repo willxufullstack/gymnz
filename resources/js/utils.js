@@ -96,6 +96,13 @@ export function getYearStartEnd(date, format = 'YYYY-MM-DD') {
         end: d.endOf('year').format(format),
     }
 }
+export function getDayStartEnd(date, format = 'YYYY-MM-DD HH:mm:ss') {
+    const d = dayjs(date)
+    return {
+        start: d.startOf('day').format(format),
+        end: d.endOf('day').format(format),
+    }
+}
 
 export function b64toBlob(b64Data, contentType, sliceSize) {
     contentType = contentType || '';

@@ -51,6 +51,7 @@ class Dashboard extends React.Component {
 
     handleDateChange = selectedDate => {
         this.setState({ selectedDate }, () => {
+            this.refreshTodaySale(selectedDate);
             this.props.actions.LoadGymSchedule(this.props.selectedGym.id, {
                 date: dayjs(selectedDate).format('YYYY-MM-DD'),
                 price: 1
@@ -81,6 +82,18 @@ class Dashboard extends React.Component {
     componentWillUnmount() {
         // close dialogue when leaving
         this.props.actions.cancelNewOrder()
+    }
+
+    refreshTodaySale = (selectedDate) => {
+        const dateRange = utils.getDayStartEnd(selectedDate)
+        const params = {
+            start: dateRange.start,
+            end: dateRange.end
+        }
+        this.props.actions.loadGymOrders(
+            this.props.selectedGym.id,
+            params
+        )
     }
 
     reloadSchedule = () => {
@@ -445,6 +458,24 @@ class Dashboard extends React.Component {
                         </CardHeader>
                     </Card>
                 </GridItem>
+
+
+                <GridItem xs={12} sm={6} md={3}>
+                    <Card className='summary-card'>
+                        <CardHeader color='success' stats icon>
+                            <p className={classes.cardCategory}>今日销售</p>
+                            <h3 className={classes.cardTitle}>
+                                ¥
+                                {Math.floor(
+                                    this.props.gym.report.orders.reduce(
+                                        (prev, cur) => prev + cur.price, 0
+                                    )
+                                )}
+                            </h3>
+                        </CardHeader>
+                    </Card>
+                </GridItem>
+
             </GridContainer>
         )
     }
