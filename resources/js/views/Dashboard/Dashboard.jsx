@@ -462,7 +462,7 @@ class Dashboard extends React.Component {
                                 ¥
                                 {Math.floor(
                                     this.props.gym.schedules.reduce(
-                                        (prev, cur) => prev + cur.price, 0
+                                        (prev, cur) => prev + (cur.price || 0), 0
                                     )
                                 )}
                             </h3>
