@@ -232,6 +232,7 @@ class Overview extends React.Component {
                         views={["year", "month"]}
                         value={this.state.date}
                         onChange={this.handleDateChange}
+                        autoOk
                     />
                 </MuiPickersUtilsProvider>
             </div>
