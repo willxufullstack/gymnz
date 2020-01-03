@@ -236,6 +236,7 @@ class MonthlyReport extends React.Component {
                     views={['year', 'month']}
                     value={this.state.date}
                     onChange={this.handleDateChange}
+                    autoOk
                 />
             </MuiPickersUtilsProvider>
         )

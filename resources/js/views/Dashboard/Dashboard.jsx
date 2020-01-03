@@ -8,6 +8,8 @@ import withStyles from '@material-ui/core/styles/withStyles'
 import Paper from '@material-ui/core/Paper'
 // @material-ui/icons
 import Add from '@material-ui/icons/Add'
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft'
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight'
 // core components
 import GridItem from '-components/Grid/GridItem.jsx'
 import GridContainer from '-components/Grid/GridContainer.jsx'
@@ -15,16 +17,11 @@ import Badge from '@material-ui/core/Badge'
 import CustomerSelectionDialogue from '-components/CustomDialogues/CustomerSelectionDialogue'
 import Card from '-components/Card/Card.jsx'
 import CardHeader from '-components/Card/CardHeader.jsx'
-import CardIcon from '-components/Card/CardIcon.jsx'
-import CardFooter from '-components/Card/CardFooter.jsx'
-import Icon from '@material-ui/core/Icon'
 import Button from '-components/CustomButtons/Button.jsx'
 import * as utils from '-utils'
 import * as config from '-config'
 import dayjs from 'dayjs'
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
-import Danger from '-components/Typography/Danger.jsx'
-import Warning from '-components/Typography/Warning.jsx'
 
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import classnames from 'classnames'
@@ -349,6 +346,16 @@ class Dashboard extends React.Component {
         )
     }
 
+    nextDay = () => {
+        const nextDay = dayjs(this.state.selectedDate).add(1, 'day')
+        this.handleDateChange(nextDay)
+    }
+
+    prevDay = () => {
+        const prevDay = dayjs(this.state.selectedDate).add(-1, 'day')
+        this.handleDateChange(prevDay)
+    }
+
     getGymDayOverView = () => {
         return (
             <Paper elevation={12} className='gym-day-view-container'>
@@ -360,7 +367,9 @@ class Dashboard extends React.Component {
                             md={1}
                             container
                             alignItems={'center'}
+                            style={{position:'relative'}}
                         >
+                            <KeyboardArrowLeft onClick={this.prevDay} style={{fill:'#666', position: 'absolute', left: 0, top: 3, zIndex: 1000}}/>
                             <MuiPickersUtilsProvider
                                 utils={DayjsUtils}
                                 locale={'zh-cn'}
@@ -370,8 +379,10 @@ class Dashboard extends React.Component {
                                     format='MM/DD'
                                     value={this.state.selectedDate}
                                     onChange={this.handleDateChange}
+                                    autoOk
                                 />
                             </MuiPickersUtilsProvider>
+                            <KeyboardArrowRight onClick={this.nextDay}  style={{fill:'#666', position: 'absolute', right: 0, top: 3, zIndex: 1000}}/>
                         </GridItem>
                         <GridItem
                             container
