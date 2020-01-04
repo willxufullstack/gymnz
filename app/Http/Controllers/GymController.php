@@ -111,7 +111,8 @@ class GymController extends Controller
         //
     }
 
-    public function getShareCover(){
+    public function getShareCover()
+    {
         return [
             'plan' => 'http://static.o2-fit.com/image/plan_share_500x400.png',
             // 'register' => 'http://static.o2-fit.com/image/register_share.jpg',
@@ -120,7 +121,8 @@ class GymController extends Controller
         ];
     }
 
-    public function refreshCustomerCreatedAt($id){
+    public function refreshCustomerCreatedAt($id)
+    {
         $customers = Order::with('customer')
             ->where('gym_id', '=', $id)
             ->orderBy('updated_at', 'DESC')
@@ -129,13 +131,13 @@ class GymController extends Controller
             ->unique('id')
             ->toArray();
         $i = 0;
-        foreach($customers as $c){
+        foreach ($customers as $c) {
             $customer = User::find($c['id']);
             $firstOrder = $customer->getFirstOrder($id);
-            if(!empty($firstOrder)){
+            if (!empty($firstOrder)) {
                 $customer->created_at = $firstOrder->created_at;
                 $customer->save();
-                $i ++;
+                $i++;
             }
         }
         return response()->json(['updated' => $i], 200);
@@ -155,14 +157,14 @@ class GymController extends Controller
         $gym = Gym::find($id);
         $trialIds = $gym->getTrialCustomers();
         $trials = [];
-        if(!empty($trialIds)){
+        if (!empty($trialIds)) {
             $trials = User::whereIn('id', $gym->getTrialCustomers())->get();
         }
         $ret = [];
         if (is_array($customers)) {
             $ret = array_values($customers);
         }
-        foreach($trials as $c) {
+        foreach ($trials as $c) {
             $ret[] = $c->toArray();
         }
         return response()->json($ret, 200);
@@ -178,7 +180,7 @@ class GymController extends Controller
         // get workinghours
         $gym = Gym::find($id);
         $workingHours = range($gym->setting['workingHours']['min'], $gym->setting['workingHours']['max'] - 1);
-        if(empty($workingHours) || count($workingHours) < 4) {
+        if (empty($workingHours) || count($workingHours) < 4) {
             $workingHours = range(32, 92);
         }
 
@@ -223,8 +225,10 @@ class GymController extends Controller
 
 
         $gym = Gym::find($id);
+        $endWithSeconds = $request->input('end') . ' 23:59:59';
         $startGymTimezone = $gym->convertGymTimezoneToUTC($request->input('start'));
-        $endGymTimezone = $gym->convertGymTimezoneToUTC($request->input('end'));
+        $endGymTimezone = $gym->convertGymTimezoneToUTC($endWithSeconds);
+        // change end time to the last second of the end day
 
         $orders = Order::where('gym_id', $id)
             ->where('price', '>', 0)

@@ -30,8 +30,6 @@ class OrderController extends Controller
         $gym = Gym::find($gymId);
         $startGymTimezone = $gym->convertGymTimezoneToUTC($request->input('start'));
         $endGymTimezone = $gym->convertGymTimezoneToUTC($request->input('end'));
-        // have to goes to the end of the end day
-        $endGymTimezone .= ' 23:59:59';
 
         $orders = Order::with(['customer', 'coach.user'])
             ->where('gym_id', '=', $gymId)
