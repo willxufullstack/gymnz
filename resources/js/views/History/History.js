@@ -136,7 +136,7 @@ class History extends React.Component {
     }
 
     refreshMonthSale = () => {
-        const dateRange = utils.getYearStartEnd(this.state.date)
+        const dateRange = utils.getYearStartEnd(this.state.date, 'YYYY-MM-DD HH:mm:ss')
         const params = {
             start: dateRange.start,
             end: dateRange.end
