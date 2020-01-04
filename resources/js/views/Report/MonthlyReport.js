@@ -36,7 +36,7 @@ class MonthlyReport extends React.Component {
             this.loadSale, // refresh sale
             () => {
                 //refresh coach
-                let params = utils.getMonthStartEnd(this.state.date)
+                let params = utils.getMonthStartEnd(this.state.date,)
                 params.count = 'coach_id'
                 params.status = 2
                 this.props.actions.loadGymScheduleCount(
@@ -69,7 +69,7 @@ class MonthlyReport extends React.Component {
     }
 
     loadSale = () => {
-        const month = utils.getMonthStartEnd(this.state.date)
+        const month = utils.getMonthStartEnd(this.state.date, 'YYYY-MM-DD HH:mm:ss')
         this.props.actions.loadGymOrders(this.props.selectedGym.id, month)
     }
 
