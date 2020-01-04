@@ -221,10 +221,15 @@ class GymController extends Controller
 
         $activeCustomerCount = count($schedules->groupBy('customer_id')->get('customer_id'));
 
+
+        $gym = Gym::find($id);
+        $startGymTimezone = $gym->convertGymTimezoneToUTC($request->input('start'));
+        $endGymTimezone = $gym->convertGymTimezoneToUTC($request->input('end'));
+
         $orders = Order::where('gym_id', $id)
             ->where('price', '>', 0)
-            ->where('created_at', '>=', $request->input('start'))
-            ->where('created_at', '<=', $request->input('end'));
+            ->where('created_at', '>=', $startGymTimezone)
+            ->where('created_at', '<=', $endGymTimezone);
         // order count
         $orderCount = $orders->count();
 

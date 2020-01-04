@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Redis;
 class Gym extends Model
 {
     protected $tableName = "gyms";
+    const DEFAULT_TIMEZONE = 'Asia/Shanghai';
 
     protected $casts = [
         'setting' => 'array'
@@ -19,7 +20,7 @@ class Gym extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'org_id', 'created_by', 'setting'
+        'name', 'description', 'org_id', 'created_by', 'setting', 'timezone'
     ];
 
     /**
@@ -39,6 +40,7 @@ class Gym extends Model
     {
         return 'gym_' . $this->id . '___trial_customers';
     }
+
     public function addTrialCustomer($customerId)
     {
         $key = $this->_trialCustomersRedisKey();
@@ -61,4 +63,26 @@ class Gym extends Model
         }
         return array_keys(json_decode($trialCustomers, true));
     }
+
+    public function getTimezone()
+    {
+        return $this->timezone ? $this->timezone : self::DEFAULT_TIMEZONE;
+    }
+
+    public function convertGymTimezoneToUTC($time, $format = 'Y-m-d H:i:s'): string
+    {
+        $timezone = $this->getTimezone();
+        $utcTime = new \DateTime($time, new \DateTimeZone($timezone));
+        $utcTime->setTimezone(new \DateTimeZone('UTC'));
+        return $utcTime->format($format);
+    }
+
+    public function convertUTCToGymTimezone($time, $format = 'Y-m-d H:i:s'): string
+    {
+        $timezone = $this->getTimezone();
+        $gymTime = new \DateTime($time, new \DateTimeZone('UTC'));
+        $gymTime->setTimezone(new \DateTimeZone($timezone));
+        return $gymTime->format($format);
+    }
+
 }

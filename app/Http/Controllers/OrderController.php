@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 class OrderController extends Controller
 {
     const DEFAULT_PASSWORD = '12345678';
+
     /**
      * Display a listing of the resource.
      *
@@ -26,11 +27,18 @@ class OrderController extends Controller
             return response()->json(array('message' => 'missing time range'), 500);
         }
 
+        $gym = Gym::find($gymId);
+        $startGymTimezone = $gym->convertGymTimezoneToUTC($request->input('start'));
+        $endGymTimezone = $gym->convertGymTimezoneToUTC($request->input('end'));
         $orders = Order::with(['customer', 'coach.user'])
             ->where('gym_id', '=', $gymId)
-            ->where('created_at', '>=', $request->input('start'))
-            ->where('created_at', '<=', $request->input('end'))
+            ->where('created_at', '>=', $startGymTimezone)
+            ->where('created_at', '<=', $endGymTimezone)
             ->get();
+
+        foreach ($orders as &$order) {
+            $order->formatTimestamp();
+        }
 
         if ($orders) {
             return response()->json($orders, 200);
@@ -51,7 +59,7 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -104,7 +112,7 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -115,7 +123,7 @@ class OrderController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -126,8 +134,8 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $gymId, $orderId)
@@ -142,13 +150,13 @@ class OrderController extends Controller
         $order->price = $request->input('price');
         $order->course_amount = $request->input('course_amount');
         $order->save();
-        return  response()->json($order, 200);
+        return response()->json($order, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -156,16 +164,17 @@ class OrderController extends Controller
         //
     }
 
-    public function split(Request $request, $gymId, $orderId) {
+    public function split(Request $request, $gymId, $orderId)
+    {
         $by = Auth::User()->id;
         $oriOrder = Order::find($orderId);
         $data = $request->only('customer_phone', 'course_amount');
         $customer = User::where('email', $data['customer_phone'])->first();
-        if(empty($customer)){
+        if (empty($customer)) {
             return response()->json(array('message' => 'cannot find the customer'), 404);
         }
 
-        $childOrderPrice = $oriOrder->price / $oriOrder->course_amount *  $data['course_amount'];
+        $childOrderPrice = $oriOrder->price / $oriOrder->course_amount * $data['course_amount'];
         // 1. create a new order
         $childOrder = new Order();
         $childOrder->course_amount = $data['course_amount'];
@@ -199,7 +208,7 @@ class OrderController extends Controller
         $order->status = 2;
         $order->save();
         event(new \App\Events\OrderEvent($order, Auth::User()->id, 'refund', -$request->input('amount'), $request->input('reason')));
-        return  response()->json($order, 200);
+        return response()->json($order, 200);
     }
 
     public function getCustomerOrders(Request $request, $customerId)
@@ -211,8 +220,12 @@ class OrderController extends Controller
             $query = $query->where('gym_id', '=', $request->input('gym'));
         }
         $ret = $query->get();
+        foreach ($ret as $order) {
+            $order->formatTimestamp();
+        }
+
         if ($request->input('schedule')) {
-            foreach($ret as &$order){
+            foreach ($ret as &$order) {
                 $order['schedules'] = Schedule::where('order_id', $order->id)
                     ->orderBy('date', 'DESC')
                     ->get();
