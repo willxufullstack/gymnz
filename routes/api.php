@@ -77,6 +77,7 @@ Route::group([
     Route::get('user/{user}/order', 'OrderController@getCustomerOrders');
     Route::resource('user.bodydata', 'BodyDataController');
     Route::resource('user.photo', 'PhotoController');
+    Route::resource('user.homework', 'HomeworkController');
 
     Route::resource('org', 'OrganizationController');
 
