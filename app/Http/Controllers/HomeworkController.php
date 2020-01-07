@@ -17,7 +17,8 @@ class HomeworkController extends Controller
      */
     public function index($userId)
     {
-        return Homework::where('customer_id', $userId)
+        return Homework::with(['coach.user', 'customer'])
+            ->where('customer_id', $userId)
             ->orderBy('date', 'DESC')
             ->get();
     }
