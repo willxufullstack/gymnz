@@ -289,6 +289,28 @@ class Customer extends React.Component {
         )
     }
 
+    getFinishedTab = () => {
+        let finished = this.props.gym.customerPage.schedules.finished
+        if (!finished) {
+            return <p>{L.noFinished}</p>
+        }
+        let header = [L.date, L.time, L.coach]
+        let tableData = finished.map(r => [
+            r.date,
+            utils.getTimeStr(r.start),
+            r.coach.user.name,
+        ])
+
+        return (
+            <Table
+                classes={{ tableResponsive: 'no-margin-top' }}
+                tableHeaderColor='primary'
+                tableHead={header}
+                tableData={tableData}
+            />
+        )
+    }
+
     getDataTab = () => {
         return (
             <CustomerDataSection
@@ -338,6 +360,17 @@ class Customer extends React.Component {
                 {L.unfinished}
             </Badge>
         )
+        let finishedTabHeader = (
+            <Badge
+                className='tab-badge'
+                color='secondary'
+                badgeContent={
+                    this.props.gym.customerPage.schedules.finished.length
+                }
+            >
+                {L.finished}
+            </Badge>
+        )
         let confirmationParams = {
             message: L.cancelConfirm,
             onCancel: this.hideCancelConfirmation,
@@ -377,6 +410,10 @@ class Customer extends React.Component {
                             {
                                 tabName: unfinishedTabHeader,
                                 tabContent: this.getUnfinishedTab()
+                            },
+                            {
+                                tabName: finishedTabHeader,
+                                tabContent: this.getFinishedTab()
                             },
                             {
                                 tabName: L.data,
