@@ -62,9 +62,12 @@ class HomeworkController extends Controller
      * @param  \App\Homework  $homework
      * @return \Illuminate\Http\Response
      */
-    public function show(Homework $homework)
+    public function show(Request $request, $userId, $id)
     {
-        //
+        return Homework::with(['coach.user', 'customer'])
+                ->where('customer_id', $userId)
+                ->where('id', $id)
+                ->first();
     }
 
     /**
