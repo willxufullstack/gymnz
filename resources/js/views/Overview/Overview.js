@@ -241,6 +241,8 @@ class Overview extends React.Component {
 
     customerCard = (customer, color) => {
         const { classes } = this.props;
+        const customerWithLatestSchedule = this.props.gym.customers.find((item) => item.id === customer.id)
+        const subtitle = (schedule) => schedule ? schedule.date + ' | ' + schedule.coach_name : '--'
         return (
             <ListItem key={customer.id}>
                 <ListItemAvatar className={classes.customerCard}>
@@ -253,7 +255,7 @@ class Overview extends React.Component {
                         }}
                     />
                 </ListItemAvatar>
-                <ListItemText primary={customer.name} secondary="" />
+                <ListItemText primary={customer.name} secondary={subtitle(customerWithLatestSchedule.latest_schedule)} />
             </ListItem>
         );
     };

@@ -43,7 +43,7 @@ class GymController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -61,7 +61,7 @@ class GymController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -72,7 +72,7 @@ class GymController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -83,8 +83,8 @@ class GymController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -103,7 +103,7 @@ class GymController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -167,6 +167,30 @@ class GymController extends Controller
         foreach ($trials as $c) {
             $ret[] = $c->toArray();
         }
+
+        // get customer id list
+        $customerIdList =  array_column($ret, 'id');
+
+        // get latest schedule info by customer_id
+        $schedules = Schedule::with(['coach.user', 'customer'])
+            ->select(DB::raw('coach_id, customer_id, MAX(date) AS date'))
+            ->whereIn('customer_id', $customerIdList)
+            ->groupBy('customer_id')
+            ->get();
+
+        $customerToSchedule = [];
+        foreach ($schedules as $item) {
+            $customerToSchedule[$item['customer_id']]['date'] = $item['date'];
+            $customerToSchedule[$item['customer_id']]['coach_name'] = $item['coach']['user']['name'];
+        }
+
+        // add schedule data to ret
+        foreach ($ret as &$item) {
+            if(array_key_exists($item['id'], $customerToSchedule)){
+                $item['latest_schedule'] = $customerToSchedule[$item['id']];
+            }
+        }
+
         return response()->json($ret, 200);
     }
 
