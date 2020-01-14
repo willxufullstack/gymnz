@@ -1,6 +1,6 @@
 import React from 'react'
 import connect from 'react-redux/es/connect/connect'
-import { bindActionCreators } from 'redux'
+import {bindActionCreators} from 'redux'
 import * as Actions from '../../actions'
 import PropTypes from 'prop-types'
 // @material-ui/core
@@ -21,7 +21,7 @@ import Button from '-components/CustomButtons/Button.jsx'
 import * as utils from '-utils'
 import * as config from '-config'
 import dayjs from 'dayjs'
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
+import {DatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers'
 
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import classnames from 'classnames'
@@ -31,23 +31,34 @@ import '../../../sass/gymdayview.scss'
 import 'dayjs/locale/zh-cn'
 
 import dashboardStyle from '-assets/jss/material-dashboard-react/views/dashboardStyle.jsx'
-import { List, ListItem } from '@material-ui/core'
+import {Avatar, List, ListItem, ListItemAvatar, ListItemText} from '@material-ui/core'
 import DayjsUtils from '@date-io/dayjs'
 import i18N from '../../lang'
 
+// import React from 'react';
+import ButtonUi from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from "@material-ui/core/Typography";
+
 const L = i18N('Dashboard')
+
 class Dashboard extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             selectedDate: new Date(),
             scheduleActionConfirmationParams: null,
-            showCustomerSelection: null
+            showCustomerSelection: null,
+            scheduleDetailModal: null
         }
     }
 
     handleDateChange = selectedDate => {
-        this.setState({ selectedDate }, () => {
+        this.setState({selectedDate}, () => {
             this.refreshTodaySale(selectedDate);
             this.props.actions.LoadGymSchedule(this.props.selectedGym.id, {
                 date: dayjs(selectedDate).format('YYYY-MM-DD'),
@@ -55,6 +66,7 @@ class Dashboard extends React.Component {
             })
         })
     }
+
     shouldComponentUpdate(nextProps, nextState) {
         if (
             nextProps.selectedGym.id &&
@@ -102,10 +114,10 @@ class Dashboard extends React.Component {
         this.setState({
             scheduleActionConfirmationParams: {
                 onCancel: () => {
-                    this.setState({ scheduleActionConfirmationParams: null })
+                    this.setState({scheduleActionConfirmationParams: null})
                 },
                 onConfirm: () => {
-                    this.setState({ scheduleActionConfirmationParams: null })
+                    this.setState({scheduleActionConfirmationParams: null})
                     this.props.actions
                         .deleteSchedule(schedule.gym_id, schedule.id)
                         .then(this.reloadSchedule)
@@ -120,10 +132,10 @@ class Dashboard extends React.Component {
         this.setState({
             scheduleActionConfirmationParams: {
                 onCancel: () => {
-                    this.setState({ scheduleActionConfirmationParams: null })
+                    this.setState({scheduleActionConfirmationParams: null})
                 },
                 onConfirm: () => {
-                    this.setState({ scheduleActionConfirmationParams: null })
+                    this.setState({scheduleActionConfirmationParams: null})
                     this.props.actions
                         .completeSchedule(schedule.gym_id, schedule.id)
                         .then(this.reloadSchedule)
@@ -131,6 +143,59 @@ class Dashboard extends React.Component {
                 message: L.doneConfirm
             }
         })
+    }
+
+    onTapScheduleDetails = (schedule) => {
+        this.setState({scheduleDetailModal: schedule})
+    }
+
+    scheduleDetailCard = (detail) => {
+        const {classes} = this.props
+        const actions = detail.filter(t => {
+            return t.contenttype === 'action'
+        })
+        return (
+            <GridItem xs={12} sm={12} md={12} classes={{grid: 'time-column'}}>
+                <List>
+                    {
+                        actions.map((item) =>
+                            //卧推 3 组 * 10个 100kg 休息 30s
+                            <ListItem className={classes.scheduleDetail} key={`${item.sortIndex}`}>
+                                <ListItemText className={classes.scheduleDetailName} primary={item.name}/>
+                                <ListItemText className={classes.scheduleDetailValue} primary={
+                                    item.set_times + '组 * ' + item.repeat_times + item.unit + '*' + item.weight
+                                }/>
+                                <ListItemText className={classes.scheduleDetailInterval}
+                                              primary={' 休息 ' + item.interval}/>
+                            </ListItem>
+                        )
+                    }
+                </List>
+            </GridItem>
+        )
+    };
+
+    scheduleDetailsDialog = () => {
+        const onCancel = () => {
+            this.setState({scheduleDetailModal: null})
+        };
+        const detail = JSON.parse(this.state.scheduleDetailModal.detail);
+        let scheduleTitleItem = detail.find(o => o.contenttype === 'comments')
+        return (
+            <div>
+                <Dialog
+                    open={true}
+                    onClose={onCancel}
+                    scroll={'paper'}
+                    fullWidth={true}
+                >
+                    <DialogTitle>{scheduleTitleItem ? scheduleTitleItem['comments'] : ''}</DialogTitle>
+                    <DialogContent dividers={true}>
+                        {this.scheduleDetailCard(detail)}
+                    </DialogContent>
+                </Dialog>
+            </div>
+        );
     }
 
     tapNewOrder = () => {
@@ -156,7 +221,7 @@ class Dashboard extends React.Component {
                     name: 'coach',
                     label: L.coach,
                     options: this.props.gym.coaches.map(coach => {
-                        return { value: coach.id, label: coach.user.name }
+                        return {value: coach.id, label: coach.user.name}
                     })
                 },
                 {
@@ -168,8 +233,8 @@ class Dashboard extends React.Component {
                     name: 'sex',
                     label: L.sex,
                     options: [
-                        { value: 0, label: L.female },
-                        { value: 1, label: L.male }
+                        {value: 0, label: L.female},
+                        {value: 1, label: L.male}
                     ]
                 },
                 {
@@ -205,7 +270,7 @@ class Dashboard extends React.Component {
     }
     getTimeAxisColumn = () => {
         return (
-            <GridItem xs={1} sm={1} md={1} classes={{ grid: 'time-column' }}>
+            <GridItem xs={1} sm={1} md={1} classes={{grid: 'time-column'}}>
                 <List>
                     {utils
                         .getTimeRange(config.startTime, config.endTime - 1)
@@ -219,7 +284,7 @@ class Dashboard extends React.Component {
         )
     }
 
-    onTapTimeSlot = (coach, start) => {
+    onTapTimeSlot = (schedule, coach, start) => {
         let isOverlap = (schedule, start) => {
             const end = start + 3
             if (end >= schedule.start && end < schedule.end) {
@@ -236,35 +301,37 @@ class Dashboard extends React.Component {
                 s => coach.id === s.coach_id && isOverlap(s, start)
             ).length
         ) {
-            return
-        }
-
-        const hideDialog = () => this.setState({ showCustomerSelection: null })
-        this.setState({
-            showCustomerSelection: {
-                customers: this.props.gym.customers,
-                onCancel: hideDialog,
-                title: `${coach.user.name} ${utils.getTimeStr(start)}`,
-                onSelect: c => {
-                    let params = {
-                        customer: c.id,
-                        gym: this.props.selectedGym.id,
-                        coach: coach.id,
-                        start: start,
-                        end: start + 3,
-                        date: dayjs(this.state.selectedDate).format(
-                            'YYYY-MM-DD'
-                        )
+            // show schedule detail
+            this.onTapScheduleDetails(schedule[0])
+        } else {
+            // show new order dialog
+            const hideDialog = () => this.setState({showCustomerSelection: null})
+            this.setState({
+                showCustomerSelection: {
+                    customers: this.props.gym.customers,
+                    onCancel: hideDialog,
+                    title: `${coach.user.name} ${utils.getTimeStr(start)}`,
+                    onSelect: c => {
+                        let params = {
+                            customer: c.id,
+                            gym: this.props.selectedGym.id,
+                            coach: coach.id,
+                            start: start,
+                            end: start + 3,
+                            date: dayjs(this.state.selectedDate).format(
+                                'YYYY-MM-DD'
+                            )
+                        }
+                        this.props.actions
+                            .createSchedule(params.gym, params)
+                            .then(() => {
+                                hideDialog()
+                                this.reloadSchedule()
+                            })
                     }
-                    this.props.actions
-                        .createSchedule(params.gym, params)
-                        .then(() => {
-                            hideDialog()
-                            this.reloadSchedule()
-                        })
                 }
-            }
-        })
+            })
+        }
     }
 
     getCoachDayColumn = c => {
@@ -274,6 +341,7 @@ class Dashboard extends React.Component {
         let sealed = {}
         let desc = {}
         let actions = {}
+        let scheduleList = {}
         schedules.forEach(s => {
             let suffix = ''
 
@@ -286,6 +354,7 @@ class Dashboard extends React.Component {
                     {L.cancel}
                 </span>
             ]
+
             if (s.status === 2) {
                 suffix = ' done'
             } else {
@@ -302,6 +371,7 @@ class Dashboard extends React.Component {
 
             utils.range(s.start, s.end).forEach(i => {
                 sealed[i] = '-x' + suffix
+                scheduleList[i] = [s];
             })
             sealed[s.start] = '-start' + suffix
             desc[s.start] = s.customer.name
@@ -315,6 +385,7 @@ class Dashboard extends React.Component {
                     {utils.range(config.startTime, config.endTime).map(t => {
                         let borderCls = 'none'
                         let timeStr = utils.getTimeStr(t)
+                        let s = scheduleList[t]
                         if (timeStr.split(':')[1] === '00') {
                             borderCls = 'solid'
                         }
@@ -327,7 +398,7 @@ class Dashboard extends React.Component {
                         return (
                             <ListItem
                                 onClick={() => {
-                                    this.onTapTimeSlot(c, t)
+                                    this.onTapTimeSlot(s, c, t)
                                 }}
                                 key={t}
                                 className={classnames(
@@ -367,9 +438,15 @@ class Dashboard extends React.Component {
                             md={1}
                             container
                             alignItems={'center'}
-                            style={{position:'relative'}}
+                            style={{position: 'relative'}}
                         >
-                            <KeyboardArrowLeft onClick={this.prevDay} style={{fill:'#666', position: 'absolute', left: 0, top: 3, zIndex: 1000}}/>
+                            <KeyboardArrowLeft onClick={this.prevDay} style={{
+                                fill: '#666',
+                                position: 'absolute',
+                                left: 0,
+                                top: 3,
+                                zIndex: 1000
+                            }}/>
                             <MuiPickersUtilsProvider
                                 utils={DayjsUtils}
                                 locale={'zh-cn'}
@@ -382,7 +459,13 @@ class Dashboard extends React.Component {
                                     autoOk
                                 />
                             </MuiPickersUtilsProvider>
-                            <KeyboardArrowRight onClick={this.nextDay}  style={{fill:'#666', position: 'absolute', right: 0, top: 3, zIndex: 1000}}/>
+                            <KeyboardArrowRight onClick={this.nextDay} style={{
+                                fill: '#666',
+                                position: 'absolute',
+                                right: 0,
+                                top: 3,
+                                zIndex: 1000
+                            }}/>
                         </GridItem>
                         <GridItem
                             container
@@ -390,7 +473,7 @@ class Dashboard extends React.Component {
                             xs={11}
                             sm={11}
                             md={11}
-                            classes={{ grid: 'coach-column' }}
+                            classes={{grid: 'coach-column'}}
                         >
                             {this.props.gym.coaches.map(c => {
                                 return (
@@ -426,7 +509,7 @@ class Dashboard extends React.Component {
                             xs={11}
                             sm={11}
                             md={11}
-                            classes={{ grid: 'coach-column' }}
+                            classes={{grid: 'coach-column'}}
                         >
                             {this.props.gym.coaches.map(c =>
                                 this.getCoachDayColumn(c)
@@ -439,7 +522,7 @@ class Dashboard extends React.Component {
     }
 
     getSummaryHeader = () => {
-        const { classes } = this.props
+        const {classes} = this.props
         return (
             <GridContainer>
                 <GridItem xs={12} sm={6} md={3}>
@@ -448,7 +531,7 @@ class Dashboard extends React.Component {
                             <p className={classes.cardCategory}>今日课程</p>
                             <h3 className={classes.cardTitle}>
                                 {this.props.gym.schedules &&
-                                    this.props.gym.schedules.length}
+                                this.props.gym.schedules.length}
                                 <small>节</small>
                             </h3>
                         </CardHeader>
@@ -495,6 +578,7 @@ class Dashboard extends React.Component {
         return (
             <div>
                 {this.props.gym.showNewOrder && this.newOrderDialog()}
+                {this.state.scheduleDetailModal && this.scheduleDetailsDialog()}
                 {this.state.showCustomerSelection && (
                     <CustomerSelectionDialogue
                         {...this.state.showCustomerSelection}
@@ -517,7 +601,7 @@ class Dashboard extends React.Component {
                     className='add-order'
                     onClick={this.tapNewOrder}
                 >
-                    <Add />
+                    <Add/>
                 </Button>
             </div>
         )

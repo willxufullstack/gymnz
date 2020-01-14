@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Followup;
 use Illuminate\Http\Request;
+use App\Gym;
+use App\Coach;
+use App\User;
 
 class FollowupController extends Controller
 {
@@ -14,28 +17,40 @@ class FollowupController extends Controller
      */
     public function index(Request $request, $gymId)
     {
+        if (empty($request->input('before'))) {
+            return response()->json(array('message' => 'fail: before is empty'), 500);
+        }
+        $beforeDate = $request->input('before');
+
         $query = Followup::with(['customer']);
         $query->where('gym_id', (int)$gymId);
-        $query->where('date', '<=', $request->input('before'));
-        if($request->has('customer')){
+        if ($request->has('customer')) {
             $query->where('customer_id', (int)$request->input('customer'));
         }
-        if($request->has('coach')){
+        if ($request->has('coach')) {
             $query->where('coach_id', (int)$request->input('coach'));
         }
-        if($request->has('status')){
+        if ($request->has('status')) {
             $query->where('status', (int)$request->input('status'));
         } else {
             $query->where('status', 0);
         }
-        if($request->has('before')){
-            $query->where('date', '<=', $request->input('before'));
-        }
-        if($request->has('after')){
+        if ($request->input('after')) {
             $query->where('date', '>=', $request->input('after'));
         }
-        return $query->orderBy('date', 'DESC')->get();
+        $query->where('date', '<=', $beforeDate);
+        $followUps = $query->orderBy('date', 'DESC')->get();
+        if (empty($followUps)) {
+            return response()->json($followUps, 201);
+        }
 
+        // get schedules info 35 days before return data as schedule_history_line
+        $durationDays = 35;
+        foreach ($followUps as &$item) {
+            $item['hot_map'] = $item->customer->getHotMap($beforeDate, $durationDays, $gymId);
+            $item['latest_schedule'] = $item->customer->getLatestSchedule(null, $gymId);
+        }
+        return response()->json($followUps, 201);
     }
 
     /**
@@ -51,18 +66,26 @@ class FollowupController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        $followUpData = $request->only('date', 'coach_id', 'customer_id', 'gym_id');
+        $followUp = new Followup();
+        $followUp->customer()->associate(User::find($followUpData['customer_id']));
+        $followUp->coach()->associate(Coach::find($followUpData['coach_id']));
+        $followUp->gym()->associate(Gym::find($followUpData['gym_id']));
+        $followUp->date = $followUpData['date'];
+        $followUp->status = 1;
+        $followUp->save();
+        return response()->json($followUp, 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Followup  $followup
+     * @param  \App\Followup $followup
      * @return \Illuminate\Http\Response
      */
     public function show(Followup $followup)
@@ -73,7 +96,7 @@ class FollowupController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Followup  $followup
+     * @param  \App\Followup $followup
      * @return \Illuminate\Http\Response
      */
     public function edit(Followup $followup)
@@ -84,8 +107,8 @@ class FollowupController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Followup  $followup
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Followup $followup
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Followup $followup)
@@ -96,7 +119,7 @@ class FollowupController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Followup  $followup
+     * @param  \App\Followup $followup
      * @return \Illuminate\Http\Response
      */
     public function destroy(Followup $followup)

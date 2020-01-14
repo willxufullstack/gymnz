@@ -230,7 +230,8 @@ const Lang = {
             coach: '教练',
             female: '女',
             male: '男',
-            createOrder: '新建订单'
+            createOrder: '新建订单',
+            details: '课程详情'
         },
         en: {
             cancel: 'CANCEL',
@@ -246,7 +247,8 @@ const Lang = {
             coach: 'Coach',
             female: 'Female',
             male: 'Male',
-            createOrder: 'CreateOrder'
+            createOrder: 'CreateOrder',
+            details: 'schedule details'
         }
     },
     SalarySummary: {

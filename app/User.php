@@ -70,15 +70,15 @@ class User extends Authenticatable implements JWTSubject
     public function getCourseBalance($gymId)
     {
         $query = Order::where([
-                'customer_id' => $this->id,
-            ]);
+            'customer_id' => $this->id,
+        ]);
 
         $query = $query->where('gym_id', $gymId)->orderBy('created_at', 'ASC');
         $orders = $query->get();
         $ret = ['total' => 0, 'booked' => 0, 'created_at' => 0];
         // calc
         foreach ($orders as $order) {
-            if($ret['created_at'] === 0) {
+            if ($ret['created_at'] === 0) {
                 $ret['created_at'] = substr($order->created_at, 0, 10);
             }
             if ($order->status === 1) {
@@ -92,12 +92,57 @@ class User extends Authenticatable implements JWTSubject
         return $ret;
     }
 
-    public function getFirstOrder($gymId){
+    public function getFirstOrder($gymId)
+    {
         $query = Order::where([
             'customer_id' => $this->id,
-            'gym_id' =>$gymId
+            'gym_id' => $gymId
         ]);
 
         return $query->orderBy('created_at', 'ASC')->first();
+    }
+
+    public function getHotMap($date, $durationDays = 7, $gymId = null)
+    {
+        $fromDate = date('Y-m-d', strtotime($date . " -{$durationDays} day"));
+        $query = Schedule::where('customer_id', $this->id)
+            ->where('date', '>', $fromDate)
+            ->where('date', '<=', $date);
+        if ($gymId) {
+            $query->where('gym_id', $gymId);
+        }
+        $schedules = $query->get();
+
+        /*
+         * build a hot map which marks days with schedule as 1, otherwise 0
+         * eg.
+         *  "110000"  => there are schedules in the first 2 days
+         */
+        $dateMap = [];
+        for ($i = $durationDays - 1; $i >= 0; $i--) {
+            $dateStr = date('Y-m-d', strtotime($date . " -{$i} day"));
+            $dateMap[$dateStr] = 0;
+        }
+
+        foreach ($schedules as $schedule) {
+            $dateMap[$schedule->date] = 1;
+        }
+        return implode('', array_values($dateMap));
+    }
+
+    public function getLatestSchedule($status = null, $gymId = null, $coachId = null)
+    {
+        $query = Schedule::with(['coach.user', 'customer'])
+            ->where('customer_id', $this->id);
+        if ($status) {
+            $query->where('status', $status);
+        }
+        if ($gymId) {
+            $query->where('gym_id', $gymId);
+        }
+        if ($coachId) {
+            $query->where('coach_id', $coachId);
+        }
+        return $query->orderBy('date', 'DESC')->first();
     }
 }
