@@ -9,8 +9,9 @@ class Schedule extends Model
 {
     protected $table = 'schedules';
 
-
     protected $fillable = ['detail'];
+
+    protected $hidden = ['created_at', 'updated_at'];
 
     /**
      * Get the gym.

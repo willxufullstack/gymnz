@@ -137,7 +137,7 @@ class User extends Authenticatable implements JWTSubject
 
     public static function getLatestScheduleById($customerId, $status = null, $gymId = null, $coachId = null)
     {
-        $query = Schedule::with(['coach.user', 'customer'])
+        $query = Schedule::with(['coach.user'])
             ->where('customer_id', $customerId);
         if ($status) {
             $query->where('status', $status);
@@ -148,6 +148,11 @@ class User extends Authenticatable implements JWTSubject
         if ($coachId) {
             $query->where('coach_id', $coachId);
         }
-        return $query->orderBy('date', 'DESC')->first();
+        $ret = $query->orderBy('date', 'DESC')->first();
+        if(empty($ret)){
+            return null;
+        }
+        return $ret->makeHidden('detail');
+
     }
 }
