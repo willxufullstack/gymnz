@@ -169,12 +169,11 @@ class GymController extends Controller
         }
 
         // get customer id list
-        $customerIdList =  array_column($ret, 'id');
 
         // get latest schedule info by customer_id
         // add schedule data to ret
         foreach ($ret as &$item) {
-            $item['latest_schedule'] = $item->customer->getLastestSchedule(2);
+            $item['latest_schedule'] = User::getLatestScheduleById($item['id'], 2);
         }
 
         return response()->json($ret, 200);

@@ -132,8 +132,13 @@ class User extends Authenticatable implements JWTSubject
 
     public function getLatestSchedule($status = null, $gymId = null, $coachId = null)
     {
+        return self::getLatestScheduleById($this->id, $status, $gymId, $coachId);
+    }
+
+    public static function getLatestScheduleById($customerId, $status = null, $gymId = null, $coachId = null)
+    {
         $query = Schedule::with(['coach.user', 'customer'])
-            ->where('customer_id', $this->id);
+            ->where('customer_id', $customerId);
         if ($status) {
             $query->where('status', $status);
         }
