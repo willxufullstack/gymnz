@@ -83,7 +83,7 @@ class Dashboard extends React.Component {
     componentWillMount() {
         if (this.props.selectedGym.id) {
             this.props.actions.loadCoach(this.props.selectedGym.id)
-            this.props.actions.loadCustomer(this.props.selectedGym.id)
+            // this.props.actions.loadCustomer(this.props.selectedGym.id)
             this.reloadSchedule()
         }
     }
