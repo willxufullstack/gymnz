@@ -48,9 +48,9 @@ class FollowupController extends Controller
         $durationDays = 35;
         foreach ($followUps as &$item) {
             $item['hot_map'] = $item->customer->getHotMap($beforeDate, $durationDays, $gymId);
-            $item['latest_schedule'] = $item->customer->getLatestSchedule(null, $gymId);
+            $item['latest_schedule'] = $item->customer->getLatestSchedule(2, $gymId);
         }
-        return response()->json($followUps, 201);
+        return response()->json($followUps, 200);
     }
 
     /**

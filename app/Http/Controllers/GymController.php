@@ -172,23 +172,9 @@ class GymController extends Controller
         $customerIdList =  array_column($ret, 'id');
 
         // get latest schedule info by customer_id
-        $schedules = Schedule::with(['coach.user', 'customer'])
-            ->select(DB::raw('coach_id, customer_id, MAX(date) AS date'))
-            ->whereIn('customer_id', $customerIdList)
-            ->groupBy('customer_id')
-            ->get();
-
-        $customerToSchedule = [];
-        foreach ($schedules as $item) {
-            $customerToSchedule[$item['customer_id']]['date'] = $item['date'];
-            $customerToSchedule[$item['customer_id']]['coach_name'] = $item['coach']['user']['name'];
-        }
-
         // add schedule data to ret
         foreach ($ret as &$item) {
-            if(array_key_exists($item['id'], $customerToSchedule)){
-                $item['latest_schedule'] = $customerToSchedule[$item['id']];
-            }
+            $item['latest_schedule'] = $item->customer->getLastestSchedule(2);
         }
 
         return response()->json($ret, 200);
