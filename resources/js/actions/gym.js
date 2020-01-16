@@ -173,6 +173,18 @@ export function LoadGymSchedule(gymId, params) {
     };
 }
 
+export function LoadGymScheduleTomorrow(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_GYM_SCHEDULE_TOMORROW,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/schedule',
+                params
+            }
+        }
+    };
+}
+
 export function LoadCustomerSchedule(gymId, params) {
     return {
         type: ActionTypes.LOAD_CUSTOMER_SCHEDULE,

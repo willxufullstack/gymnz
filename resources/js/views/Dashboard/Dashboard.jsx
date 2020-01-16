@@ -64,6 +64,11 @@ class Dashboard extends React.Component {
                 date: dayjs(selectedDate).format('YYYY-MM-DD'),
                 price: 1
             })
+            // get tomorrow schedules
+            this.props.actions.LoadGymScheduleTomorrow(this.props.selectedGym.id, {
+                date: dayjs(selectedDate).add(1, 'day').format('YYYY-MM-DD'),
+                price: 1
+            })
         })
     }
 
@@ -532,6 +537,18 @@ class Dashboard extends React.Component {
                             <h3 className={classes.cardTitle}>
                                 {this.props.gym.schedules &&
                                 this.props.gym.schedules.length}
+                                <small>节</small>
+                            </h3>
+                        </CardHeader>
+                    </Card>
+                </GridItem>
+                <GridItem xs={12} sm={6} md={3}>
+                    <Card className='summary-card'>
+                        <CardHeader color='warning' stats icon>
+                            <p className={classes.cardCategory}>明日课程</p>
+                            <h3 className={classes.cardTitle}>
+                                {this.props.gym.schedulesTomorrow &&
+                                this.props.gym.schedulesTomorrow.length}
                                 <small>节</small>
                             </h3>
                         </CardHeader>

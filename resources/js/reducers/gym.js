@@ -8,6 +8,7 @@ const initState = {
     // data
     coaches: [],
     schedules: [],
+    schedulesTomorrow: [],
     accounting: [],
     reimbursements: [],
     salarySettings: [],
@@ -585,6 +586,19 @@ const gym = (state = initState, action = NonAction) => {
             return Object.assign({}, state, {
                 loading: false,
                 errorMsg: 'Load gym schedule failed'
+            })
+
+        case ActionTypes.LOAD_GYM_SCHEDULE_TOMORROW:
+            return Object.assign({}, state, { loading: true })
+        case ActionTypes.LOAD_GYM_SCHEDULE_TOMORROW_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                schedulesTomorrow: action.payload.data
+            })
+        case ActionTypes.LOAD_GYM_SCHEDULE_TOMORROW_FAIL:
+            return Object.assign({}, state, {
+                loading: false,
+                errorMsg: 'Load gym schedule tomorrow failed'
             })
 
         case ActionTypes.LOAD_GYM_SUMMARY:
