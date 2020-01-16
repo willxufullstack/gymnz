@@ -66,7 +66,7 @@ class FollowupController extends Controller
 
     public function postpone(Request $request, $id)
     {
-        $days = $request->input('days');
+        $date = $request->input('date');
         $followUp = Followup::find($id);
         if(empty($followUp)){
             return response()->json(array('message' => 'cannot find the followup task'), 404);
@@ -78,14 +78,13 @@ class FollowupController extends Controller
 
         // crete new
         $newFollowup = new Followup();
-        $newFollowup->date = date('Y-m-d', strtotime("+{$days} day", strtotime($followUp->date)));
+        $newFollowup->date = $date;
         $newFollowup->customer_id = $followUp->customer_id;
         $newFollowup->coach_id = $followUp->coach_id;
         $newFollowup->gym_id = $followUp->gym_id;
         $newFollowup->action = $followUp->action;
         $newFollowup->save();
-        return response()->json($newFollowup, 201);
-
+        return response()->json($followUp, 200);
     }
 
     /**
