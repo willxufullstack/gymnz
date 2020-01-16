@@ -8,6 +8,7 @@ use App\Gym;
 use App\User;
 use App\Coach;
 use App\Events\BonusEvent;
+use App\Followup;
 use App\Order;
 use App\Schedule;
 use Auth;
@@ -394,6 +395,9 @@ class ScheduleController extends Controller
 
         $schedule->status = 2;
         $success = $schedule->save();
+
+        // try to trigger followup if needed
+        Followup::triggerNewFollowp($schedule);
 
         // check where have bonus setting
         $setting = $schedule->gym->setting;
