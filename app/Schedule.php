@@ -200,4 +200,41 @@ class Schedule extends Model
         }
         return false;
     }
+
+    public function fillFollowup()
+    {
+        $followup = Followup::where('status', 0)
+            ->where('coach_id', $this->coach_id)
+            ->where('gym_id', $this->gym_id)
+            ->where('customer_id', $this->customer_id)
+            ->first();
+        if (!$followup) {
+            return;
+        }
+        $followup->status = 1; // 1 => finished by schedule
+        $followup->schedule_id = $this->id;
+        $followup->save();
+    }
+
+    public function triggerNewFollowp($postponeDays = 1)
+    {
+        // skip if there is unfinished item
+        $count = Followup::where('status', 0)
+            ->where('coach_id', $this->coach_id)
+            ->where('gym_id', $this->gym_id)
+            ->where('customer_id', $this->customer_id)
+            ->count();
+        if ($count) {
+            return;
+        }
+        // create
+        $followup = new Followup();
+        $followup->customer_id = $this->customer_id;
+        $followup->gym_id = $this->gym_id;
+        $followup->coach_id = $this->coach_id;
+        $followup->status = 0; // 0 => pending
+        // set date to tomorrow
+        $followup->date = date('Y-m-d', strtotime("+{$postponeDays} day", strtotime($this->date)));
+        $followup->save();
+    }
 }

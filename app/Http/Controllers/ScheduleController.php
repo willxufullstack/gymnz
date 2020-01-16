@@ -285,6 +285,9 @@ class ScheduleController extends Controller
             return response()->json(['message' => 'conflict with other schedules'], 400);
         }
         $schedule->save();
+
+        // link the followup
+        $schedule->fillFollowup();
         event(new \App\Events\ScheduleCreateEvent($schedule));
         // TODO handle save error
         // 3. update order booked_amount
@@ -397,7 +400,7 @@ class ScheduleController extends Controller
         $success = $schedule->save();
 
         // try to trigger followup if needed
-        Followup::triggerNewFollowp($schedule);
+        $schedule->triggerNewFollowp();
 
         // check where have bonus setting
         $setting = $schedule->gym->setting;
