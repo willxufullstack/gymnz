@@ -172,7 +172,8 @@ class Schedule extends Model
      */
     private function _isTimeOverlap($form, $to, $start, $end)
     {
-        if ($form >= $start && $form <= $end ||
+        if (
+            $form >= $start && $form <= $end ||
             $start >= $form && $start <= $to
         ) {
             return true;
@@ -201,7 +202,7 @@ class Schedule extends Model
         return false;
     }
 
-    public function fillFollowup()
+    public function linkFollowup()
     {
         $followup = Followup::where('status', 0)
             ->where('coach_id', $this->coach_id)
@@ -215,6 +216,27 @@ class Schedule extends Model
         $followup->schedule_id = $this->id;
         $followup->save();
     }
+
+    public function unlinkFollowup()
+    {
+        $followup = Followup::where('schedule_id', $this->id)
+            ->first();
+        if (!$followup) {
+            return;
+        }
+        // if there is still unfinished task follow up delete this one
+        $unfinished = Followup::where('status', 0)
+            ->where('customer_id', $this->customer_id)
+            ->count();
+        if ($unfinished) {
+            $followup->delete();
+        } else {
+            $followup->status = 0;
+            $followup->schedule_id = null; // unlink the schedule
+            $followup->save();
+        }
+    }
+
 
     public function triggerNewFollowp($postponeDays = 1)
     {

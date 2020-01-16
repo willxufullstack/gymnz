@@ -287,7 +287,7 @@ class ScheduleController extends Controller
         $schedule->save();
 
         // link the followup
-        $schedule->fillFollowup();
+        $schedule->linkFollowup();
         event(new \App\Events\ScheduleCreateEvent($schedule));
         // TODO handle save error
         // 3. update order booked_amount
@@ -368,6 +368,8 @@ class ScheduleController extends Controller
             return response()->json(array('message' => 'can not find the schedule ' . $id), 500);
         }
 
+        // unlink followup
+        $schedule->unlinkFollowup();
         // keep the plan into cache
         Redis::set('tmp_schedule_plan_' . $schedule->customer_id, $schedule->detail);
 
