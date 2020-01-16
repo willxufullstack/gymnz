@@ -63,6 +63,31 @@ class FollowupController extends Controller
         //
     }
 
+
+    public function postpone(Request $request, $id)
+    {
+        $days = $request->input('days');
+        $followUp = Followup::find($id);
+        if(empty($followUp)){
+            return response()->json(array('message' => 'cannot find the followup task'), 404);
+        }
+        // close the old one
+        $followUp->status = 2;
+        $followUp->action .= ' postpone'; // append an `postpone`
+        $followUp->save();
+
+        // crete new
+        $newFollowup = new Followup();
+        $newFollowup->date = date('Y-m-d', strtotime("+{$days} day", strtotime($followUp->date)));
+        $newFollowup->customer_id = $followUp->customer_id;
+        $newFollowup->coach_id = $followUp->coach_id;
+        $newFollowup->gym_id = $followUp->gym_id;
+        $newFollowup->action = $followUp->action;
+        $newFollowup->save();
+        return response()->json($newFollowup, 201);
+
+    }
+
     /**
      * Store a newly created resource in storage.
      *

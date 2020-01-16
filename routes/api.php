@@ -45,7 +45,6 @@ Route::group([], function () {
     Route::get('/gym/{gym}/trial/{id}', 'ScheduleController@show');
     // paste route here to skip auth when debug
     // Route::get('gym/{gym}/refreshCustomerCreatedAt', 'GymController@refreshCustomerCreatedAt');
-
 });
 
 // route for helper
@@ -70,6 +69,7 @@ Route::group([
     Route::get('gym/{gym}/workload', 'ScheduleController@workload');
     Route::get('gym/{gym}/anaylze/customer', 'GymController@anaylzeCustomer');
     Route::resource('gym/{gym}/followup', 'FollowupController');
+    Route::post('followup/{id}/postpone', 'FollowupController@postpone');
 
     Route::resource('user/{user}/task', 'TaskController');
     Route::patch('task/{task}/complete', 'TaskController@complete');
