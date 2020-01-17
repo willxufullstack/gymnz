@@ -255,7 +255,7 @@ class Overview extends React.Component {
                         }}
                     />
                 </ListItemAvatar>
-                <ListItemText primary={customer.name} secondary={subtitle(customerWithLatestSchedule.latest_schedule)} />
+                <ListItemText primary={customer.name} secondary={customerWithLatestSchedule ? subtitle(customerWithLatestSchedule.latest_schedule) : '- -'} />
             </ListItem>
         );
     };
