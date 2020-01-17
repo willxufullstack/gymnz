@@ -242,7 +242,7 @@ class Overview extends React.Component {
     customerCard = (customer, color) => {
         const { classes } = this.props;
         const customerWithLatestSchedule = this.props.gym.customers.find((item) => item.id === customer.id)
-        const subtitle = (schedule) => schedule ? schedule.date + ' | ' + schedule.coach_name : '--'
+        const subtitle = (schedule) => schedule ? schedule.date + ' | ' + schedule.coach.user.name : '--'
         return (
             <ListItem key={customer.id}>
                 <ListItemAvatar className={classes.customerCard}>
