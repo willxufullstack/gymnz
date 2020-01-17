@@ -6,6 +6,10 @@ module.exports = {
     plugins: [
         new BundleAnalyzerPlugin()
     ],
+    output: {
+        filename: '[name].js?t=' + new Date().getTime(),
+        chunkFilename: '[name].js?t=' + new Date().getTime()
+    },
     resolve: {
         alias: {
             '-assets': __dirname + '/resources/js/assets',
