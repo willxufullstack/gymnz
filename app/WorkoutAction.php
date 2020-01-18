@@ -11,9 +11,24 @@ class WorkoutAction extends Model
         'name', 'unit', 'weight', 'set_times','repeat_times', 'interval'
     ];
 
-    static function actionsWithDefaultValueByCustomer($customerId){
-        $ori = WorkoutAction::all();
+    const ALL_ACTIONS_KEY = 'all_workout_actions';
 
+    static function clearAllRedis() {
+        Redis::del(self::ALL_ACTIONS_KEY);
+    }
+
+    static function allFromRedis() {
+        $allActionsStr = Redis::get(self::ALL_ACTIONS_KEY);
+        if(empty($allActionsStr)) {
+            $ret = WorkoutAction::all();
+            Redis::set(self::ALL_ACTIONS_KEY, json_encode($ret));
+            return $ret;
+        }
+        return json_decode($allActionsStr);
+    }
+
+    static function actionsWithDefaultValueByCustomer($customerId){
+        $ori = WorkoutAction::allFromRedis();
         if(empty($customerId)){
             return $ori;
         }
@@ -23,7 +38,7 @@ class WorkoutAction extends Model
         if(!$defaultValues) {
             $defaultValues = [];
         }
-        $ori = WorkoutAction::all();
+
         $ret = [];
         foreach($ori as $action) {
             if(array_key_exists($action->id, $defaultValues)){

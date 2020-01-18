@@ -54,6 +54,7 @@ class WorkoutActionController extends Controller
             $action->interval = $request->input('interval') ?? '30s';
         }
         $action->save();
+        WorkoutAction::clearAllRedis();
         return response()->json($action, 201);
     }
 
@@ -105,6 +106,7 @@ class WorkoutActionController extends Controller
         }
         $success = $action->delete();
         if ($success) {
+            WorkoutAction::clearAllRedis();
             return response()->json($action, 200);
         }
         return response()->json(array('message' => 'fail'), 500);
