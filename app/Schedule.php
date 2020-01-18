@@ -80,8 +80,10 @@ class Schedule extends Model
             $hash = [];
         }
         foreach ($detail as $action) {
-            $action['lastUsed'] = $this->date;
-            $hash[$action['id']] = $action;
+            if($action['contenttype'] === 'action'){
+                $action['lastUsed'] = $this->date;
+                $hash[$action['id']] = $action;
+            }
         }
         Redis::set($key, json_encode($hash));
     }
