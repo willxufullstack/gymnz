@@ -70,6 +70,8 @@ Route::group([
     Route::get('gym/{gym}/anaylze/customer', 'GymController@anaylzeCustomer');
     Route::resource('gym/{gym}/followup', 'FollowupController');
     Route::post('followup/{id}/postpone', 'FollowupController@postpone');
+    Route::post('followup/{id}/close', 'FollowupController@close');
+    Route::post('followup/{id}/switch', 'FollowupController@switch');
 
     Route::resource('user/{user}/task', 'TaskController');
     Route::patch('task/{task}/complete', 'TaskController@complete');
