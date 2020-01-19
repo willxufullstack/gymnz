@@ -40,17 +40,22 @@ class FollowupController extends Controller
         }
         $query->where('date', '<=', $beforeDate);
         $followUps = $query->orderBy('date', 'DESC')->get();
-        if (empty($followUps)) {
-            return response()->json($followUps, 201);
-        }
 
         // get schedules info 35 days before return data as schedule_history_line
         $durationDays = 35;
         foreach ($followUps as &$item) {
             $item['hot_map'] = $item->customer->getHotMap($beforeDate, $durationDays, $gymId);
             $item['latest_schedule'] = $item->customer->getLatestSchedule(2, $gymId);
+            $item['balance'] = $item->customer->getCourseBalance($gymId);
         }
-        return response()->json($followUps, 200);
+
+        $followUpsArr = iterator_to_array($followUps);
+        // order by latest schedule
+        usort($followUpsArr, function($a, $b){
+            return strtotime($a['latest_schedule']->date) - strtotime($b['latest_schedule']->date);
+        });
+
+        return response()->json($followUpsArr, 200);
     }
 
     /**
@@ -104,6 +109,34 @@ class FollowupController extends Controller
         $followUp->status = 1;
         $followUp->save();
         return response()->json($followUp, 201);
+    }
+
+    public function close(Request $request, $id)
+    {
+        $followUp = Followup::find($id);
+        if(empty($followUp)){
+            return response()->json(array('message' => 'cannot find the followup task'), 404);
+        }
+        $followUp->status = 3; //closed
+        $followUp->save();
+        return response()->json($followUp, 200);
+    }
+
+    public function switch(Request $request, $id)
+    {
+        $followUp = Followup::find($id);
+        if(empty($followUp)){
+            return response()->json(array('message' => 'cannot find the followup task'), 404);
+        }
+        $followUp->status = 2; //closed
+        $followUp->save();
+        $newFollowup = new Followup();
+        $newFollowup->gym_id = $followUp->gym_id;
+        $newFollowup->coach_id = $request->input('coach');
+        $newFollowup->customer_id = $followUp->customer_id;
+        $newFollowup->date = $request->input('date');
+        $newFollowup->save();
+        return response()->json($followUp, 200);
     }
 
     /**
