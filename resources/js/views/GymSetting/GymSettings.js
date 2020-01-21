@@ -429,7 +429,7 @@ class GymSettings extends React.Component {
                     },
                     {
                         tabName: L.csvDataImport,
-                        tabContent: <LinkedCsvDataImport/>
+                        tabContent: <LinkedCsvDataImport />
                     }
                 ]}
             />
