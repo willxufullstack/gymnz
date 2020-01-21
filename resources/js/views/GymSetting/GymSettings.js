@@ -20,7 +20,7 @@ import CustomInput from '-components/CustomInput/CustomInput.jsx'
 import { withStyles } from '@material-ui/core'
 import i18N from '../../lang'
 import Switch from 'react-switch'
-import LinkedCsvDataImport from "-views/Accounting/CsvDataImport";
+import LinkedCsvDataImport from "-views/GymSetting/CsvDataImport";
 
 const L = i18N('GymSettings')
 const styles = {

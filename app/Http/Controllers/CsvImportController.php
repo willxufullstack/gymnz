@@ -58,7 +58,6 @@ class CsvImportController extends Controller
                 '*.customer_sex' => 'required',
                 '*.coach_name' => 'required',
                 '*.coach_phone' => 'required',
-                '*.coach_password' => 'required',
             ]);
             if ($validator->fails() || empty($gymId)) {
                 return response()->json(['message' => 'request params illegal: ' . json_encode($validator)], 500);
@@ -154,9 +153,8 @@ class CsvImportController extends Controller
         $user = User::where('email', $userEmail)->first();
         if (empty($user)) {
             // create user if not exists
-            $password = $coachData['coach_password'] ? $coachData['coach_password'] : self::DEFAULT_PASSWORD;
             $user = new User();
-            $user->password = Hash::make($password);
+            $user->password = Hash::make(self::DEFAULT_PASSWORD);
             $user->email = $userEmail;
             $user->name = $coachData['coach_name'];
             $user->sex = false;

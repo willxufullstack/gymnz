@@ -5,7 +5,11 @@ import {connect} from 'react-redux';
 import * as Actions from "../../actions";
 import LoadingLayer from "-components/LoadingLayer/LoadingLayer";
 import MaterialTable from "material-table";
+import { withStyles } from '@material-ui/core'
+import Button from '-components/CustomButtons/Button.jsx'
 
+const styles = {
+}
 class CsvDataImport extends React.Component {
     constructor(props) {
         super(props)
@@ -14,8 +18,19 @@ class CsvDataImport extends React.Component {
             batchSize: 1000,
             sleepTime: 2000,
             showTable: false,
-            saving: false
+            saving: false,
+            done: false
         }
+    }
+
+    sampleData = () => {
+        return <React.Fragment>
+            <hr/>
+            <h4>样例数据</h4>
+            <p>price,course_amount,duration,created_at,customer_name,customer_phone,customer_sex,coach_name,coach_phone</p>
+            <p>22,5,3,2020-01-17,客户A,13333333333,1,教练A,13211111111</p>
+            <p>33,6,3,2020-01-17,客户B,13344444444,1,教练B,13222222222</p>
+        </React.Fragment>
     }
 
     dataTable = () => {
@@ -31,7 +46,7 @@ class CsvDataImport extends React.Component {
 
         return (<div className='customers-page' >
             <MaterialTable
-                title={'已上传'}
+                title={'预览'}
                 columns={columns}
                 data={this.state.csvData}
                 options={{
@@ -57,9 +72,10 @@ class CsvDataImport extends React.Component {
             );
             await new Promise(r => setTimeout(r, this.state.sleepTime));
         }
+        this.setState({saving: true});
     }
 
-    handleForce = data => {
+    onFileSelected = data => {
         const header = data.shift();
         let result = data.map(row => {
             return row.reduce(function (result, field, index) {
@@ -67,27 +83,41 @@ class CsvDataImport extends React.Component {
                 return result;
             }, {})
         });
-        this.saveData(result).then(() => {
-            this.setState({
-                saving: false,
-                showTable: true,
-                csvData: result
-            });
+        this.setState({
+            showTable: true,
+            csvData: result
         });
     };
+
+    runImport = async () => {
+        this.setState({saving: true})
+        const data = this.state.csvData
+        for (let i = 0; i < data.length; i += this.state.batchSize) {
+            const batch = data.slice(i, i + this.state.batchSize)
+            this.props.actions.csvDataImport(
+                this.props.selectedGym.id,
+                batch
+            );
+            await new Promise(r => setTimeout(r, this.state.sleepTime))
+        }
+        this.setState({
+            saving: false,
+            done: true
+        })
+    }
 
     render() {
         return (
             <div>
                 {this.state.saving && <LoadingLayer/>}
-                {!this.state.csvData.length && <div className="csv_data_import">
-                    <CSVReader
-                        cssClass="react-csv-input"
-                        label="请选择订单csv文件"
-                        onFileLoaded={this.handleForce}
-                    />
-                </div>}
-                {this.state.showTable && this.dataTable()}
+                <p>{this.state.done && '已完成'}</p>
+                <p>{!this.state.done && !this.state.showTable && '请选择CSV文件'}</p>
+                <p>{!this.state.done && this.state.showTable && <Button onClick={this.runImport} color='primary'>开始导入</Button>}</p>
+                {!this.state.done && <CSVReader
+                    label=''
+                    onFileLoaded={this.onFileSelected}
+                />}
+                {this.state.showTable ? this.dataTable() : this.sampleData()}
             </div>
         )
     }
@@ -111,5 +141,5 @@ const LinkedCsvDataImport = connect(
     mapDispatchToProps
 )(CsvDataImport);
 
-export default LinkedCsvDataImport;
+export default withStyles(styles)(LinkedCsvDataImport);
 
