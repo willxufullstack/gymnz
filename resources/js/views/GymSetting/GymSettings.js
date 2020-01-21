@@ -20,6 +20,7 @@ import CustomInput from '-components/CustomInput/CustomInput.jsx'
 import { withStyles } from '@material-ui/core'
 import i18N from '../../lang'
 import Switch from 'react-switch'
+import LinkedCsvDataImport from "-views/Accounting/CsvDataImport";
 
 const L = i18N('GymSettings')
 const styles = {
@@ -425,6 +426,10 @@ class GymSettings extends React.Component {
                     {
                         tabName: L.resetPwd,
                         tabContent: this.passwordResetForm()
+                    },
+                    {
+                        tabName: L.csvDataImport,
+                        tabContent: <LinkedCsvDataImport/>
                     }
                 ]}
             />

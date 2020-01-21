@@ -481,3 +481,18 @@ export function updateGymSalarySetting(gymId, data) {
         }
     }
 }
+
+
+/********Csv Data Import*********/
+export function csvDataImport(gymId, data) {
+    return {
+        type: ActionTypes.CSV_DATA_IMPORT,
+        payload: {
+            request: {
+                method: 'post',
+                url: '/gym/' + gymId + '/csv/',
+                data
+            }
+        }
+    }
+}

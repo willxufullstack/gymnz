@@ -219,6 +219,20 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             })
 
+
+        case ActionTypes.CSV_DATA_IMPORT:
+            return Object.assign({}, state, { loading: true })
+        case ActionTypes.CSV_DATA_IMPORT_SUCCESS:
+            return Object.assign({}, state, {
+                successMsg: 'CSV data loading finished',
+                loading: false
+            })
+        case ActionTypes.CSV_DATA_IMPORT_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'upload CSV data failed',
+                loading: false
+            })
+
         case ActionTypes.LOAD_GYM_ACCOUNTING:
             return Object.assign({}, state, { loading: true })
         case ActionTypes.LOAD_GYM_ACCOUNTING_SUCCESS:

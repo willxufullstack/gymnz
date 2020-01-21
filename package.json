@@ -29,6 +29,7 @@
     "qiniu-js": "^2.5.4",
     "react": "16.8.1",
     "react-chartist": "0.13.3",
+    "react-csv-reader": "^2.0.2",
     "react-dom": "16.8.1",
     "react-google-maps": "9.4.5",
     "react-grid-gallery": "^0.5.5",

@@ -92,6 +92,7 @@ Route::group([
     Route::resource('gym.order', 'OrderController');
     Route::post('gym/{gym}/order/{order}/refund', 'OrderController@refund');
     Route::post('gym/{gym}/order/{order}/split', 'OrderController@split');
+    Route::resource('gym/{gym}/csv', 'CsvImportController');
 
     Route::resource('gym.accounting', 'AccountingController');
 
