@@ -18,7 +18,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'openid', 'bind', 'token', 'chart']]);
+        $this->middleware('auth:api', ['except' => ['login', 'openid', 'bind', 'token', 'chart', 'NZHelperOpenId']]);
     }
 
     /**
@@ -115,6 +115,24 @@ class AuthController extends Controller
     public function guard()
     {
         return Auth::guard('api');
+    }
+    public function NZHelperOpenId(Request $request)
+    {
+        $code = $request->input('code');
+        $appId = 'wx6cda57a3aa04e5aa';
+        $secret = config('services.wx.secret'); // TODO replace
+        $url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' . $appId . '&secret=' . $secret . '&js_code=' . $code . '&grant_type=authorization_code';
+        $json = json_decode(file_get_contents($url), true);
+        $openid = $json['openid'];
+        $ret = [
+            'openid' => $openid
+        ];
+        $user = User::where('openid', $openid)->first();
+        if(!empty($user)){
+            $ret['token'] = $this->guard()->tokenById($user->id);
+        }
+
+        return response()->json($ret);
     }
 
     public function openid(Request $request)
