@@ -42,6 +42,7 @@ class HelperDemandController extends Controller
         $demand->from = $request->input('from');
         $demand->to = $request->input('to');
         $demand->content = $request->input('content');
+        $demand->openid = $request->input('openid');
 
         $demand->save();
         return $demand;
@@ -53,9 +54,9 @@ class HelperDemandController extends Controller
      * @param  \App\HelperDemand  $helperDemand
      * @return \Illuminate\Http\Response
      */
-    public function show(HelperDemand $helperDemand)
+    public function show($id)
     {
-        //
+        return HelperDemand::find($id);
     }
 
     /**
