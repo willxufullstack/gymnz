@@ -384,6 +384,10 @@ class ScheduleController extends Controller
         return response()->json(array('message' => 'fail'), 500);
     }
 
+    public function hotmap($userId) {
+        $customer = User::find($userId);
+        return response()->json(str_split($customer->getHotMap(date('Y-m-d'), 40)));
+    }
 
     public function complete($gymId, $id)
     {

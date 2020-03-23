@@ -78,6 +78,7 @@ Route::group([
 
     Route::get('user/{user}/coursebalance', 'OrderController@getCustomerCourseBalance');
     Route::get('user/{user}/order', 'OrderController@getCustomerOrders');
+    Route::get('user/{user}/hotmap', 'ScheduleController@hotmap');
     Route::resource('user.bodydata', 'BodyDataController');
     Route::resource('user.photo', 'PhotoController');
     Route::resource('user.homework', 'HomeworkController');
