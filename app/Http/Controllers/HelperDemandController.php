@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\HelperDemand;
 use Illuminate\Http\Request;
+use Symfony\Component\Console\Helper\Helper;
 
 class HelperDemandController extends Controller
 {
@@ -56,7 +57,11 @@ class HelperDemandController extends Controller
      */
     public function show($id)
     {
-        return HelperDemand::find($id);
+        $ret = HelperDemand::find($id);
+        if(empty($ret)){
+            $ret = HelperDemand::where('openid', $id)->first();
+        }
+        return $ret;
     }
 
     /**
