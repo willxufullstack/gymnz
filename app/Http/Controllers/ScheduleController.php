@@ -386,7 +386,7 @@ class ScheduleController extends Controller
 
     public function hotmap($userId) {
         $customer = User::find($userId);
-        return response()->json(str_split($customer->getHotMap(date('Y-m-d'), 40)));
+        return response()->json(str_split($customer->getHotMap(date('Y-m-d'), 35)));
     }
 
     public function complete($gymId, $id)
