@@ -77,7 +77,7 @@ class SalarySettingController extends Controller
             ->where('gym_id', $gymId)
             ->first();
 
-        $newData = $request->only('base', 'course_fixed', 'course_percentage', 'sale_percentage', 'tax');
+        $newData = $request->only('base', 'course_fixed', 'course_free','course_percentage', 'sale_percentage', 'tax');
         $newData['created_by'] = Auth::User()->id;
         $row->update($newData);
         return $row;

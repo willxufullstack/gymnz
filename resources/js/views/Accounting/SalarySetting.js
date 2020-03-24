@@ -28,6 +28,7 @@ class SalarySetting extends React.Component {
             { title: L.name, field: 'coach.user.name', editable: 'never' },
             { title: L.base, field: 'base', type: 'numeric' },
             { title: L.courseFixed, field: 'course_fixed', type: 'numeric' },
+            { title: L.courseFree, field: 'course_free', type: 'numeric' },
             { title: L.coursePercent, field: 'course_percentage', type: 'numeric' },
             { title: L.salePercent, field: 'sale_percentage', type: 'numeric' },
             { title: L.tax, field: 'tax', type: 'numeric' }

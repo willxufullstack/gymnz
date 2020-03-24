@@ -349,6 +349,7 @@ const Lang = {
             name: '姓名',
             base: '底薪',
             courseFixed: '课提(固定)',
+            courseFree: '课提(赠课)',
             coursePercent: '课提(%)',
             salePercent: '销提(%)',
             tax: '社保'
@@ -358,6 +359,7 @@ const Lang = {
             name: 'Name',
             base: 'Base',
             courseFixed: 'Course(Fixed)',
+            courseFixed: 'Course(Free)',
             coursePercent: 'Course(%)',
             salePercent: 'Sale(%)',
             tax: 'Tax'
