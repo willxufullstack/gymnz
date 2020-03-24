@@ -250,6 +250,7 @@ class ScheduleController extends Controller
         $order = Order::where([
             'customer_id' => $scheduleData['customer'],
             'gym_id' => $scheduleData['gym'],
+            'status' => 1,
         ])->whereRaw('booked_amount<course_amount')
             ->orderBy('expiry', 'ASC')
             ->first();
