@@ -11,6 +11,7 @@ class SalaryReceipt extends Model
         'created_by',
         'base',
         'course_fixed',
+        'course_free',
         'course_percentage',
         'sale_percentage',
         'tax',
@@ -137,13 +138,24 @@ class SalaryReceipt extends Model
             $moneyByOrderPercentage = $moneyByOrderPercentage * $this->sale_percentage / 100;
         }
 
+        // handle free course and normal course with different setting
+        $normalCourseCount = $freeCourseCount = 0;
+        foreach($query as $schedule) {
+            if($schedule->getPrice() === 0) {
+                $freeCourseCount ++;
+            } else {
+                $normalCourseCount ++;
+            }
+        }
 
         // update total
         // $count = $query->count();
         $count = count($query);
         $this->course_count = $count;
+        $this->free_course_count = $freeCourseCount;
         $this->total = $this->base
-            + $count * $this->course_fixed
+            + $normalCourseCount * $this->course_fixed
+            + $freeCourseCount * $this->course_free
             + $this->adjustment
             + $moneyByCoursePercentage
             + $moneyByOrderPercentage

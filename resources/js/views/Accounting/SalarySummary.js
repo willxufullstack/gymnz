@@ -114,7 +114,12 @@ class SalarySummary extends React.Component {
                 },
                 render: rowData => `${rowData.base} - ${rowData.tax}`
             },
-            { title: L.course, field: 'course_count', editable: 'never', render: rowData => `${rowData.course_fixed} * ${rowData.course_count}` },
+            {
+                title: L.course,
+                field: 'course_count',
+                 editable: 'never',
+                render: rowData => `${rowData.course_fixed} * ${rowData.course_count - rowData.free_course_count} + ${rowData.course_free} * ${rowData.free_course_count}`
+            },
             { title: L.adjustment, field: 'adjustment' },
             { title: L.comments, field: 'adjustment_reason' },
             { title: '', editable: 'never', render: rowData => rowData.status === 2 ? <Success><Done /></Success> : <Button onClick={() => this.tapPay(rowData)} color='transparentPrimary'><Pay />{L.pay}</Button> }
