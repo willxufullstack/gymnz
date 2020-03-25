@@ -70,6 +70,13 @@ class HomeworkController extends Controller
                 ->first();
     }
 
+    public function showWithoutUser(Request $request, $id)
+    {
+        return Homework::with(['coach.user', 'customer'])
+        ->where('id', $id)
+        ->first();
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

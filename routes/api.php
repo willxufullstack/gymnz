@@ -82,6 +82,7 @@ Route::group([
     Route::resource('user.bodydata', 'BodyDataController');
     Route::resource('user.photo', 'PhotoController');
     Route::resource('user.homework', 'HomeworkController');
+    Route::get('homework/{id}', 'HomeworkController@showWithoutUser');
 
     Route::resource('org', 'OrganizationController');
 
