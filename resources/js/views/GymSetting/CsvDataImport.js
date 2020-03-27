@@ -21,7 +21,8 @@ const styles = {
     downloadIcon: {
         fontSize: '1rem',
         position: 'relative',
-        top: 4
+        top: -1,
+        left: 4
     }
 }
 class CsvDataImport extends React.Component {
