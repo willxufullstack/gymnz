@@ -10,6 +10,7 @@ use App\Coach;
 use App\User;
 use App\Gym;
 use App\Order;
+use App\Schedule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
@@ -118,24 +119,53 @@ class CsvImportController extends Controller
         $order->price = $orderData['price'];
         $order->course_amount = $orderData['course_amount'];
         $order->duration = $orderData['duration'];
-        $order->setCreatedAt($orderData['created_at']);
+        $order->setCreatedAt( str_replace('/', '-', $orderData['created_at']));
         // calculate expiry
         $order->expiry = Carbon::parse($orderData['created_at'])->addMonths($orderData['duration'])->format('Y-m-d H:i:s');
         // 3. map user
-        $order->customer()->associate($customer);
+        $order->customer_id = $customer->id;
         // 4. map gym
-        $gym = Gym::find($orderData['gym_id']);
-        $order->gym()->associate($gym);
+        $order->gym_id = $orderData['gym_id'];
         // 5. map coach
-        $coach = Coach::find($orderData['coach_id']);
-        $order->coach()->associate($coach);
+        $order->coach_id = $orderData['coach_id'];
         // 6. return
         $order->save();
 
-        //dispatch event for accounting
+        // handle schedules
+        if($orderData['schedules']){
+            $schedulesDates = explode('|', $orderData['schedules']);
+            $this->saveSchedule($order, $schedulesDates);
+        }
+
+        // dispatch event for accounting
         event(new \App\Events\OrderEvent($order, $userId));
 
         return $order;
+    }
+
+    function saveSchedule($order, $schedulesDates){
+        foreach($schedulesDates as $date) {
+            $trimed = trim($date);
+            if(empty($trimed)){
+                continue;
+            }
+            $schedule = new Schedule();
+            $schedule->created_by = Auth::User()->id;;
+            $schedule->order_id = $order->id;
+            $schedule->date = trim($date);
+            $schedule->start = 40;
+            $schedule->end = 43;
+            $schedule->detail = '[]';
+            $schedule->status = 2; // mark as finished
+            $schedule->conclusion = '';
+            $schedule->customer_id = $order->customer_id;
+            $schedule->coach_id = $order->coach_id;
+            $schedule->gym_id = $order->gym_id;
+            $schedule->save();
+
+            $order->booked_amount++;
+        }
+        $order->save();
     }
 
     /**

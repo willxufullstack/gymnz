@@ -14,7 +14,7 @@ class Accounting extends Model
      * @var array
      */
     protected $fillable = [
-        'created_by', 'amount', 'category', 'detail', 'gym_id',
+        'created_by', 'amount', 'category', 'detail', 'gym_id', 'created_at'
     ];
 
     public function gym()

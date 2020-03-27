@@ -41,6 +41,7 @@ class OrderAccountingAction
             'amount' => $event->amount,
             'created_by' => $event->operator,
             'gym_id' => $order->gym_id,
+            'created_at' => $order->created_at
         ]);
     }
 }
