@@ -368,7 +368,9 @@ class ScheduleController extends Controller
         // unlink followup
         $schedule->unlinkFollowup();
         // keep the plan into cache
-        Redis::set('tmp_schedule_plan_' . $schedule->customer_id, $schedule->detail);
+        if(!empty($schedule->detail) && $schedule->detail !== '[]'){
+            Redis::set('tmp_schedule_plan_' . $schedule->customer_id, $schedule->detail);
+        }
 
         $success = $schedule->delete();
         if ($success) {
