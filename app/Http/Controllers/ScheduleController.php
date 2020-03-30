@@ -392,13 +392,17 @@ class ScheduleController extends Controller
         return response()->json(str_split($customer->getHotMap(date('Y-m-d'), 35)));
     }
 
-    public function complete($gymId, $id)
+    public function complete(Request $request, $gymId, $id)
     {
         $schedule = Schedule::with(['coach.user', 'customer', 'gym'])
             ->where(['id' => $id, 'gym_id' => $gymId])
             ->first();
         if (empty($schedule)) {
             return response()->json(array('message' => 'can not find the schedule ' . $id), 500);
+        }
+
+        if($reaction = $request->input('reaction', 'test')){
+            $schedule->reaction = $reaction;
         }
 
         $schedule->status = 2;
