@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Coach;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
@@ -148,6 +149,10 @@ class AuthController extends Controller
         ];
         $user = User::where('openid', $openid)->first();
         if(!empty($user)){
+            // try to mock to the target customer if is coach
+            if($request->input('customer') && Coach::where('user_id', $user->id)->count() > 0) {
+                $user = User::find($request->input('customer'));
+            }
             $ret['token'] = $this->guard()->tokenById($user->id);
         }
 
