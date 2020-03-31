@@ -104,7 +104,7 @@ Route::group([
     Route::get('schedule/history', 'ScheduleController@history');
     Route::resource('gym.schedule', 'ScheduleController');
     Route::get('gym/{gym}/schedule/{schedule}/complete', 'ScheduleController@complete');
-    Route::patch('gym/{gym}/schedule/{schedule}/complete', 'ScheduleController@complete');
+    Route::post('gym/{gym}/schedule/{schedule}/complete', 'ScheduleController@complete');
 
     Route::resource('gym.salarysetting', 'SalarySettingController');
 
