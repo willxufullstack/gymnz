@@ -401,7 +401,7 @@ class ScheduleController extends Controller
             return response()->json(array('message' => 'can not find the schedule ' . $id), 500);
         }
 
-        if($reaction = $request->input('reaction', 'test')){
+        if($reaction = $request->input('reaction')){
             $schedule->reaction = $reaction;
         }
 
