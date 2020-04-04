@@ -48,20 +48,20 @@ class CsvImportController extends Controller
     public function store(Request $request, $gymId)
     {
         try {
-            // values must be present and not empty.
+            //values must be present and not empty.
             $validator = Validator::make($request->all(), [
                 '*.price' => 'required',
                 '*.course_amount' => 'required',
                 '*.duration' => 'required',
                 '*.created_at' => 'required',
                 '*.customer_name' => 'required',
-                '*.customer_phone' => 'required',
+                // '*.customer_phone' => 'required',
                 '*.customer_sex' => 'required',
                 '*.coach_name' => 'required',
                 '*.coach_phone' => 'required',
             ]);
             if ($validator->fails() || empty($gymId)) {
-                return response()->json(['message' => 'request params illegal: ' . json_encode($validator)], 500);
+                return response()->json($validator->errors()->first(), 500);
             }
         } catch (Exception $e) {
             return response()->json(['message' => 'request params illegal: ' . $e], 500);
@@ -69,7 +69,12 @@ class CsvImportController extends Controller
 
         try {
             $savedOrders = [];
+            $counter = 0;
             foreach ($request->all() as $params) {
+                $counter ++;
+                if(empty($params['customer_phone'])){
+                    $params['customer_phone'] = self::autoFixPhone($counter);
+                }
                 $params['gym_id'] = $gymId;
                 $coach = $this->saveCoach($params);
                 $params['coach_id'] = $coach->id;
@@ -79,6 +84,10 @@ class CsvImportController extends Controller
         } catch (Exception $e) {
             return response()->json(['message' => 'fail' . $e], 500);
         }
+    }
+
+    static function autoFixPhone(int $i){
+       return substr(time(). $i, -11);
     }
 
     /**
