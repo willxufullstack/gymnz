@@ -38,8 +38,11 @@ class TimelineController extends Controller
 
         $ret = [];
         foreach ($schedules as $s) {
-            $ret[] = $s->toTrainCard();
-            if ($s->status === 2) {
+            $trainCard =  $s->toTrainCard();
+            if(!empty($trainCard)){
+                $ret[] = $trainCard;
+            }
+            if ($s->status === 2 && !empty(trim($s->conclusion))) {
                 $ret[] = $s->toConclusionCard();
             }
         }

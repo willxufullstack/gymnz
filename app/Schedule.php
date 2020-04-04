@@ -118,6 +118,9 @@ class Schedule extends Model
     {
         $detail = json_decode($this->detail);
         $title = '~ 训练 ~';
+        if(empty($detail)){
+            return [];
+        }
 
         foreach ($detail as $row) {
             if ($row->contenttype === 'comments') {
@@ -139,6 +142,9 @@ class Schedule extends Model
 
     public function toConclusionCard()
     {
+        if(empty(trim($this->conclusion))){
+            return [];
+        }
         return [
             'type' => 'body-only',
             'body' => $this->conclusion,
