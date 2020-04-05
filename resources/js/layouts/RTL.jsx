@@ -15,7 +15,6 @@ import routes from "../routes.js";
 
 import rtlStyle from "-assets/jss/material-dashboard-react/layouts/rtlStyle.jsx";
 
-import image from "-assets/img/sidebar-2.jpg";
 import logo from "-assets/img/reactlogo.png";
 
 const switchRoutes = (
@@ -38,7 +37,6 @@ class RTL extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      image: image,
       color: "blue",
       hasImage: true,
       fixedClasses: "dropdown ",
@@ -94,7 +92,6 @@ class RTL extends React.Component {
           routes={routes}
           logoText={"الإبداعية تيم"}
           logo={logo}
-          image={this.state.image}
           handleDrawerToggle={this.handleDrawerToggle}
           open={this.state.mobileOpen}
           color={this.state.color}

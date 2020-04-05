@@ -9,6 +9,7 @@ use App\User;
 use App\Coach;
 use App\Events\BonusEvent;
 use App\Followup;
+use Carbon\Carbon;
 use App\Order;
 use App\Schedule;
 use Auth;
@@ -291,7 +292,10 @@ class ScheduleController extends Controller
         $schedule->linkFollowup();
         event(new \App\Events\ScheduleCreateEvent($schedule));
         // TODO handle save error
-        // 3. update order booked_amount
+        // 3. update order booked_amount / expiry
+        if(!$order->booked_amount){
+            $order->expiry = Carbon::createFromFormat('Y-m-d', $scheduleData['date'])->addMonths($order->duration);
+        }
         $order->booked_amount++;
         $order->save();
 

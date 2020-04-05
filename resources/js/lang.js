@@ -162,7 +162,8 @@ const Lang = {
             book: '预约',
             orders: '订单',
             data: '数据',
-            photo: '照片'
+            photo: '照片',
+            expiry: '过期时间'
         },
         en: {
             refund: 'Refund',
@@ -187,7 +188,8 @@ const Lang = {
             book: 'Book',
             orders: 'Orders',
             data: 'Data',
-            photo: 'Photo'
+            photo: 'Photo',
+            expiry: 'Expiry'
         }
     },
     Customers: {

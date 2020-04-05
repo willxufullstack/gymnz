@@ -23,6 +23,7 @@ const sidebarStyle = theme => ({
     bottom: "0",
     left: "0",
     zIndex: "1",
+    background: "#333",
     ...boxShadow,
     width: drawerWidth,
     [theme.breakpoints.up("md")]: {
