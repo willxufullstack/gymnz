@@ -43,8 +43,11 @@ Route::group([], function () {
     Route::get('/user/{user}/bodydata/chart', 'BodyDataController@chart');
     // allow visit the trial course so that user can access from wx app
     Route::get('/gym/{gym}/trial/{id}', 'ScheduleController@show');
+    // legacy API: to re-generate bonus orders: year=2020&month=4
+    Route::get('gym/{gym}/bonus', 'ScheduleController@bonusCheck');
     // paste route here to skip auth when debug
     // Route::get('gym/{gym}/refreshCustomerCreatedAt', 'GymController@refreshCustomerCreatedAt');
+
 });
 
 // route for helper
