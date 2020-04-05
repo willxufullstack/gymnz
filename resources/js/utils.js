@@ -170,6 +170,9 @@ export function arrayToOptions(arr) {
 export function getOrderStatus(order) {
     const today = new Date()
     const expiry = new Date(order.expiry)
+    if(order.booked_amount === 0) {
+        return '- -'
+    }
     if(today > expiry){
         return L.expired;
     }
@@ -181,4 +184,11 @@ export function getOrderStatus(order) {
         default:
             return L.unknown;
     };
+}
+
+export function getOrderExpiry(order) {
+    if(order.booked_amount === 0) {
+        return '- -'
+    }
+    return order.expiry
 }

@@ -192,6 +192,7 @@ class Customer extends React.Component {
             L.bookedTotal,
             L.coach,
             L.created,
+            L.expiry,
             L.status,
             L.action
         ]
@@ -225,7 +226,8 @@ class Customer extends React.Component {
                 (r.price / r.course_amount).toFixed(0) + '/' + r.price,
                 r.booked_amount + ' / ' + r.course_amount,
                 r.coach.user.name,
-                r.created_at,
+                r.created_at.split(' ')[0],
+                utils.getOrderExpiry(r),
                 utils.getOrderStatus(r),
                 r.status === 1 && r.course_amount > r.booked_amount ? btn : '--'
             ]

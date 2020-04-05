@@ -10,7 +10,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 // core components
 import Sidebar from "-components/Sidebar/Sidebar.jsx";
 import routes from "../routes.js";
-import image from "-assets/img/sidebar-2.jpg";
+
 import { bindActionCreators } from "redux";
 import * as Actions from "../actions";
 import connect from "react-redux/es/connect/connect";
@@ -42,7 +42,6 @@ class Admin extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            image: image,
             color: "blue",
             hasImage: true,
             fixedClasses: "dropdown show",
@@ -105,7 +104,6 @@ class Admin extends React.Component {
                 <Sidebar
                     routes={routes}
                     logoText={this.props.setting.selectedGym.name}
-                    image={this.state.image}
                     handleDrawerToggle={this.handleDrawerToggle}
                     open={this.state.mobileOpen}
                     color={this.state.color}
