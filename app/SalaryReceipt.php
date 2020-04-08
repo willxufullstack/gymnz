@@ -33,6 +33,9 @@ class SalaryReceipt extends Model
             'coach_id' => $this->coach_id,
             'gym_id' => $this->gym_id
         ])->first();
+        if(empty($setting)) {
+            return;
+        }
 
         $this->base = $setting->base;
         $this->course_fixed = $setting->course_fixed;

@@ -137,6 +137,8 @@ class CoachController extends Controller
         $coachItem->status = 0;
         $success = $coachItem->save();
         if ($success) {
+            $ss = SalarySetting::where(['gym_id' => $gymId, 'coach_id' => $coachId]);
+            $ss->delete();
             return response()->json($coachItem, 200);
         }
         return response()->json(array('message' => 'fail'), 500);
