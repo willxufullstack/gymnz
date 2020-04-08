@@ -396,6 +396,42 @@ class ScheduleController extends Controller
         return response()->json(str_split($customer->getHotMap(date('Y-m-d'), 35)));
     }
 
+    public function bonusCheck(Request $request, $gymId) {
+
+        $gym = Gym::find($gymId);
+        $setting = $gym->setting;
+        if (!array_key_exists('bonus', $setting) || !$setting['bonus']) {
+            return response()->json(array('message' => 'bonus has not been enabled '), 200);
+        }
+
+        $year = $request->input('year');
+        $month = $request->input('month');
+        // get last schedule of the month
+        $rows = Schedule::select(DB::raw('customer_id, count(id) as course_amount'))
+            ->where(['gym_id' => $gymId])
+            ->whereYear('date', '=', $year)
+            ->whereMonth('date', '=', $month)
+            ->where('status', 2)
+            ->groupBy('customer_id')
+            ->get();
+        $processed = [];
+        foreach($rows as $row){
+            if($row->course_amount >= (int)$setting['bonus']){
+                // last schedule
+                $lastSchedule = Schedule::with(['customer'])
+                    ->where(['gym_id' => $gymId, 'customer_id' => $row->customer_id])
+                    ->whereYear('date', '=', $year)
+                    ->whereMonth('date', '=', $month)
+                    ->where('status', 2)
+                    ->orderBy('date', 'DESC')
+                    ->first();
+                event(new BonusEvent($lastSchedule));
+                $processed[] = $lastSchedule->customer->name;
+            }
+        }
+        return response()->json($processed, 200);
+    }
+
     public function complete(Request $request, $gymId, $id)
     {
         $schedule = Schedule::with(['coach.user', 'customer', 'gym'])

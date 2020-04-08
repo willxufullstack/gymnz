@@ -34,11 +34,10 @@ class BonusListener
         $date = explode('-', $schedule->date);
         $year = $date[0];
         $month = $date[1];
-        $key = `bonus_{$schedule->customer_id}_{$year}_{$month}`;
+        $key = "bonus_{$schedule->customer_id}_{$year}_{$month}";
         if(Redis::get($key)) {
             return;
         }
-
 
         // 2. create order
         $order = new Order();
@@ -50,7 +49,8 @@ class BonusListener
         $order->gym_id = $schedule->gym_id;
         $order->coach_id = $schedule->coach_id;
         // calcuate expiry
-        $order->expiry = Carbon::now()->addMonths(12);
+        $order->expiry = Carbon::createFromFormat('Y-m-d', $schedule->date)->addMonths(120);
+        $order->created_at = Carbon::createFromFormat('Y-m-d', $schedule->date)->toDateTimeString();
         // 3. map user
         // $order->customer()->associate($schedule->customer);
         // // 4. map gym
