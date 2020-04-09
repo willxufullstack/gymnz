@@ -51,8 +51,13 @@ return [
     ],
 
     'wx' => [
-        'id' => env('WX_APP_ID', 'aa'),
-        'secret' => env('WX_APP_SECRET', 'aa'),
+        'id' => env('WX_APP_ID', 'null'),
+        'secret' => env('WX_APP_SECRET', 'null'),
 
+    ],
+
+    'dianping' => [
+        'key' => env('DIANPING_APP_KEY', 'null'),
+        'secret' => env('DIANPING_APP_SECRET', 'null'),
     ]
 ];
