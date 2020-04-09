@@ -496,3 +496,16 @@ export function csvDataImport(gymId, data) {
         }
     }
 }
+
+export function authDianping(gymId, code) {
+    return {
+        type: ActionTypes.AUTH_DIANPING,
+        payload: {
+            request: {
+                method: 'post',
+                url: '/gym/' + gymId + '/bind/',
+                data: { code }
+            }
+        }
+    }
+}

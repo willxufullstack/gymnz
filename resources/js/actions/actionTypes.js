@@ -8,6 +8,10 @@ export const SHOW_SUCCESS_MSG = 'SHOW_SUCCESS_MSG';
 export const SHOW_NEW_ORG = 'SHOW_NEW_ORG';
 export const CANCEL_NEW_ORG = 'CANCEL_NEW_ORG';
 
+export const AUTH_DIANPING = 'AUTH_DIANPING';
+export const AUTH_DIANPING_SUCCESS = 'AUTH_DIANPING_SUCCESS';
+export const AUTH_DIANPING_FAIL = 'AUTH_DIANPING_FAIL';
+
 export const LOAD_ORG = 'LOAD_ORG';
 export const LOAD_ORG_SUCCESS = 'LOAD_ORG_SUCCESS';
 export const LOAD_ORG_FAIL = 'LOAD_ORG_FAIL';

@@ -78,7 +78,7 @@ class CustomTabs extends React.Component {
         <CardBody>
           {tabs.map((prop, key) => {
             if (key === this.state.value) {
-              return <div key={key}>{prop.tabContent}</div>;
+              return <React.Fragment key={key}>{prop.tabContent}</React.Fragment>;
             }
             return null;
           })}

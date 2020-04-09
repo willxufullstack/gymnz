@@ -14,13 +14,15 @@ class Gym extends Model
         'setting' => 'array'
     ];
 
+    protected $hidden = ['dianping_session', 'dianping_remain_refresh_count', 'dianping_expires_in', 'dianping_refresh_token'];
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'org_id', 'created_by', 'setting', 'timezone'
+        'name', 'description', 'org_id', 'created_by', 'setting', 'timezone', 'dianping_shop_id', 'dianping_shop_name'
     ];
 
     /**

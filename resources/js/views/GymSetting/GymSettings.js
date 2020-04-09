@@ -1,38 +1,49 @@
-import React from 'react'
-import GridItem from '-components/Grid/GridItem'
-import GridContainer from '-components/Grid/GridContainer'
-import InputRange from 'react-input-range'
-import 'react-input-range/lib/css/index.css'
-import '../../../sass/settings.scss'
-import { bindActionCreators } from 'redux'
-import * as Actions from '../../actions'
-import connect from 'react-redux/es/connect/connect'
-import Label from '@material-ui/icons/Dehaze'
-import Edit from '@material-ui/icons/Edit'
-import Tabs from '-components/CustomTabs/CustomTabs.jsx'
-import Coach from './Coach'
-import Organization from './Organization'
-import Button from '-components/CustomButtons/Button.jsx'
-import { Typography, IconButton } from '@material-ui/core'
-import Primary from '-components/Typography/Primary'
-import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
-import CustomInput from '-components/CustomInput/CustomInput.jsx'
-import { withStyles } from '@material-ui/core'
-import i18N from '../../lang'
-import Switch from 'react-switch'
-import LinkedCsvDataImport from "-views/GymSetting/CsvDataImport";
+import React from "react"
+import GridItem from "-components/Grid/GridItem"
+import GridContainer from "-components/Grid/GridContainer"
+import InputRange from "react-input-range"
+import "react-input-range/lib/css/index.css"
+import "../../../sass/settings.scss"
+import { bindActionCreators } from "redux"
+import * as Actions from "../../actions"
+import connect from "react-redux/es/connect/connect"
+import Label from "@material-ui/icons/Dehaze"
+import Edit from "@material-ui/icons/Edit"
+import Tabs from "-components/CustomTabs/CustomTabs.jsx"
+import Coach from "./Coach"
+import Organization from "./Organization"
+import Button from "-components/CustomButtons/Button.jsx"
+import {
+    Typography,
+    IconButton,
+    RadioGroup,
+    Radio,
+    FormControlLabel,
+    FormControl
+} from "@material-ui/core"
+import Primary from "-components/Typography/Primary"
+import Confirmation from "-components/CustomDialogues/Confirmation"
+import CreateNewDialogue from "-components/CustomDialogues/CreateNewDialogue"
+import CustomInput from "-components/CustomInput/CustomInput.jsx"
+import { withStyles } from "@material-ui/core"
+import i18N from "../../lang"
+import Switch from "react-switch"
+import LinkedCsvDataImport from "-views/GymSetting/CsvDataImport"
 
-const L = i18N('GymSettings')
+const L = i18N("GymSettings")
 const styles = {
+    shopPicker: {
+        margin: "auto"
+    },
     resetPwdContainer: {
-        width: '60%',
-        margin: 'auto'
+        width: "60%",
+        margin: "auto"
     },
     bonusSettingRow: {
-        display: 'flex'
+        display: "flex"
     },
     bonusSwitch: {
-        marginLeft: 12,
+        marginLeft: 12
     },
     bounsLabel: {
         flex: 1
@@ -42,17 +53,27 @@ class GymSettings extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            showDisableDianpingConfirmation: false,
+            showIntegrateDianpingFrame: false,
+            showDianpingShopPicker: false,
             editGymNameDialogue: false,
             selectedTabIndex: 0,
+            selectedShop: null,
             selectedGymId: props.selectedGymId || 0,
             passwordRest: {
-                currentPwd: '',
-                newPwd: '',
-                repeatPwd: ''
+                currentPwd: "",
+                newPwd: "",
+                repeatPwd: ""
             },
-            bonus: props.setting && props.setting.bonus ? props.setting.bonus : 0,
-            bodyMeasureDays: props.setting && props.setting.bodyMeasureDays ? props.setting.bodyMeasureDays : 0,
-            disableAppCompleteSchedule: props.setting ? props.setting.disableAppCompleteSchedule : false,
+            bonus:
+                props.setting && props.setting.bonus ? props.setting.bonus : 0,
+            bodyMeasureDays:
+                props.setting && props.setting.bodyMeasureDays
+                    ? props.setting.bodyMeasureDays
+                    : 0,
+            disableAppCompleteSchedule: props.setting
+                ? props.setting.disableAppCompleteSchedule
+                : false,
             workingHours: {
                 max:
                     props.setting &&
@@ -70,12 +91,40 @@ class GymSettings extends React.Component {
         }
     }
 
+    componentDidMount() {
+        window.addEventListener("message", this)
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("message", this)
+    }
+
+    handleEvent(e) {
+        if (e.type === "message") {
+            this.onDianpingAuthSuccess(event)
+        }
+    }
+
+    onDianpingAuthSuccess(event) {
+        console.log(`Received message: ${event.data}`)
+        // save session
+        this.props.actions
+            .authDianping(event.data.state, event.data.auth_code)
+            .then(() =>
+                this.setState({
+                    showDianpingShopPicker: true,
+                    showIntegrateDianpingFrame: false
+                })
+            )
+    }
+
     tapTab = tabIndex => {
         this.setState({ selectedTabIndex: tabIndex })
     }
 
     saveWorkingHours = value => {
-        const setting = { ...this.props.selectedGym.setting,
+        const setting = {
+            ...this.props.selectedGym.setting,
             workingHours: value
         }
         this.props.actions.updateGym(this.state.selectedGymId, {
@@ -83,7 +132,8 @@ class GymSettings extends React.Component {
         })
     }
     saveBonus = () => {
-        const setting = { ...this.props.selectedGym.setting,
+        const setting = {
+            ...this.props.selectedGym.setting,
             bonus: this.state.bonus
         }
         this.props.actions.updateGym(this.state.selectedGymId, {
@@ -92,7 +142,8 @@ class GymSettings extends React.Component {
     }
 
     saveDisableAppCompleteSchedule = () => {
-        const setting = { ...this.props.selectedGym.setting,
+        const setting = {
+            ...this.props.selectedGym.setting,
             disableAppCompleteSchedule: this.state.disableAppCompleteSchedule
         }
         this.props.actions.updateGym(this.state.selectedGymId, {
@@ -101,7 +152,8 @@ class GymSettings extends React.Component {
     }
 
     saveBodyMeasureDays = () => {
-        const setting = { ...this.props.selectedGym.setting,
+        const setting = {
+            ...this.props.selectedGym.setting,
             bodyMeasureDays: this.state.bodyMeasureDays
         }
         this.props.actions.updateGym(this.state.selectedGymId, {
@@ -124,7 +176,7 @@ class GymSettings extends React.Component {
                 }}
                 inputFields={[
                     {
-                        name: 'name',
+                        name: "name",
                         label: L.name,
                         value: this.props.selectedGym.name
                     }
@@ -135,9 +187,21 @@ class GymSettings extends React.Component {
         )
     }
 
+    getDisableDianpingConfirmation = () => {
+        return (
+            <Confirmation
+                message={"确定要解除与大众点评的绑定吗？"}
+                onConfirm={() => this.saveDianpingShop("", "")}
+                onCancel={() => {
+                    this.setState({ showDisableDianpingConfirmation: false })
+                }}
+            />
+        )
+    }
+
     getTimeLabel = v => {
         let hour = Math.floor(v / 4)
-        let min = ['00', '15', '30', '45'][v % 4]
+        let min = ["00", "15", "30", "45"][v % 4]
         return `${hour}:${min}`
     }
 
@@ -163,20 +227,93 @@ class GymSettings extends React.Component {
         }
         return null
     }
+
+    saveDianpingShop = (selectedShop, selectedShopName) => {
+        this.props.actions
+            .updateGym(this.state.selectedGymId, {
+                dianping_shop_id: selectedShop,
+                dianping_shop_name: selectedShopName
+            })
+            .then(() => {
+                this.setState({
+                    showDisableDianpingConfirmation: false,
+                    showDianpingShopPicker: false,
+                    showIntegrateDianpingFrame: false
+                })
+            })
+    }
+    shopPicker = shops => {
+        const selectedShop = this.state.selectedShop
+            ? this.state.selectedShop
+            : shops[0].open_shop_uuid
+        const shopObj = shops.find(shop => shop.open_shop_uuid === selectedShop)
+        const shopName = shop =>
+            shop.branchname + "/" + shop.shopname + "/" + shop.cityname
+        const selectedShopName = shopName(shopObj)
+
+        return (
+            <FormControl className={this.props.classes.bonusSettingRow}>
+                <Typography variant="subtitle1" paragraph>
+                    请选择要绑定的商铺
+                </Typography>
+                <RadioGroup
+                    value={selectedShop}
+                    onChange={event =>
+                        this.setState({ selectedShop: event.target.value })
+                    }
+                >
+                    {shops.map(shop => (
+                        <FormControlLabel
+                            key={shop.open_shop_uuid}
+                            value={shop.open_shop_uuid}
+                            control={<Radio />}
+                            label={shopName(shop)}
+                        />
+                    ))}
+                </RadioGroup>
+                <Button
+                    color="primary"
+                    onClick={() =>
+                        this.saveDianpingShop(selectedShop, selectedShopName)
+                    }
+                >
+                    保存
+                </Button>
+            </FormControl>
+        )
+    }
+
     getSettingTab = () => {
         const { feature } = this.props.selectedGym
+
+        if (this.state.showDianpingShopPicker) {
+            return this.shopPicker(this.props.gym.dianpingShopList)
+        }
+
+        if (this.state.showIntegrateDianpingFrame) {
+            const url =
+                "https://e.dianping.com/dz-open/merchant/auth?app_key=b3d5ba23ab19eaf1&state=" +
+                this.state.selectedGymId
+            return (
+                <iframe
+                    style={{ minWidth: "100%", minHeight: 625 }}
+                    src={url}
+                />
+            )
+        }
+
         return (
             <GridContainer>
-                {this.state.editGymNameDialogue &&
-                    this.getEditGymNameDialogue()}
+                {this.state.showDisableDianpingConfirmation && this.getDisableDianpingConfirmation()}
+                {this.state.editGymNameDialogue &&this.getEditGymNameDialogue()}
                 <GridItem
                     xs={12}
                     sm={12}
                     md={6}
-                    classes={{ grid: 'setting-option-block' }}
+                    classes={{ grid: "setting-option-block" }}
                 >
-                    <Typography variant='subtitle1' paragraph>
-                        <Label fontSize='small' />
+                    <Typography variant="subtitle1" paragraph>
+                        <Label fontSize="small" />
                         {L.availableTime}
                     </Typography>
                     <InputRange
@@ -196,20 +333,20 @@ class GymSettings extends React.Component {
                     xs={12}
                     sm={12}
                     md={6}
-                    classes={{ grid: 'setting-option-block' }}
+                    classes={{ grid: "setting-option-block" }}
                 >
-                    <Typography variant='subtitle1' paragraph>
-                        <Label fontSize='small' />
+                    <Typography variant="subtitle1" paragraph>
+                        <Label fontSize="small" />
                         {L.name}
                     </Typography>
-                    <Primary className='setting-gym-name'>
+                    <Primary className="setting-gym-name">
                         {this.props.selectedGym.name}
                         <IconButton
                             onClick={() =>
                                 this.setState({ editGymNameDialogue: true })
                             }
                         >
-                            <Edit fontSize='large' />
+                            <Edit fontSize="large" />
                         </IconButton>
                     </Primary>
                 </GridItem>
@@ -217,30 +354,34 @@ class GymSettings extends React.Component {
                     xs={12}
                     sm={12}
                     md={6}
-                    classes={{ grid: 'setting-option-block' }}
+                    classes={{ grid: "setting-option-block" }}
                 >
                     <div className={this.props.classes.bonusSettingRow}>
-                        <Typography variant='subtitle1' paragraph className={this.props.classes.bounsLabel}>
-                            <Label fontSize='small' />
-                            满 {this.state.bonus ? this.state.bonus : 'N'} 赠1
+                        <Typography
+                            variant="subtitle1"
+                            paragraph
+                            className={this.props.classes.bounsLabel}
+                        >
+                            <Label fontSize="small" />满{" "}
+                            {this.state.bonus ? this.state.bonus : "N"} 赠1
                         </Typography>
                         <Switch
-                            onChange={(checked)=>{
+                            onChange={checked => {
                                 const bonus = checked ? 4 : 0
-                                this.setState({bonus}, this.saveBonus)
+                                this.setState({ bonus }, this.saveBonus)
                             }}
                             className={this.props.classes.bonusSwitch}
                             checked={!!this.state.bonus}
-                            onColor='#ab47bc'
-                            onHandleColor='#ab47bc'
+                            onColor="#ab47bc"
+                            onHandleColor="#ab47bc"
                             handleDiameter={30}
                             uncheckedIcon={false}
                             checkedIcon={false}
-                            boxShadow='0px 1px 5px rgba(0, 0, 0, 0.6)'
-                            activeBoxShadow='0px 0px 1px 10px rgba(0, 0, 0, 0.2)'
+                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
                             height={20}
                             width={48}
-                            className='react-switch'
+                            className="react-switch"
                         />
                     </div>
                     {!!this.state.bonus && (
@@ -260,29 +401,36 @@ class GymSettings extends React.Component {
                     xs={12}
                     sm={12}
                     md={6}
-                    classes={{ grid: 'setting-option-block' }}
+                    classes={{ grid: "setting-option-block" }}
                 >
                     <div className={this.props.classes.bonusSettingRow}>
-                        <Typography variant='subtitle1' paragraph className={this.props.classes.bounsLabel}>
-                            <Label fontSize='small' />
+                        <Typography
+                            variant="subtitle1"
+                            paragraph
+                            className={this.props.classes.bounsLabel}
+                        >
+                            <Label fontSize="small" />
                             禁用APP课程完成
                         </Typography>
                         <Switch
-                            onChange={(disableAppCompleteSchedule)=>{
-                                this.setState({disableAppCompleteSchedule}, this.saveDisableAppCompleteSchedule)
+                            onChange={disableAppCompleteSchedule => {
+                                this.setState(
+                                    { disableAppCompleteSchedule },
+                                    this.saveDisableAppCompleteSchedule
+                                )
                             }}
                             className={this.props.classes.bonusSwitch}
                             checked={!!this.state.disableAppCompleteSchedule}
-                            onColor='#ab47bc'
-                            onHandleColor='#ab47bc'
+                            onColor="#ab47bc"
+                            onHandleColor="#ab47bc"
                             handleDiameter={30}
                             uncheckedIcon={false}
                             checkedIcon={false}
-                            boxShadow='0px 1px 5px rgba(0, 0, 0, 0.6)'
-                            activeBoxShadow='0px 0px 1px 10px rgba(0, 0, 0, 0.2)'
+                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
                             height={20}
                             width={48}
-                            className='react-switch'
+                            className="react-switch"
                         />
                     </div>
                 </GridItem>
@@ -290,30 +438,90 @@ class GymSettings extends React.Component {
                     xs={12}
                     sm={12}
                     md={6}
-                    classes={{ grid: 'setting-option-block' }}
+                    classes={{ grid: "setting-option-block" }}
                 >
                     <div className={this.props.classes.bonusSettingRow}>
-                        <Typography variant='subtitle1' paragraph className={this.props.classes.bounsLabel}>
-                            <Label fontSize='small' />
-                            {this.state.bodyMeasureDays ? this.state.bodyMeasureDays : 'N'} 天数据测量提醒
+                        <Typography
+                            variant="subtitle1"
+                            paragraph
+                            className={this.props.classes.bounsLabel}
+                        >
+                            <Label fontSize="small" />
+                            大众点评集成
                         </Typography>
                         <Switch
-                            onChange={(checked)=>{
-                                const bodyMeasureDays = checked ? 40 : 0
-                                this.setState({bodyMeasureDays}, this.saveBodyMeasureDays)
+                            onChange={enableDianping => {
+                                if (enableDianping) {
+                                    this.setState({
+                                        showIntegrateDianpingFrame: true
+                                    })
+                                } else {
+                                    this.setState({
+                                        showDisableDianpingConfirmation: true
+                                    })
+                                }
                             }}
                             className={this.props.classes.bonusSwitch}
-                            checked={!!this.state.bodyMeasureDays}
-                            onColor='#ab47bc'
-                            onHandleColor='#ab47bc'
+                            checked={
+                                !!this.props.selectedGym.dianping_shop_name
+                            }
+                            onColor="#ab47bc"
+                            onHandleColor="#ab47bc"
                             handleDiameter={30}
                             uncheckedIcon={false}
                             checkedIcon={false}
-                            boxShadow='0px 1px 5px rgba(0, 0, 0, 0.6)'
-                            activeBoxShadow='0px 0px 1px 10px rgba(0, 0, 0, 0.2)'
+                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
                             height={20}
                             width={48}
-                            className='react-switch'
+                            className="react-switch"
+                        />
+                    </div>
+                    <Primary className="setting-gym-name">
+                        {this.props.selectedGym.dianping_shop_name
+                            ? "店铺: " +
+                              this.props.selectedGym.dianping_shop_name
+                            : ""}
+                    </Primary>
+                </GridItem>
+                <GridItem
+                    xs={12}
+                    sm={12}
+                    md={6}
+                    classes={{ grid: "setting-option-block" }}
+                >
+                    <div className={this.props.classes.bonusSettingRow}>
+                        <Typography
+                            variant="subtitle1"
+                            paragraph
+                            className={this.props.classes.bounsLabel}
+                        >
+                            <Label fontSize="small" />
+                            {this.state.bodyMeasureDays
+                                ? this.state.bodyMeasureDays
+                                : "N"}{" "}
+                            天数据测量提醒
+                        </Typography>
+                        <Switch
+                            onChange={checked => {
+                                const bodyMeasureDays = checked ? 40 : 0
+                                this.setState(
+                                    { bodyMeasureDays },
+                                    this.saveBodyMeasureDays
+                                )
+                            }}
+                            className={this.props.classes.bonusSwitch}
+                            checked={!!this.state.bodyMeasureDays}
+                            onColor="#ab47bc"
+                            onHandleColor="#ab47bc"
+                            handleDiameter={30}
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                            height={20}
+                            width={48}
+                            className="react-switch"
                         />
                     </div>
                     {!!this.state.bodyMeasureDays && (
@@ -353,9 +561,9 @@ class GymSettings extends React.Component {
                         fullWidth: true
                     }}
                     inputProps={{
-                        type: 'password',
+                        type: "password",
                         value: this.state.passwordRest.currentPwd,
-                        onChange: onInput('currentPwd')
+                        onChange: onInput("currentPwd")
                     }}
                 />
                 <CustomInput
@@ -365,9 +573,9 @@ class GymSettings extends React.Component {
                         fullWidth: true
                     }}
                     inputProps={{
-                        type: 'password',
+                        type: "password",
                         value: this.state.passwordRest.newPwd,
-                        onChange: onInput('newPwd')
+                        onChange: onInput("newPwd")
                     }}
                 />
                 <CustomInput
@@ -381,15 +589,15 @@ class GymSettings extends React.Component {
                         this.state.passwordRest.newPwd
                     }
                     inputProps={{
-                        type: 'password',
+                        type: "password",
                         value: this.state.passwordRest.repeatPwd,
-                        onChange: onInput('repeatPwd')
+                        onChange: onInput("repeatPwd")
                     }}
                 />
                 <Button
                     disabled={!isValid}
                     style={{ marginTop: 16 }}
-                    color='primary'
+                    color="primary"
                     fullWidth={true}
                     onClick={() => {
                         this.props.actions.changePwd(
@@ -407,8 +615,8 @@ class GymSettings extends React.Component {
     render() {
         return (
             <Tabs
-                title={''}
-                headerColor='primary'
+                title={""}
+                headerColor="primary"
                 onSwitch={this.tapTab}
                 tabs={[
                     {

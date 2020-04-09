@@ -13,6 +13,7 @@ const initState = {
     reimbursements: [],
     salarySettings: [],
     salaryReceipts: [],
+    dianpingShopList: [],
     report: {
         orders: [],
         scheduleCountByMonthPerCoach: [],
@@ -702,6 +703,21 @@ const gym = (state = initState, action = NonAction) => {
                 errorMsg: 'Load gym orders failed'
             })
 
+        case ActionTypes.AUTH_DIANPING:
+            return Object.assign({}, state, {
+                loading: true
+            })
+        case ActionTypes.AUTH_DIANPING_SUCCESS:
+            return {
+                loading: false,
+                dianpingShopList: action.payload.data
+            }
+
+        case ActionTypes.AUTH_DIANPING_FAIL:
+            return {
+                loading: false,
+                errorMsg: '查询店铺列表失败'
+            }
         default:
             return state
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Gym;
 use App\Order;
 use App\Coach;
+use App\Console\Commands\DianpingCrawler;
 use App\Schedule;
 use App\User;
 use Auth;
@@ -256,5 +257,26 @@ class GymController extends Controller
             'activeCustomerCount' => $activeCustomerCount
         ];
         return response()->json($res, 200);
+    }
+
+    public function bind(Request $request, $gymId) {
+        $code = $request->input('code');
+
+        $appKey = config('services.dianping.key');
+        $appSecret = config('services.dianping.secret');
+        $sessionData = DianpingCrawler::getSession($appKey, $appSecret, $code);
+
+        $gym = Gym::find($gymId);
+        $gym->dianping_session = $sessionData['access_token'];
+        $gym->dianping_refresh_token = $sessionData['refresh_token'];
+        $gym->dianping_expires_in = (int)$sessionData['expires_in'];
+        $gym->dianping_remain_refresh_count = (int)$sessionData['remain_refresh_count'];
+        $gym->dianping_bid = $sessionData['bid'];
+        $gym->save();
+
+        $crawler = new DianpingCrawler($appKey, $appSecret, $gym->dianping_session);
+        $shopListResp = $crawler->getShopList($gym->dianping_bid);
+
+        return response()->json($shopListResp['data'] ?? [], 200);
     }
 }
