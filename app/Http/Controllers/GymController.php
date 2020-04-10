@@ -6,6 +6,7 @@ use App\Gym;
 use App\Order;
 use App\Coach;
 use App\Console\Commands\DianpingCrawler;
+use App\Jobs\DianpingJob;
 use App\Schedule;
 use App\User;
 use Auth;
@@ -95,6 +96,11 @@ class GymController extends Controller
             return response()->json(array('message' => 'fail'), 500);
         }
         $success = $gym->update($request->all());
+        // when set the dianping shop for the first time, crawl past 180 days data
+        if($request->has('dianping_shop_name') && !empty($request->input('dianping_shop_name'))) {
+            // aync crawl half year
+            $gym->crawlTraffic(date('Y-m-d'), 190);
+        }
         if ($success) {
             return response()->json($gym, 200);
         }

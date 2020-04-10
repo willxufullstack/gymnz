@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Dianping;
 use App\Gym;
 use Illuminate\Console\Command;
 
@@ -13,7 +12,7 @@ class CrawlDianping extends Command
      *
      * @var string
      */
-    protected $signature = 'crawler:dianping {task} {--gym=} {--date=}';
+    protected $signature = 'crawler:dianping {task} {--async} {--date=} {--duration=1} {--delay=5}';
 
     /**
      * The console command description.
@@ -41,36 +40,16 @@ class CrawlDianping extends Command
     {
         $type = $this->argument('task');
         if ($type === 'traffic') {
-            $this->crawlTraffic();
-        }
-    }
-
-    private function crawlTraffic()
-    {
-        $gym = Gym::find($this->option('gym'));
-        $date = $this->option('date');
-
-        $appKey = config('services.dianping.key');
-        $appSecret = config('services.dianping.secret');
-
-        $session = $gym->dianping_session;
-        $shopId = $gym->dianping_shop_id;
-
-        $crawler = new DianpingCrawler($appKey, $appSecret, $session);
-        $resp = $crawler->getDayTraffic($shopId, $date);
-
-        if ((int) $resp['code'] === 200) {
-            $data = $resp['data'];
-            $dianping = Dianping::firstOrNew(['gym_id' => $gym->id, 'date' => $date]);
-            $dianping->consume_uv = (int) $data['consume_uv'] ?? 0;
-            $dianping->view_uv = (int) $data['view_uv'] ?? 0;
-            $dianping->buy_uv = (int) $data['buy_uv'] ?? 0;
-            $dianping->shop_uv = (int) $data['shop_uv'] ?? 0;
-            $dianping->gym_id = $gym->id;
-            $dianping->date = $date;
-            $dianping->save();
-        } else {
-            echo 'faile to crawl dianping:' . $resp['msg'];
+            $date = $this->option('date') ?? date('Y-m-d');
+            $duration = $this->option('duration');
+            $async = $this->hasOption('async');
+            $delay = $this->option('delay');
+            $gyms = Gym::all();
+            foreach ($gyms as $gym) {
+                if ($gym->dianping_shop_name) {
+                    $gym->crawlTraffic($date, $duration, $async, $delay);
+                }
+            }
         }
     }
 }
