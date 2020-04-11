@@ -243,11 +243,6 @@ class Dashboard extends React.Component {
                     ]
                 },
                 {
-                    name: 'phone',
-                    type: 'phone',
-                    label: L.phone
-                },
-                {
                     name: 'price',
                     label: 'Price',
                     type: 'number',
