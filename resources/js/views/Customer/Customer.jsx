@@ -116,8 +116,10 @@ class Customer extends React.Component {
                 },
                 {
                     name: 'customer_phone',
-                    label: '转入客户（电话号码）',
-                    type: 'phone'
+                    label: '转入客户',
+                    type: 'customer',
+                    customers: this.props.gym.customers,
+                    columns: {name: 'customer_name', sex: 'customer_sex', 'phone': 'customer_phone'}
                 }
             ]
         }

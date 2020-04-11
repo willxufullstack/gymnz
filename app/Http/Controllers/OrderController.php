@@ -169,10 +169,15 @@ class OrderController extends Controller
     {
         $by = Auth::User()->id;
         $oriOrder = Order::find($orderId);
-        $data = $request->only('customer_phone', 'course_amount');
+        $data = $request->only('customer_phone', 'customer_sex', 'customer_name', 'course_amount');
         $customer = User::where('email', $data['customer_phone'])->first();
         if (empty($customer)) {
-            return response()->json(array('message' => 'cannot find the customer'), 404);
+            $customer = new User();
+            $customer->password = Hash::make(self::DEFAULT_PASSWORD);
+            $customer->email = $data['customer_phone'];
+            $customer->name = $data['customer_name'];
+            $customer->sex = $data['customer_sex'];
+            $customer->save();
         }
 
         $childOrderPrice = $oriOrder->price / $oriOrder->course_amount * $data['course_amount'];
