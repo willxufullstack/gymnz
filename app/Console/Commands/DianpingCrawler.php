@@ -34,11 +34,7 @@ class DianpingCrawler
         $resp = $client->post('https://openapi.dianping.com/router/oauth/token',
             ['form_params' => $params]
         );
-        $data = json_decode($resp->getBody(), true);
-        if ((int) $data['code'] === 200) {
-            return $data;
-        }
-        return $data;
+        return json_decode($resp->getBody(), true);
     }
 
     public function getDayTraffic(string $shopId, string $day, string $platform = 'ALL')
@@ -50,6 +46,15 @@ class DianpingCrawler
             'end_date' => $day
         ];
         return $this->get('https://openapi.dianping.com/router/merchant/data/poitraffic', $params);
+    }
+
+    private function post(string $url, array $params){
+        $mergedParams = array_merge($params, $this->getCommonParameters());
+        $mergedParams['sign'] = $this->getSign($mergedParams);
+
+        $resp = $this->client->post($url,  ['form_params' => $mergedParams]);
+
+        return json_decode($resp->getBody(), true);
     }
 
     private function get(string $url, array $params)
@@ -97,5 +102,20 @@ class DianpingCrawler
     public function getShopList(string $bid): array
     {
         return $this->get('https://openapi.dianping.com/router/oauth/session/scope', ['bid' => $bid]);
+    }
+
+    public function consume($code, $requestId, $openShopUuid, $userId, $userName): bool{
+        $params = [
+            'requestid' => $requestId,
+            'receipt_code' => $code,
+            'count' => 1,
+            'open_shop_uuid' => $openShopUuid,
+            'app_shop_account' => $userId,
+            'app_shop_accountname' => $userName
+        ];
+
+        $resp = $this->post('https://openapi.dianping.com/router/tuangou/receipt/consume', $params);
+
+        return (int)$resp['code'] === 200;
     }
 }

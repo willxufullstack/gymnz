@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Gym;
 use App\User;
 use App\Coach;
+use App\Console\Commands\DianpingCrawler;
 use App\Events\BonusEvent;
 use App\Followup;
 use Carbon\Carbon;
@@ -27,8 +28,8 @@ class ScheduleController extends Controller
     public function index(Request $request, $id)
     {
 
-        if($request->has('analyse')) {
-            if($request->input('analyse') === 'customer') {
+        if ($request->has('analyse')) {
+            if ($request->input('analyse') === 'customer') {
                 return $this->anaylzeCustomer($request, $id);
             }
             return response()->json(array('message' => 'invalid analyse type'), 500);
@@ -99,7 +100,7 @@ class ScheduleController extends Controller
         return response()->json(['message' => 'failed'], 500);
     }
 
-        // frequency = 1 / ((firstSchedule.date - lastSchedule.date) / scheduleCount)
+    // frequency = 1 / ((firstSchedule.date - lastSchedule.date) / scheduleCount)
 
     public function anaylzeCustomer(Request $request, $id)
     {
@@ -116,7 +117,7 @@ class ScheduleController extends Controller
             ->groupBy('customer_id');
         $ret = $query->get();
 
-        foreach($ret as &$row) {
+        foreach ($ret as &$row) {
             // plug first order create time
             // plug available balance
             $row['balance'] =  $row['customer']->getCourseBalance($id);
@@ -128,7 +129,7 @@ class ScheduleController extends Controller
     private function getWorkloadExpr()
     {
         $str = '';
-        for ($i = 0; $i <= 24 * 60; $i+=15) {
+        for ($i = 0; $i <= 24 * 60; $i += 15) {
             $str .= 0;
         }
         return $str;
@@ -164,7 +165,7 @@ class ScheduleController extends Controller
         // 3. mark workload
         foreach ($schedules as $s) {
             for ($i = $s->start; $i <= $s->end; $i++) {
-                $workloadStr[$s->date][$i] = (int)$workloadStr[$s->date][$i] + 1;
+                $workloadStr[$s->date][$i] = (int) $workloadStr[$s->date][$i] + 1;
             }
         }
         return $workloadStr;
@@ -283,7 +284,7 @@ class ScheduleController extends Controller
         $schedule->coach()->associate(Coach::with('user')->find($scheduleData['coach']));
         $schedule->gym()->associate(Gym::find($scheduleData['gym']));
 
-        if($schedule->hasTimeConflicts()){
+        if ($schedule->hasTimeConflicts()) {
             return response()->json(['message' => 'conflict with other schedules'], 400);
         }
         $schedule->save();
@@ -293,7 +294,7 @@ class ScheduleController extends Controller
         event(new \App\Events\ScheduleCreateEvent($schedule));
         // TODO handle save error
         // 3. update order booked_amount / expiry
-        if(!$order->booked_amount){
+        if (!$order->booked_amount) {
             $order->expiry = Carbon::createFromFormat('Y-m-d', $scheduleData['date'])->addMonths($order->duration);
         }
         $order->booked_amount++;
@@ -372,7 +373,7 @@ class ScheduleController extends Controller
         // unlink followup
         $schedule->unlinkFollowup();
         // keep the plan into cache
-        if(!empty($schedule->detail) && $schedule->detail !== '[]'){
+        if (!empty($schedule->detail) && $schedule->detail !== '[]') {
             Redis::set('tmp_schedule_plan_' . $schedule->customer_id, $schedule->detail);
         }
 
@@ -391,12 +392,14 @@ class ScheduleController extends Controller
         return response()->json(array('message' => 'fail'), 500);
     }
 
-    public function hotmap($userId) {
+    public function hotmap($userId)
+    {
         $customer = User::find($userId);
         return response()->json(str_split($customer->getHotMap(date('Y-m-d'), 35)));
     }
 
-    public function bonusCheck(Request $request, $gymId) {
+    public function bonusCheck(Request $request, $gymId)
+    {
 
         $gym = Gym::find($gymId);
         $setting = $gym->setting;
@@ -415,8 +418,8 @@ class ScheduleController extends Controller
             ->groupBy('customer_id')
             ->get();
         $processed = [];
-        foreach($rows as $row){
-            if($row->course_amount >= (int)$setting['bonus']){
+        foreach ($rows as $row) {
+            if ($row->course_amount >= (int) $setting['bonus']) {
                 // last schedule
                 $lastSchedule = Schedule::with(['customer'])
                     ->where(['gym_id' => $gymId, 'customer_id' => $row->customer_id])
@@ -441,7 +444,7 @@ class ScheduleController extends Controller
             return response()->json(array('message' => 'can not find the schedule ' . $id), 500);
         }
 
-        if($reaction = $request->input('reaction')){
+        if ($reaction = $request->input('reaction')) {
             $schedule->reaction = $reaction;
         }
 
@@ -473,5 +476,29 @@ class ScheduleController extends Controller
         }
         $customer = (int) $request->input('customer');
         return Schedule::where('customer_id', $customer)->orderBy('date', 'DESC')->get();
+    }
+
+    public function coupon(Request $request, $gymId, $id)
+    {
+        $schedule = Schedule::where(['id' => $id, 'gym_id' => $gymId])
+            ->first();
+        if(empty($schedule)){
+            return response()->json(array('message' => 'cannot find schedule'), 406);
+        }
+
+        $user = Auth::user();
+        $gym = Gym::find($gymId);
+        $code = $request->input('code');
+
+        $appKey = config('services.dianping.key');
+        $appSecret = config('services.dianping.secret');
+        $crawler = new DianpingCrawler($appKey, $appSecret, $gym->dianping_session);
+
+        if ($crawler->consume($code, $schedule->id, $gym->dianping_shop_id, $user->id, $user->name)) {
+            $schedule->dianping_code = $code;
+            $schedule->save();
+            return response()->json($schedule, 200);
+        }
+        return response()->json(['success' => 'verify groupon code fail'], 406);
     }
 }
