@@ -1,6 +1,6 @@
 import React from 'react'
 import connect from 'react-redux/es/connect/connect'
-import {bindActionCreators} from 'redux'
+import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import PropTypes from 'prop-types'
 // @material-ui/core
@@ -21,7 +21,7 @@ import Button from '-components/CustomButtons/Button.jsx'
 import * as utils from '-utils'
 import * as config from '-config'
 import dayjs from 'dayjs'
-import {DatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers'
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import classnames from 'classnames'
@@ -31,18 +31,24 @@ import '../../../sass/gymdayview.scss'
 import 'dayjs/locale/zh-cn'
 
 import dashboardStyle from '-assets/jss/material-dashboard-react/views/dashboardStyle.jsx'
-import {Avatar, List, ListItem, ListItemAvatar, ListItemText} from '@material-ui/core'
+import {
+    Avatar,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText
+} from '@material-ui/core'
 import DayjsUtils from '@date-io/dayjs'
 import i18N from '../../lang'
 
 // import React from 'react';
-import ButtonUi from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from "@material-ui/core/Typography";
+import ButtonUi from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import Typography from '@material-ui/core/Typography'
 
 const L = i18N('Dashboard')
 
@@ -58,17 +64,22 @@ class Dashboard extends React.Component {
     }
 
     handleDateChange = selectedDate => {
-        this.setState({selectedDate}, () => {
-            this.refreshTodaySale(selectedDate);
+        this.setState({ selectedDate }, () => {
+            this.refreshTodaySale(selectedDate)
             this.props.actions.LoadGymSchedule(this.props.selectedGym.id, {
                 date: dayjs(selectedDate).format('YYYY-MM-DD'),
                 price: 1
             })
             // get tomorrow schedules
-            this.props.actions.LoadGymScheduleTomorrow(this.props.selectedGym.id, {
-                date: dayjs(selectedDate).add(1, 'day').format('YYYY-MM-DD'),
-                price: 1
-            })
+            this.props.actions.LoadGymScheduleTomorrow(
+                this.props.selectedGym.id,
+                {
+                    date: dayjs(selectedDate)
+                        .add(1, 'day')
+                        .format('YYYY-MM-DD'),
+                    price: 1
+                }
+            )
         })
     }
 
@@ -98,16 +109,13 @@ class Dashboard extends React.Component {
         this.props.actions.cancelNewOrder()
     }
 
-    refreshTodaySale = (selectedDate) => {
+    refreshTodaySale = selectedDate => {
         const dateRange = utils.getDayStartEnd(selectedDate)
         const params = {
             start: dateRange.start,
             end: dateRange.end
         }
-        this.props.actions.loadGymOrders(
-            this.props.selectedGym.id,
-            params
-        )
+        this.props.actions.loadGymOrders(this.props.selectedGym.id, params)
     }
 
     reloadSchedule = () => {
@@ -119,10 +127,10 @@ class Dashboard extends React.Component {
         this.setState({
             scheduleActionConfirmationParams: {
                 onCancel: () => {
-                    this.setState({scheduleActionConfirmationParams: null})
+                    this.setState({ scheduleActionConfirmationParams: null })
                 },
                 onConfirm: () => {
-                    this.setState({scheduleActionConfirmationParams: null})
+                    this.setState({ scheduleActionConfirmationParams: null })
                     this.props.actions
                         .deleteSchedule(schedule.gym_id, schedule.id)
                         .then(this.reloadSchedule)
@@ -137,10 +145,10 @@ class Dashboard extends React.Component {
         this.setState({
             scheduleActionConfirmationParams: {
                 onCancel: () => {
-                    this.setState({scheduleActionConfirmationParams: null})
+                    this.setState({ scheduleActionConfirmationParams: null })
                 },
                 onConfirm: () => {
-                    this.setState({scheduleActionConfirmationParams: null})
+                    this.setState({ scheduleActionConfirmationParams: null })
                     this.props.actions
                         .completeSchedule(schedule.gym_id, schedule.id)
                         .then(this.reloadSchedule)
@@ -150,41 +158,55 @@ class Dashboard extends React.Component {
         })
     }
 
-    onTapScheduleDetails = (schedule) => {
-        this.setState({scheduleDetailModal: schedule})
+    onTapScheduleDetails = schedule => {
+        this.setState({ scheduleDetailModal: schedule })
     }
 
-    scheduleDetailCard = (detail) => {
-        const {classes} = this.props
+    scheduleDetailCard = detail => {
+        const { classes } = this.props
         const actions = detail.filter(t => {
             return t.contenttype === 'action'
         })
         return (
-            <GridItem xs={12} sm={12} md={12} classes={{grid: 'time-column'}}>
+            <GridItem xs={12} sm={12} md={12} classes={{ grid: 'time-column' }}>
                 <List>
-                    {
-                        actions.map((item) =>
-                            //卧推 3 组 * 10个 100kg 休息 30s
-                            <ListItem className={classes.scheduleDetail} key={`${item.sortIndex}`}>
-                                <ListItemText className={classes.scheduleDetailName} primary={item.name}/>
-                                <ListItemText className={classes.scheduleDetailValue} primary={
-                                    item.set_times + '组 * ' + item.repeat_times + item.unit + '*' + item.weight
-                                }/>
-                                <ListItemText className={classes.scheduleDetailInterval}
-                                              primary={' 休息 ' + item.interval}/>
-                            </ListItem>
-                        )
-                    }
+                    {actions.map(item => (
+                        //卧推 3 组 * 10个 100kg 休息 30s
+                        <ListItem
+                            className={classes.scheduleDetail}
+                            key={`${item.sortIndex}`}
+                        >
+                            <ListItemText
+                                className={classes.scheduleDetailName}
+                                primary={item.name}
+                            />
+                            <ListItemText
+                                className={classes.scheduleDetailValue}
+                                primary={
+                                    item.set_times +
+                                    '组 * ' +
+                                    item.repeat_times +
+                                    item.unit +
+                                    '*' +
+                                    item.weight
+                                }
+                            />
+                            <ListItemText
+                                className={classes.scheduleDetailInterval}
+                                primary={' 休息 ' + item.interval}
+                            />
+                        </ListItem>
+                    ))}
                 </List>
             </GridItem>
         )
-    };
+    }
 
     scheduleDetailsDialog = () => {
         const onCancel = () => {
-            this.setState({scheduleDetailModal: null})
-        };
-        const detail = JSON.parse(this.state.scheduleDetailModal.detail);
+            this.setState({ scheduleDetailModal: null })
+        }
+        const detail = JSON.parse(this.state.scheduleDetailModal.detail)
         let scheduleTitleItem = detail.find(o => o.contenttype === 'comments')
         return (
             <div>
@@ -194,13 +216,15 @@ class Dashboard extends React.Component {
                     scroll={'paper'}
                     fullWidth={true}
                 >
-                    <DialogTitle>{scheduleTitleItem ? scheduleTitleItem['comments'] : ''}</DialogTitle>
+                    <DialogTitle>
+                        {scheduleTitleItem ? scheduleTitleItem['comments'] : ''}
+                    </DialogTitle>
                     <DialogContent dividers={true}>
                         {this.scheduleDetailCard(detail)}
                     </DialogContent>
                 </Dialog>
             </div>
-        );
+        )
     }
 
     tapNewOrder = () => {
@@ -226,21 +250,15 @@ class Dashboard extends React.Component {
                     name: 'coach',
                     label: L.coach,
                     options: this.props.gym.coaches.map(coach => {
-                        return {value: coach.id, label: coach.user.name}
+                        return { value: coach.id, label: coach.user.name }
                     })
                 },
                 {
-                    name: 'name',
-                    label: L.customerName,
-                    validation: v => v.length > 0
-                },
-                {
-                    name: 'sex',
-                    label: L.sex,
-                    options: [
-                        {value: 0, label: L.female},
-                        {value: 1, label: L.male}
-                    ]
+                    name: 'customer_phone',
+                    label: '客户',
+                    type: 'customer',
+                    customers: this.props.gym.customers,
+                    columns: { name: 'name', sex: 'sex', phone: 'phone' }
                 },
                 {
                     name: 'phone',
@@ -268,19 +286,19 @@ class Dashboard extends React.Component {
                     name: 'gym',
                     value: this.props.selectedGym.id,
                     hide: true
-                },
+                }
             ]
         }
         return <CreateNewDialogue {...fields} />
     }
     getTimeAxisColumn = () => {
         return (
-            <GridItem xs={1} sm={1} md={1} classes={{grid: 'time-column'}}>
+            <GridItem xs={1} sm={1} md={1} classes={{ grid: 'time-column' }}>
                 <List>
                     {utils
                         .getTimeRange(config.startTime, config.endTime - 1)
                         .map(t => (
-                            <ListItem className='time-slot' key={t}>
+                            <ListItem className="time-slot" key={t}>
                                 {t[4] === '5' ? ' ' : t}
                             </ListItem>
                         ))}
@@ -310,7 +328,8 @@ class Dashboard extends React.Component {
             this.onTapScheduleDetails(schedule[0])
         } else {
             // show new order dialog
-            const hideDialog = () => this.setState({showCustomerSelection: null})
+            const hideDialog = () =>
+                this.setState({ showCustomerSelection: null })
             this.setState({
                 showCustomerSelection: {
                     customers: this.props.gym.customers,
@@ -352,8 +371,8 @@ class Dashboard extends React.Component {
 
             actions[s.end] = [
                 <span
-                    key='cancel'
-                    className='schedule-action'
+                    key="cancel"
+                    className="schedule-action"
                     onClick={this.onTapCancelSchedule(s)}
                 >
                     {L.cancel}
@@ -365,8 +384,8 @@ class Dashboard extends React.Component {
             } else {
                 actions[s.end].push(
                     <span
-                        key='complete'
-                        className='schedule-action complete'
+                        key="complete"
+                        className="schedule-action complete"
                         onClick={this.onTapCompleteSchedule(s)}
                     >
                         {L.done}
@@ -376,7 +395,7 @@ class Dashboard extends React.Component {
 
             utils.range(s.start, s.end).forEach(i => {
                 sealed[i] = '-x' + suffix
-                scheduleList[i] = [s];
+                scheduleList[i] = [s]
             })
             sealed[s.start] = '-start' + suffix
             desc[s.start] = s.customer.name
@@ -412,7 +431,7 @@ class Dashboard extends React.Component {
                                     scheduleSlotCls
                                 )}
                             >
-                                <span className='schedule-desc'>{desc[t]}</span>
+                                <span className="schedule-desc">{desc[t]}</span>
                                 {actions[t]}
                             </ListItem>
                         )
@@ -434,43 +453,49 @@ class Dashboard extends React.Component {
 
     getGymDayOverView = () => {
         return (
-            <Paper elevation={12} className='gym-day-view-container'>
-                <Paper square elevation={0} className='gym-day-view-header'>
-                    <GridContainer alignItems='center'>
+            <Paper elevation={12} className="gym-day-view-container">
+                <Paper square elevation={0} className="gym-day-view-header">
+                    <GridContainer alignItems="center">
                         <GridItem
                             xs={12}
                             sm={12}
                             md={1}
                             container
                             alignItems={'center'}
-                            style={{position: 'relative'}}
+                            style={{ position: 'relative' }}
                         >
-                            <KeyboardArrowLeft onClick={this.prevDay} style={{
-                                fill: '#666',
-                                position: 'absolute',
-                                left: 0,
-                                top: 3,
-                                zIndex: 1000
-                            }}/>
+                            <KeyboardArrowLeft
+                                onClick={this.prevDay}
+                                style={{
+                                    fill: '#666',
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: 3,
+                                    zIndex: 1000
+                                }}
+                            />
                             <MuiPickersUtilsProvider
                                 utils={DayjsUtils}
                                 locale={'zh-cn'}
                             >
                                 <DatePicker
-                                    className='gymd-day-picker'
-                                    format='MM/DD'
+                                    className="gymd-day-picker"
+                                    format="MM/DD"
                                     value={this.state.selectedDate}
                                     onChange={this.handleDateChange}
                                     autoOk
                                 />
                             </MuiPickersUtilsProvider>
-                            <KeyboardArrowRight onClick={this.nextDay} style={{
-                                fill: '#666',
-                                position: 'absolute',
-                                right: 0,
-                                top: 3,
-                                zIndex: 1000
-                            }}/>
+                            <KeyboardArrowRight
+                                onClick={this.nextDay}
+                                style={{
+                                    fill: '#666',
+                                    position: 'absolute',
+                                    right: 0,
+                                    top: 3,
+                                    zIndex: 1000
+                                }}
+                            />
                         </GridItem>
                         <GridItem
                             container
@@ -478,14 +503,14 @@ class Dashboard extends React.Component {
                             xs={11}
                             sm={11}
                             md={11}
-                            classes={{grid: 'coach-column'}}
+                            classes={{ grid: 'coach-column' }}
                         >
                             {this.props.gym.coaches.map(c => {
                                 return (
                                     <GridItem item xs key={c.id}>
                                         <Badge
-                                            className='coach-name'
-                                            color='secondary'
+                                            className="coach-name"
+                                            color="secondary"
                                             badgeContent={
                                                 this.props.gym.schedules.filter(
                                                     s => s.coach.id === c.id
@@ -504,7 +529,7 @@ class Dashboard extends React.Component {
                 <Paper
                     square
                     elevation={0}
-                    className='gym-day-view-body-container'
+                    className="gym-day-view-body-container"
                 >
                     <GridContainer>
                         {this.getTimeAxisColumn()}
@@ -514,7 +539,7 @@ class Dashboard extends React.Component {
                             xs={11}
                             sm={11}
                             md={11}
-                            classes={{grid: 'coach-column'}}
+                            classes={{ grid: 'coach-column' }}
                         >
                             {this.props.gym.coaches.map(c =>
                                 this.getCoachDayColumn(c)
@@ -527,42 +552,43 @@ class Dashboard extends React.Component {
     }
 
     getSummaryHeader = () => {
-        const {classes} = this.props
+        const { classes } = this.props
         return (
             <GridContainer>
                 <GridItem xs={12} sm={6} md={3}>
-                    <Card className='summary-card'>
-                        <CardHeader color='warning' stats icon>
+                    <Card className="summary-card">
+                        <CardHeader color="warning" stats icon>
                             <p className={classes.cardCategory}>今日课程</p>
                             <h3 className={classes.cardTitle}>
                                 {this.props.gym.schedules &&
-                                this.props.gym.schedules.length}
+                                    this.props.gym.schedules.length}
                                 <small>节</small>
                             </h3>
                         </CardHeader>
                     </Card>
                 </GridItem>
                 <GridItem xs={12} sm={6} md={3}>
-                    <Card className='summary-card'>
-                        <CardHeader color='warning' stats icon>
+                    <Card className="summary-card">
+                        <CardHeader color="warning" stats icon>
                             <p className={classes.cardCategory}>明日课程</p>
                             <h3 className={classes.cardTitle}>
                                 {this.props.gym.schedulesTomorrow &&
-                                this.props.gym.schedulesTomorrow.length}
+                                    this.props.gym.schedulesTomorrow.length}
                                 <small>节</small>
                             </h3>
                         </CardHeader>
                     </Card>
                 </GridItem>
                 <GridItem xs={12} sm={6} md={3}>
-                    <Card className='summary-card'>
-                        <CardHeader color='success' stats icon>
+                    <Card className="summary-card">
+                        <CardHeader color="success" stats icon>
                             <p className={classes.cardCategory}>课程总价</p>
                             <h3 className={classes.cardTitle}>
                                 ¥
                                 {Math.floor(
                                     this.props.gym.schedules.reduce(
-                                        (prev, cur) => prev + (cur.price || 0), 0
+                                        (prev, cur) => prev + (cur.price || 0),
+                                        0
                                     )
                                 )}
                             </h3>
@@ -570,23 +596,22 @@ class Dashboard extends React.Component {
                     </Card>
                 </GridItem>
 
-
                 <GridItem xs={12} sm={6} md={3}>
-                    <Card className='summary-card'>
-                        <CardHeader color='success' stats icon>
+                    <Card className="summary-card">
+                        <CardHeader color="success" stats icon>
                             <p className={classes.cardCategory}>今日销售</p>
                             <h3 className={classes.cardTitle}>
                                 ¥
                                 {Math.floor(
                                     this.props.gym.report.orders.reduce(
-                                        (prev, cur) => prev + cur.price, 0
+                                        (prev, cur) => prev + cur.price,
+                                        0
                                     )
                                 )}
                             </h3>
                         </CardHeader>
                     </Card>
                 </GridItem>
-
             </GridContainer>
         )
     }
@@ -614,11 +639,11 @@ class Dashboard extends React.Component {
                 <Button
                     justIcon
                     round
-                    color='primary'
-                    className='add-order'
+                    color="primary"
+                    className="add-order"
                     onClick={this.tapNewOrder}
                 >
-                    <Add/>
+                    <Add />
                 </Button>
             </div>
         )
