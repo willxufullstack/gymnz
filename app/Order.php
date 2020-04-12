@@ -31,14 +31,15 @@ class Order extends Model
         return $this;
     }
 
-    public function getAccountingMessage($message) {
-        return $message.' #' . $this->id . ' ' . $this->customer->name . ' ' . $this->price . '/' . $this->course_amount;
+    public function getAccountingMessage($message)
+    {
+        return $message . ' #' . $this->id . ' ' . $this->customer->name . ' ' . $this->price . '/' . $this->course_amount;
     }
 
     public function deleteAccounting()
     {
         $accounting = Accounting::where('order_id', $this->id)->first();
-        if(!empty($accounting)){
+        if (!empty($accounting)) {
             $accounting->delete();
         }
     }
@@ -46,11 +47,20 @@ class Order extends Model
     public function updateAccounting()
     {
         $accounting = Accounting::where('order_id', $this->id)->first();
-        if(!empty($accounting)){
-            $accounting->amount = $this->price;
-            $message = ';'.date('Y/m/d') . '更新';
-            $accounting->detail .= $this->getAccountingMessage($message);
-            $accounting->save();
+
+        if (empty($accounting)) {
+            // WHERE detail lke '% #orderid %'
+            $accounting = Accounting::where('detail', 'LIKE', '%#' . $this->id . ' %')->first();
         }
+
+        if(empty($accounting)){
+            return;
+        }
+        $accounting->order_id = $this->id;
+        $accounting->amount = $this->price;
+        $message = ';' . date('Y/m/d') . '更新';
+        $accounting->detail .= $this->getAccountingMessage($message);
+        $accounting->created_at = $this->created_at;
+        $accounting->save();
     }
 }

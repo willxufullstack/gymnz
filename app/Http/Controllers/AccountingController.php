@@ -18,6 +18,7 @@ class AccountingController extends Controller
         if (!$request->has('start') || !$request->has('end')) {
             return response()->json(array('message' => 'missing time range'), 500);
         }
+        // TODO: timezone ??
 
         return Accounting::with('op')
             ->where('gym_id', $gymId)

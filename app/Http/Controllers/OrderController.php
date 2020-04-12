@@ -150,6 +150,8 @@ class OrderController extends Controller
         }
         $order->price = $request->input('price');
         $order->course_amount = $request->input('course_amount');
+        $gym = Gym::find($gymId);
+        $order->created_at = $request->input('created_at');
         $order->save();
         $order->updateAccounting();
         return response()->json($order, 200);

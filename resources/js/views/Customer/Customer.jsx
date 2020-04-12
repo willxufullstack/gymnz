@@ -159,13 +159,22 @@ class Customer extends React.Component {
                     name: 'price',
                     label: '金额',
                     type: 'number',
-                    placeholder: order.price + ''
+                    placeholder: order.price + '',
+                    value: order.price + ''
                 },
                 {
                     name: 'course_amount',
                     label: '课程数量',
                     type: 'number',
-                    placeholder: order.course_amount + ''
+                    placeholder: order.course_amount + '',
+                    value: order.course_amount + ''
+                },
+                {
+                    name: 'created_at',
+                    label: '入账时间',
+                    type: 'string',
+                    placeholder: order.created_at + '',
+                    value: order.created_at
                 }
             ]
         }
