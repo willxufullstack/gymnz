@@ -30,18 +30,21 @@ class OrderAccountingAction
         // generate detail
         $cate = '订单收入';
 
-        if($event->action == 'refund') {
+        $orderId = $order->id;
+        if ($event->action == 'refund') {
             $cate = '退款支出';
+            $orderId = null;
         }
 
-        $detail = $event->message.' #'.$order->id . ' ' . $order->customer->name . ' ' . $order->price . '/' . $order->course_amount;
+        $detail = $order->getAccountingMessage($event->message);
         Accounting::create([
             'category' => $cate,
             'detail' => $detail,
             'amount' => $event->amount,
             'created_by' => $event->operator,
             'gym_id' => $order->gym_id,
-            'created_at' => $order->created_at
+            'created_at' => $order->created_at,
+            'order_id' => $orderId
         ]);
     }
 }

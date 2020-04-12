@@ -151,6 +151,7 @@ class OrderController extends Controller
         $order->price = $request->input('price');
         $order->course_amount = $request->input('course_amount');
         $order->save();
+        $order->updateAccounting();
         return response()->json($order, 200);
     }
 
@@ -160,9 +161,15 @@ class OrderController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($gymId, $id)
     {
-        //
+        $order = Order::find($id);
+        if($order && $order->gym_id === (int)$gymId) {
+            $order->deleteAccounting();
+            $order->delete();
+            return response()->json(['success' => true], 202);
+        }
+        return response()->json(['success' => false], 204);
     }
 
     public function split(Request $request, $gymId, $orderId)

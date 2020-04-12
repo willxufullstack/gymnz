@@ -39,7 +39,8 @@ class Customer extends React.Component {
             cancelSchedule: null,
             refundDialogue: false,
             modifyDialogue: false,
-            splitOrderDialogue: false
+            splitOrderDialogue: false,
+            removeOrderDialogue: false
         }
     }
 
@@ -70,7 +71,10 @@ class Customer extends React.Component {
         this.setState({ modifyDialogue: order })
     }
     tapSplit = order => {
-        this.setState({splitOrderDialogue: order})
+        this.setState({ splitOrderDialogue: order })
+    }
+    tapRemove = order => {
+        this.setState({ removeOrderDialogue: order })
     }
 
     refundOrder = (data, order) => {
@@ -98,6 +102,17 @@ class Customer extends React.Component {
         })
     }
 
+    removeOrder = () => {
+        this.props.actions
+            .deleteOrder(this.state.removeOrderDialogue)
+            .then(() => {
+                this.setState({ removeOrderDialogue: false })
+                this.props.actions.loadCustomerOrders(this.customerId, {
+                    gym: this.props.selectedGym.id
+                })
+            })
+    }
+
     getSplitDialogue = order => {
         let params = {
             dialogue: true,
@@ -106,7 +121,7 @@ class Customer extends React.Component {
                 this.splitOrder(data, order)
             },
             onCancel: () => {
-                this.setState({ splitOrderDialogue : false })
+                this.setState({ splitOrderDialogue: false })
             },
             inputFields: [
                 {
@@ -119,7 +134,11 @@ class Customer extends React.Component {
                     label: '转入客户',
                     type: 'customer',
                     customers: this.props.gym.customers,
-                    columns: {name: 'customer_name', sex: 'customer_sex', 'phone': 'customer_phone'}
+                    columns: {
+                        name: 'customer_name',
+                        sex: 'customer_sex',
+                        phone: 'customer_phone'
+                    }
                 }
             ]
         }
@@ -133,9 +152,8 @@ class Customer extends React.Component {
             title: '修改',
             onSave: data => this.modifyOrder(data, order),
             onCancel: () => {
-                this.setState({ modifyDialogue : false })
+                this.setState({ modifyDialogue: false })
             },
-            subtitle: '！修改订单信息可能会影响统计数据',
             inputFields: [
                 {
                     name: 'price',
@@ -180,6 +198,18 @@ class Customer extends React.Component {
         return <CreateNewDialogue {...params} />
     }
 
+    getRemoveDialogue = order => {
+        return (
+            <Confirmation
+                message={'删除仅用于误操作导致错误订单，确定要继续删除吗？'}
+                onConfirm={this.removeOrder}
+                onCancel={() => {
+                    this.setState({ removeOrderDialogue: false })
+                }}
+            />
+        )
+    }
+
     getBookTab = () => {
         return <Scheduling {...this.props} customerId={this.customerId} />
     }
@@ -203,25 +233,34 @@ class Customer extends React.Component {
                 <React.Fragment>
                     <Button
                         onClick={() => this.tapRefund(r)}
-                        size='sm'
-                        color='transparentGray'
+                        size="sm"
+                        color="transparentGray"
                     >
                         {L.refund}
                     </Button>
                     <Button
                         onClick={() => this.tapModify(r)}
-                        size='sm'
-                        color='transparentGray'
+                        size="sm"
+                        color="transparentGray"
                     >
                         修改
                     </Button>
                     <Button
                         onClick={() => this.tapSplit(r)}
-                        size='sm'
-                        color='transparentGray'
+                        size="sm"
+                        color="transparentGray"
                     >
                         拆分
                     </Button>
+                    {r.booked_amount === 0 && (
+                        <Button
+                            onClick={() => this.tapRemove(r)}
+                            size="sm"
+                            color="transparentGray"
+                        >
+                            删除
+                        </Button>
+                    )}
                 </React.Fragment>
             )
             return [
@@ -238,7 +277,7 @@ class Customer extends React.Component {
         return (
             <Table
                 classes={{ tableResponsive: 'no-margin-top' }}
-                tableHeaderColor='primary'
+                tableHeaderColor="primary"
                 tableHead={header}
                 tableData={tableData}
                 strokeRow={i => orders[i].status === 2}
@@ -258,8 +297,8 @@ class Customer extends React.Component {
         let header = [L.date, L.time, L.coach, L.action]
         let cancelBtn = s => (
             <Button
-                size='sm'
-                color='transparentGray'
+                size="sm"
+                color="transparentGray"
                 onClick={() => this.showCancelConfirmation(s)}
             >
                 {L.cancel}
@@ -267,8 +306,8 @@ class Customer extends React.Component {
         )
         let completeBtn = s => (
             <Button
-                size='sm'
-                color='transparentPrimary'
+                size="sm"
+                color="transparentPrimary"
                 onClick={() => this.completeSchedule(s)}
             >
                 {L.complete}
@@ -286,7 +325,7 @@ class Customer extends React.Component {
         return (
             <Table
                 classes={{ tableResponsive: 'no-margin-top' }}
-                tableHeaderColor='primary'
+                tableHeaderColor="primary"
                 tableHead={header}
                 tableData={tableData}
             />
@@ -302,13 +341,13 @@ class Customer extends React.Component {
         let tableData = finished.map(r => [
             r.date,
             utils.getTimeStr(r.start),
-            r.coach.user.name,
+            r.coach.user.name
         ])
 
         return (
             <Table
                 classes={{ tableResponsive: 'no-margin-top' }}
-                tableHeaderColor='primary'
+                tableHeaderColor="primary"
                 tableHead={header}
                 tableData={tableData}
             />
@@ -355,8 +394,8 @@ class Customer extends React.Component {
         const { classes } = this.props
         let unfinishedTabHeader = (
             <Badge
-                className='tab-badge'
-                color='secondary'
+                className="tab-badge"
+                color="secondary"
                 badgeContent={
                     this.props.gym.customerPage.schedules.booked.length
                 }
@@ -366,8 +405,8 @@ class Customer extends React.Component {
         )
         let finishedTabHeader = (
             <Badge
-                className='tab-badge'
-                color='secondary'
+                className="tab-badge"
+                color="secondary"
                 badgeContent={
                     this.props.gym.customerPage.schedules.finished.length
                 }
@@ -385,6 +424,8 @@ class Customer extends React.Component {
                 {this.state.cancelSchedule && (
                     <Confirmation {...confirmationParams} />
                 )}
+                {this.state.removeOrderDialogue &&
+                    this.getRemoveDialogue(this.removeOrderDialogue)}
                 {this.state.refundDialogue &&
                     this.getRefundDialogue(this.state.refundDialogue)}
                 {this.state.modifyDialogue &&
@@ -400,7 +441,7 @@ class Customer extends React.Component {
                                 </p>
                             </div>
                         }
-                        headerColor='primary'
+                        headerColor="primary"
                         onSwitch={this.tapTab}
                         tabs={[
                             {

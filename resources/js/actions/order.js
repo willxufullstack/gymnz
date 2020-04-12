@@ -4,9 +4,9 @@ export function createOrder(data) {
     return {
         type: ActionTypes.CREATE_ORDER,
         payload: {
-            request:{
+            request: {
                 method: 'post',
-                url:'/gym/' + data.gym + '/order',
+                url: '/gym/' + data.gym + '/order',
                 data
             }
         }
@@ -17,10 +17,22 @@ export function refundOrder(order, data) {
     return {
         type: ActionTypes.REFUND_ORDER,
         payload: {
-            request:{
+            request: {
                 method: 'post',
-                url:'/gym/' + order.gym_id + '/order/' + order.id + '/refund',
+                url: '/gym/' + order.gym_id + '/order/' + order.id + '/refund',
                 data
+            }
+        }
+    }
+}
+
+export function deleteOrder(order) {
+    return {
+        type: ActionTypes.DELETE_ORDER,
+        payload: {
+            request: {
+                method: 'delete',
+                url: '/gym/' + order.gym_id + '/order/' + order.id
             }
         }
     }
@@ -30,9 +42,9 @@ export function modifyOrder(order, data) {
     return {
         type: ActionTypes.MODIFY_ORDER,
         payload: {
-            request:{
+            request: {
                 method: 'patch',
-                url:'/gym/' + order.gym_id + '/order/' + order.id,
+                url: '/gym/' + order.gym_id + '/order/' + order.id,
                 data
             }
         }
@@ -43,9 +55,9 @@ export function splitOrder(order, data) {
     return {
         type: ActionTypes.SPLIT_ORDER,
         payload: {
-            request:{
+            request: {
                 method: 'post',
-                url:'/gym/' + order.gym_id + '/order/' + order.id + '/split',
+                url: '/gym/' + order.gym_id + '/order/' + order.id + '/split',
                 data
             }
         }

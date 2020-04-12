@@ -220,7 +220,6 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             })
 
-
         case ActionTypes.CSV_DATA_IMPORT:
             return Object.assign({}, state, { loading: true })
         case ActionTypes.CSV_DATA_IMPORT_SUCCESS:
@@ -311,6 +310,19 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             })
 
+        case ActionTypes.DELETE_ORDER:
+            return Object.assign({}, state, { loading: true })
+        case ActionTypes.DELETE_ORDER_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                successMsg: 'delete order successed'
+            })
+        case ActionTypes.DELETE_ORDER_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'delete order failed, please try again',
+                loading: false
+            })
+
         case ActionTypes.SPLIT_ORDER:
             return Object.assign({}, state, { loading: true })
         case ActionTypes.SPLIT_ORDER_SUCCESS:
@@ -324,7 +336,6 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             })
 
-
         case ActionTypes.MODIFY_ORDER:
             return Object.assign({}, state, { loading: true })
         case ActionTypes.MODIFY_ORDER_SUCCESS:
@@ -337,7 +348,6 @@ const gym = (state = initState, action = NonAction) => {
                 errorMsg: 'Modify order failed, please try again',
                 loading: false
             })
-
 
         case ActionTypes.PAY_REIMBURSEMENT:
             return Object.assign({}, state, { loading: true })
@@ -646,7 +656,7 @@ const gym = (state = initState, action = NonAction) => {
         case ActionTypes.LOAD_GYM_SCHEDULE_COUNT_SUCCESS: {
             let report = { ...state.report }
             // analyse
-            if(action.payload.config.params.analyse === 'customer'){
+            if (action.payload.config.params.analyse === 'customer') {
                 report.scheduleCountAnaylseCustomer = action.payload.data
                 return Object.assign({}, state, { loading: false, report })
             }
@@ -656,10 +666,18 @@ const gym = (state = initState, action = NonAction) => {
                     report.scheduleCountByMonthPerCoach = action.payload.data
                     // calc live time each row
                     report.scheduleCountByMonthPerCoach.forEach(row => {
-                        const date1 = new Date(row['year(date)'] + '-' + row['month(date)'] + '-' + '01')
+                        const date1 = new Date(
+                            row['year(date)'] +
+                                '-' +
+                                row['month(date)'] +
+                                '-' +
+                                '01'
+                        )
                         const date2 = new Date(row.customer.created_at)
                         const diffTime = Math.abs(date1 - date2)
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                        const diffDays = Math.ceil(
+                            diffTime / (1000 * 60 * 60 * 24)
+                        )
                         row.year = row['year(date)']
                         row.month = row['month(date)']
                         row.liveDays = diffDays
@@ -678,21 +696,24 @@ const gym = (state = initState, action = NonAction) => {
                     report.scheduleCountByDate = action.payload.data
                     break
                 case 'coach_id,month(date)':
-                    const {data} = action.payload
+                    const { data } = action.payload
                     let grouped = []
                     data.forEach(row => {
                         const name = row.coach.user.name
                         const month = row['month(date)']
-                        if(!grouped[row.coach.user.name]) {
+                        if (!grouped[row.coach.user.name]) {
                             grouped[name] = []
                         }
                         grouped[name][month] = 0
                         grouped[name][month] += row.course_amount
                     })
                     report.scheduleCountByMonthPerCoachOfYear = grouped
-                    break;
+                    break
                 default:
-                    console.log('unknown group:', action.payload.config.params.count)
+                    console.log(
+                        'unknown group:',
+                        action.payload.config.params.count
+                    )
                     break
             }
             return Object.assign({}, state, { loading: false, report })
