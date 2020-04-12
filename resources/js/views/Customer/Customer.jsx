@@ -279,7 +279,17 @@ class Customer extends React.Component {
                 r.created_at.split(' ')[0],
                 utils.getOrderExpiry(r),
                 utils.getOrderStatus(r),
-                r.status === 1 && r.course_amount > r.booked_amount ? btn : '--'
+                r.status === 1 && r.course_amount > r.booked_amount ? (
+                    btn
+                ) : (
+                    <Button
+                        onClick={() => this.tapModify(r)}
+                        size="sm"
+                        color="transparentGray"
+                    >
+                        修改
+                    </Button>
+                )
             ]
         })
 
