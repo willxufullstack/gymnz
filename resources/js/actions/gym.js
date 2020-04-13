@@ -344,6 +344,18 @@ export function loadGymSummary(gymId, params) {
     };
 }
 
+export function loadDianpingSummary(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_DIANPING_SUMMARY,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/dianping',
+                params
+            }
+        }
+    };
+}
+
 export function loadGymScheduleCount(gymId, params) {
     return {
         type: ActionTypes.LOAD_GYM_SCHEDULE_COUNT,

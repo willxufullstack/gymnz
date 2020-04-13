@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('crawler:dianping traffic --async --duration=2')
+        $schedule->command('crawl:dianping traffic --async --duration=5')
             ->dailyAt('03:00');
     }
 

@@ -91,6 +91,9 @@ Route::group([
 
     Route::get('gym/{gym}/sharecover', 'GymController@getShareCover');
     Route::post('gym/{gym}/bind', 'GymController@bind');
+
+    Route::get('gym/{gym}/dianping', 'DianpingController@index');
+
     Route::resource('gym', 'GymController');
     Route::resource('gym.coach', 'CoachController');
     Route::get('gym/{gym}/coach/{coach}/reset', 'CoachController@reset');

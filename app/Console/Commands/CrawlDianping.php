@@ -42,7 +42,7 @@ class CrawlDianping extends Command
         if ($type === 'traffic') {
             $date = $this->option('date') ?? date('Y-m-d');
             $duration = $this->option('duration');
-            $async = $this->hasOption('async');
+            $async = $this->option('async') || false;
             $delay = $this->option('delay');
             $gyms = Gym::all();
             foreach ($gyms as $gym) {
