@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Dianping;
+use App\Gym;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use DateTime;
 
 class DianpingController extends Controller
 {
@@ -26,6 +28,8 @@ class DianpingController extends Controller
         if ($request->input('start') && $request->input('end')) {
             $query->where('date', '>=', $request->input('start'));
             $query->where('date', '<=', $request->input('end'));
+            // crwal if history is missing
+            Gym::find($gymId)->crawlHistoryIfNeeded($request->input('start'), $request->input('end'));
         }
         $query->groupBy('months');
 

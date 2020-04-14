@@ -92,7 +92,8 @@ class Gym extends Model
         return $gymTime->format($format);
     }
 
-    private static function timeRange(string $date, int $days): DatePeriod {
+    private static function timeRange(string $date, int $days): DatePeriod
+    {
         $end = new DateTime($date);
         $end->modify("+1 day");
 
@@ -104,8 +105,21 @@ class Gym extends Model
         return new DatePeriod($begin, $interval, $end);
     }
 
-    public function crawlTraffic(string $date, int $days, bool $async = true, int $delay = 5) {
-        if(!$this->dianping_shop_name){
+    public function crawlHistoryIfNeeded(string $start, string $end){
+        $query = Dianping::where('gym_id', $this->id);
+        $query->where('date', '>=', $start);
+        $query->where('date', '<=', $end);
+        $count = $query->count();
+
+        $days = (new DateTime($end))->diff(new DateTime($start))->days + 1;
+        if($count !== $days) {
+            $this->crawlTrafficByDateRange($start, $end);
+        }
+    }
+
+    public function crawlTraffic(string $date, int $days, bool $async = true, int $delay = 5)
+    {
+        if(!$this->dianping_shop_name || !$this->dianping_shop_id) {
             return;
         }
 
@@ -113,20 +127,35 @@ class Gym extends Model
 
         $jobs = [];
         foreach ($dateRange as $value) {
-            if($async) {
+            if ($async) {
                 $jobs[] = new DianpingJob($this->id, $value->format('Y-m-d'));
             } else {
                 $this->crawlTrafficDay($value->format('Y-m-d'));
                 sleep($delay);
             }
         }
-        if(!empty($jobs)){
+        if (!empty($jobs)) {
             DianpingJob::enqueueJobsWithDelay($jobs, $delay);
         }
     }
 
-    public function crawlTrafficDay(string $date)
+    public function crawlTrafficByDateRange(string $start, string $end, bool $async = true, int $delay = 5)
     {
+        $days = (new DateTime($end))->diff(new DateTime($start))->days + 1;
+        $this->crawlTraffic($end, $days, $async, $delay);
+    }
+
+    public function crawlTrafficDay(string $date, bool $force = false)
+    {
+        // skip if exist
+        $dianping = Dianping::where('date', $date)
+            ->where('gym_id', $this->gym_id)
+            ->count();
+        if($dianping) {
+            return;
+        }
+
+        // crawl
         $appKey = config('services.dianping.key');
         $appSecret = config('services.dianping.secret');
 

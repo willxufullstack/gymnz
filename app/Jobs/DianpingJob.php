@@ -3,9 +3,6 @@
 namespace App\Jobs;
 
 use App\Gym;
-use DateInterval;
-use DatePeriod;
-use DateTime;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;

@@ -6,7 +6,6 @@ use App\Gym;
 use App\Order;
 use App\Coach;
 use App\Console\Commands\DianpingCrawler;
-use App\Jobs\DianpingJob;
 use App\Schedule;
 use App\User;
 use Auth;
