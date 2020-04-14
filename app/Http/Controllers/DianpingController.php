@@ -29,7 +29,7 @@ class DianpingController extends Controller
             $query->where('date', '>=', $request->input('start'));
             $query->where('date', '<=', $request->input('end'));
             // crwal if history is missing
-            Gym::find($gymId)->crawlHistoryIfNeeded($request->input('start'), $request->input('end'));
+            // Gym::find($gymId)->crawlHistoryIfNeeded($request->input('start'), $request->input('end'));
         }
         $query->groupBy('months');
 
