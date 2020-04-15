@@ -610,7 +610,8 @@ class Overview extends React.Component {
                 monthLabel: utils.getMonthLabel(day.month()),
                 shop_uv_sum: row ? row.shop_uv_sum : 0,
                 view_uv_sum: row ? row.view_uv_sum : 0,
-                buy_uv_sum: row ? row.buy_uv_sum : 0
+                buy_uv_sum: row ? row.buy_uv_sum : 0,
+                comment_sum: row ? row.comment_sum: 0
             }
         })
 
@@ -621,7 +622,8 @@ class Overview extends React.Component {
         const options = {
             shop_uv_sum: '点击',
             view_uv_sum: '曝光',
-            buy_uv_sum: '销售'
+            buy_uv_sum: '销售',
+            comment_sum: '评论'
         }
 
         const allPointers = {}

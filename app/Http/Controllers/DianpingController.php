@@ -22,6 +22,7 @@ class DianpingController extends Controller
             DB::raw('sum(buy_uv) as buy_uv_sum'),
             DB::raw('sum(view_uv) as view_uv_sum'),
             DB::raw('sum(shop_uv) as shop_uv_sum'),
+            DB::raw('sum(comment_count) as comment_sum'),
             DB::raw("DATE_FORMAT(date,'%Y-%m') as months")
         );
         $query->where('gym_id', $gymId);
