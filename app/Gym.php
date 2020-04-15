@@ -210,4 +210,30 @@ class Gym extends Model
             echo " FAIL:" . $resp['msg'] . "\n";
         }
     }
+
+    public function refreshSession(bool $force = false) {
+
+        $expiresIn3Days = 3 * 24 * 60 * 60;
+        if(!$force && $this->dianping_expires_in - time() > $expiresIn3Days){
+            echo "no need to refresh token for {$this->id} \n";
+            return;
+        }
+
+        echo "refresh token ";
+        $appKey = config('services.dianping.key');
+        $appSecret = config('services.dianping.secret');
+        $sessionData = DianpingCrawler::refreshSession($appKey, $appSecret, $this->dianping_refresh_token);
+
+        if((int)$sessionData['code'] === 200){
+            $this->dianping_session = $sessionData['access_token'];
+            $this->dianping_refresh_token = $sessionData['refresh_token'];
+            $this->dianping_expires_in = time() + (int)$sessionData['expires_in'];
+            $this->dianping_remain_refresh_count = (int)$sessionData['remain_refresh_count'];
+
+            $this->save();
+            echo "DONE\n";
+        } else {
+            echo $sessionData['msg'];
+        }
+    }
 }

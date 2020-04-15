@@ -37,6 +37,21 @@ class DianpingCrawler
         return json_decode($resp->getBody(), true);
     }
 
+    public static function refreshSession(string $appKey, string $appSecret, string $refreshToken): array
+    {
+        $params = [
+            'app_key' => $appKey,
+            'app_secret' => $appSecret,
+            'refresh_token' => $refreshToken,
+            'grant_type' => 'refresh_token'
+        ];
+        $client = new Client();
+        $resp = $client->post('https://openapi.dianping.com/router/oauth/token',
+            ['form_params' => $params]
+        );
+        return json_decode($resp->getBody(), true);
+    }
+
     public function getDayComments(string $shopId, string $day): int{
 
         $params = [
@@ -57,7 +72,7 @@ class DianpingCrawler
         if((int)$resp['code'] === 200) {
             $count += count($resp['data']['reviewInfoDTOList']);
         } else {
-            dd($resp);
+            echo $resp['msg'];
             echo "get Dianping comment failed\n";
         }
         // get meituan
