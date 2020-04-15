@@ -28,7 +28,7 @@ class DianpingJob implements ShouldQueue
     {
         $this->gymId = $gymId;
         $this->date = $date;
-        $this->$task = $task;
+        $this->task = $task;
     }
 
     /**
@@ -38,6 +38,7 @@ class DianpingJob implements ShouldQueue
      */
     public function handle()
     {
+        echo "doing {$this->task} job for gym {$this->gymId}\n";
         $gym = Gym::find($this->gymId);
         if($this->task === 'traffic'){
             $gym->crawlTrafficDay($this->date);
