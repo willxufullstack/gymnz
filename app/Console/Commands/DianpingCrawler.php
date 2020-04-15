@@ -80,7 +80,8 @@ class DianpingCrawler
         $params['platform'] = 2;
         $resp = $this->post($url, $params);
         if((int)$resp['code'] === 200) {
-            $count += count($resp['data']['reviewInfoDTOList']);
+            $commentCount = $resp['data'] && $resp['data']['reviewInfoDTOList'] ? count($resp['data']['reviewInfoDTOList']) : 0;
+            $count += $commentCount;
         } else {
             echo "get Meituan comment failed\n";
         }
