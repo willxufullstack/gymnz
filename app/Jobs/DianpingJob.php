@@ -17,16 +17,18 @@ class DianpingJob implements ShouldQueue
 
     private $gymId;
     private $date;
+    private $task;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(int $gymId, string $date)
+    public function __construct(string $task, int $gymId, string $date)
     {
         $this->gymId = $gymId;
         $this->date = $date;
+        $this->$task = $task;
     }
 
     /**
@@ -37,7 +39,12 @@ class DianpingJob implements ShouldQueue
     public function handle()
     {
         $gym = Gym::find($this->gymId);
-        $gym->crawlTrafficDay($this->date);
+        if($this->task === 'traffic'){
+            $gym->crawlTrafficDay($this->date);
+        }
+        if($this->task === 'comment') {
+            $gym->crawlCommentDay($this->date);
+        }
     }
 
     public static function enqueueJobsWithDelay(array $jobs) {

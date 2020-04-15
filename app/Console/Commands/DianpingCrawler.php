@@ -37,6 +37,41 @@ class DianpingCrawler
         return json_decode($resp->getBody(), true);
     }
 
+    public function getDayComments(string $shopId, string $day): int{
+
+        $params = [
+            'open_shop_uuid' => $shopId,
+            'begintime' => "$day 00:00:00",
+            'endtime' => "$day 23:59:59",
+            'star' => 1, // all
+            'offset' => 1,
+            'limit' => 50
+        ];
+
+        $count = 0;
+
+        $url = 'https://openapi.dianping.com/router/ugc/queryshopreview';
+        // get dianping
+        $params['platform'] = 1;
+        $resp = $this->get($url, $params);
+        if((int)$resp['code'] === 200) {
+            $count += count($resp['data']['reviewInfoDTOList']);
+        } else {
+            dd($resp);
+            echo "get Dianping comment failed\n";
+        }
+        // get meituan
+        $params['platform'] = 2;
+        $resp = $this->post($url, $params);
+        if((int)$resp['code'] === 200) {
+            $count += count($resp['data']['reviewInfoDTOList']);
+        } else {
+            echo "get Meituan comment failed\n";
+        }
+
+        return $count;
+    }
+
     public function getDayTraffic(string $shopId, string $day, string $platform = 'ALL')
     {
         $params = [
@@ -62,7 +97,8 @@ class DianpingCrawler
         $mergedParams = array_merge($params, $this->getCommonParameters());
         $mergedParams['sign'] = $this->getSign($mergedParams);
 
-        // dd(http_build_query($mergedParams));
+        // dd($mergedParams);
+
         $queryParams = '';
         foreach ($mergedParams as $key => $value) {
             $queryParams .= $key;

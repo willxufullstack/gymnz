@@ -38,17 +38,15 @@ class CrawlDianping extends Command
      */
     public function handle()
     {
-        $type = $this->argument('task');
-        if ($type === 'traffic') {
-            $date = $this->option('date') ?? date('Y-m-d');
-            $duration = $this->option('duration');
-            $async = $this->option('async') || false;
-            $delay = $this->option('delay');
-            $gyms = Gym::all();
-            foreach ($gyms as $gym) {
-                if ($gym->dianping_shop_name) {
-                    $gym->crawlTraffic($date, $duration, $async, $delay);
-                }
+        $task = $this->argument('task');
+        $date = $this->option('date') ?? date('Y-m-d');
+        $duration = $this->option('duration');
+        $async = $this->option('async') || false;
+        $delay = $this->option('delay');
+        $gyms = Gym::all();
+        foreach ($gyms as $gym) {
+            if ($gym->dianping_shop_name) {
+                $gym->crawlDianping($task, $date, $duration, $async, $delay);
             }
         }
     }

@@ -98,7 +98,8 @@ class GymController extends Controller
         // when set the dianping shop for the first time, crawl past 180 days data
         if($request->has('dianping_shop_name') && !empty($request->input('dianping_shop_name'))) {
             // aync crawl half year
-            $gym->crawlTraffic(date('Y-m-d'), 190);
+            $gym->crawlDianping('traffic', date('Y-m-d'), 190);
+            $gym->crawlDianping('comment', date('Y-m-d'), 190);
         }
         if ($success) {
             return response()->json($gym, 200);

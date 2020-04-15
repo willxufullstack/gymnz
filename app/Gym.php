@@ -105,21 +105,24 @@ class Gym extends Model
         return new DatePeriod($begin, $interval, $end);
     }
 
-    public function crawlHistoryIfNeeded(string $start, string $end){
+    // obsoleted
+    public function crawlHistoryIfNeeded(string $start, string $end)
+    {
         $query = Dianping::where('gym_id', $this->id);
         $query->where('date', '>=', $start);
         $query->where('date', '<=', $end);
         $count = $query->count();
 
         $days = (new DateTime($end))->diff(new DateTime($start))->days + 1;
-        if($count !== $days) {
-            $this->crawlTrafficByDateRange($start, $end);
+        if ($count !== $days) {
+            $this->crawlDianpingByDateRange('traffic', $start, $end);
+            $this->crawlDianpingByDateRange('comment', $start, $end);
         }
     }
 
-    public function crawlTraffic(string $date, int $days, bool $async = true, int $delay = 5)
+    public function crawlDianping(string $task, string $date, int $days, bool $async = true, int $delay = 5)
     {
-        if(!$this->dianping_shop_name || !$this->dianping_shop_id) {
+        if (!$this->dianping_shop_name || !$this->dianping_shop_id) {
             return;
         }
 
@@ -128,9 +131,14 @@ class Gym extends Model
         $jobs = [];
         foreach ($dateRange as $value) {
             if ($async) {
-                $jobs[] = new DianpingJob($this->id, $value->format('Y-m-d'));
+                $jobs[] = new DianpingJob($this->id, $value->format('Y-m-d'), $task);
             } else {
-                $this->crawlTrafficDay($value->format('Y-m-d'));
+                if($task === 'traffic') {
+                    $this->crawlTrafficDay($value->format('Y-m-d'));
+                }
+                if($task === 'comment') {
+                    $this->crawlCommentDay($value->format('Y-m-d'));
+                }
                 sleep($delay);
             }
         }
@@ -139,10 +147,30 @@ class Gym extends Model
         }
     }
 
-    public function crawlTrafficByDateRange(string $start, string $end, bool $async = true, int $delay = 5)
+    public function crawlTrafficByDateRange(string $task, string $start, string $end, bool $async = true, int $delay = 5)
     {
         $days = (new DateTime($end))->diff(new DateTime($start))->days + 1;
-        $this->crawlTraffic($end, $days, $async, $delay);
+        $this->crawlDianping($task, $end, $days, $async, $delay);
+    }
+
+    public function crawlCommentDay(string $date)
+    {
+        // crawl
+        $appKey = config('services.dianping.key');
+        $appSecret = config('services.dianping.secret');
+
+        $session = $this->dianping_session;
+        $shopId = $this->dianping_shop_id;
+
+        echo "crawling commetnt: gymId => {$this->id} date=>{$date} dianping=>{$this->dianping_shop_name}";
+
+        $crawler = new DianpingCrawler($appKey, $appSecret, $session);
+        $dianping = Dianping::firstOrNew(['gym_id' => $this->id, 'date' => $date]);
+        $commentCount = $crawler->getDayComments($shopId, $date);
+        $dianping->gym_id = $this->id;
+        $dianping->comment_count = $commentCount;
+        $dianping->save();
+        echo " DONE\n";
     }
 
     public function crawlTrafficDay(string $date, bool $force = false)
@@ -151,7 +179,7 @@ class Gym extends Model
         $dianping = Dianping::where('date', $date)
             ->where('gym_id', $this->gym_id)
             ->count();
-        if($dianping) {
+        if ($dianping && $dianping->view_uv !== 0) {
             return;
         }
 
