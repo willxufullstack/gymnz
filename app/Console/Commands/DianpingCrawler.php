@@ -70,7 +70,8 @@ class DianpingCrawler
         $params['platform'] = 1;
         $resp = $this->get($url, $params);
         if((int)$resp['code'] === 200) {
-            $count += count($resp['data']['reviewInfoDTOList']);
+            $commentCount = $resp['data'] && $resp['data']['reviewInfoDTOList'] ? count($resp['data']['reviewInfoDTOList']) : 0;
+            $count += $commentCount;
         } else {
             echo $resp['msg'];
             echo "get Dianping comment failed\n";
