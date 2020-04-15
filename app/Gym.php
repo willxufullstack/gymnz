@@ -131,7 +131,7 @@ class Gym extends Model
         $jobs = [];
         foreach ($dateRange as $value) {
             if ($async) {
-                $jobs[] = new DianpingJob($this->id, $value->format('Y-m-d'), $task);
+                $jobs[] = new DianpingJob($task, $this->id, $value->format('Y-m-d'));
             } else {
                 if($task === 'traffic') {
                     $this->crawlTrafficDay($value->format('Y-m-d'));
