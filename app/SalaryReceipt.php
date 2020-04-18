@@ -164,4 +164,33 @@ class SalaryReceipt extends Model
             + $moneyByOrderPercentage
             - $this->tax;
     }
+
+    public function transform() {
+        $formatted = [];
+        $map = [
+            'base' => '底薪',
+            'course_fixed' => '课程薪资(元）',
+            'course_percentage' => '课程薪资(%）',
+            'course_free' => '赠课薪资',
+            'sale_percentage' => '销售提成(%）',
+
+            'course_count' => '课程数量',
+            'free_course_count' => '赠课数量',
+
+            'tax' => '税费',
+            'adjustment' => '调整金额',
+            'adjustment_reason' => '调整原因',
+
+            'total' => '合计'
+        ];
+        foreach ($map as $k => $v) {
+            if($this->{$k}){
+                $formatted[]= [
+                    'option' => $v,
+                    'value' => $this->{$k}
+                ];
+            }
+        }
+        return $formatted;
+    }
 }

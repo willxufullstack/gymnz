@@ -53,8 +53,16 @@ class SalaryReceiptController extends Controller
             }
         }
 
+        $ret = $query->get();
 
-        return $query->get();
+        if ((int) $request->input('v') === 2) {
+            $formatted = [];
+            foreach ($ret as $row) {
+                $formatted[] = $row->transform();
+            }
+            return $formatted;
+        }
+        return $ret;
     }
 
     /**
