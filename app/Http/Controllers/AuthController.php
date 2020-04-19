@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -129,7 +130,7 @@ class AuthController extends Controller
             'openid' => $openid
         ];
         $user = User::where('openid', $openid)->first();
-        if(!empty($user)){
+        if (!empty($user)) {
             $ret['token'] = $this->guard()->tokenById($user->id);
         }
 
@@ -148,9 +149,9 @@ class AuthController extends Controller
             'openid' => $openid
         ];
         $user = User::where('openid', $openid)->first();
-        if(!empty($user)){
+        if (!empty($user)) {
             // try to mock to the target customer if is coach
-            if($request->input('customer') && Coach::where('user_id', $user->id)->count() > 0) {
+            if ($request->input('customer') && Coach::where('user_id', $user->id)->count() > 0) {
                 $user = User::find($request->input('customer'));
             }
             $ret['token'] = $this->guard()->tokenById($user->id);
@@ -165,7 +166,12 @@ class AuthController extends Controller
         $appId = config('services.wx.id');
         $secret = config('services.wx.secret');
         $url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' . $appId . '&secret=' . $secret . '&js_code=' . $code . '&grant_type=authorization_code';
-        $json = json_decode(file_get_contents($url), true);
+        $resp = file_get_contents($url);
+        $json = json_decode($resp, true);
+        if (!array_key_exists('openid', $json)) {
+            Log::error('cannot get wx openid: ', $resp);
+            return response()->json(array('message' => 'cannot get openid via wx api'), 500);
+        }
         $openid = $json['openid'];
         // find user by openid
         $user = User::where('openid', $openid)->first();
