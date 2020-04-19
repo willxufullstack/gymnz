@@ -144,12 +144,33 @@ class CoachController extends Controller
         return response()->json(array('message' => 'fail'), 500);
     }
 
+    public function getCoachInfoForAdmin(User $user): Coach
+    {
+        $gym = Gym::where("created_by", "=", $user->id)->latest('created_at')->first();
+        if($gym) {
+            $coach = Coach::where('gym_id', $gym->id)
+                ->where('status', 1)
+                ->first();
+            $coach->user = $user;
+            $coach->coach_id = 0;
+            return $coach;
+        }
+        return null;
+    }
+
     public function getCoachInfoByUserId()
     {
-        $userId = Auth::User()->id;
-        $ret = Coach::with('user')->where("user_id", "=", $userId)->first();
+        $user = Auth::User();
+        $ret = Coach::with('user')
+            ->where("user_id", "=", $user->id)
+            ->where('status', 1)
+            ->first();
 
-        if ($ret) {
+        if (!$ret) {
+            $ret = $this->getCoachInfoForAdmin($user);
+        }
+
+        if ($ret){
             return response()->json($ret, 200);
         } else {
             return response()->json(array('message' => 'fail'), 500);
