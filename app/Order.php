@@ -80,9 +80,10 @@ class Order extends Model
 
     public function loadSchedules()
     {
-        $this->schedules = Schedule::select('date')
+        $this->schedules = array_column(Schedule::select('date')
             ->where('order_id', $this->id)
-            ->get();
+            ->get()
+            ->toArray(), 'date');
     }
 
     public function getExpiredCount(DateTime $day): int
@@ -105,10 +106,10 @@ class Order extends Model
         }
         $threshold = $day->getTimestamp();
         $finished = 0;
-        foreach($this->schedules as $schedule) {
+        foreach($this->schedules as $date) {
             // echo($schedule->date."\n");
             // echo($schedule['date']."\n");
-            if(strtotime($schedule->date) <= $threshold){
+            if(strtotime($date) <= $threshold){
                 $finished ++;
             }
         }
