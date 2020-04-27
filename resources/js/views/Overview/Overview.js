@@ -147,6 +147,7 @@ class Overview extends React.Component {
             chart0Value: null,
             chart1Value: null,
             chartDianpingColumn: 'shop_uv_sum',
+            chartStatisticsColumn: 'stock',
             date: dayjs(),
             coach: 0,
             yearChartData: [],
@@ -463,6 +464,10 @@ class Overview extends React.Component {
             start,
             end
         })
+        this.props.actions.loadStatistics(this.props.selectedGym.id, {
+            start,
+            end
+        })
     }
 
     getCoachQuadrantData = () => {
@@ -592,6 +597,108 @@ class Overview extends React.Component {
         )
     }
 
+    statisticsChart = () => {
+        const { classes } = this.props
+
+        const rawData = this.props.gym.report.statistics
+
+        const { _, end } = utils.getMonthStartEnd(this.state.date)
+        const endDay = dayjs(end)
+        // !!!
+        const data = {}
+        // !!!
+        utils.range(0, this.state.duration).forEach(i => {
+            const day = endDay.add(-i, 'month')
+            const k = day.format('YYYY-MM')
+            const rows = rawData
+                .filter(r => r.date.substr(0, 7) === k)
+                .sort((a, b) => {
+                    return (
+                        new Date(b.date).getTime() - new Date(a.date).getTime()
+                    )
+                })
+            console.log(rows)
+            const row = rows[0]
+            data[k] = {
+                monthLabel: utils.getMonthLabel(day.month()),
+                expired: row ? row.expired : 0,
+                stock: row ? row.stock : 0
+                // total: row ? row.total : 0,
+                // finished: row ? row.finished : 0,
+            }
+        })
+
+        const latest = data[Object.keys(data)[0]]
+        const ascKeys = Object.keys(data).reverse()
+        const xTickers = ascKeys.map(k => data[k].monthLabel)
+
+        const options = {
+            expired: '过期',
+            stock: '库存'
+        }
+
+        const allPointers = {}
+        Object.keys(options).forEach(key => {
+            allPointers[key] = ascKeys.map((k, i) => ({
+                x: i,
+                y: data[k][key] || 0
+            }))
+        })
+        const hintFormat = p => {
+            return Object.keys(options).map(opt => {
+                return {
+                    title: options[opt],
+                    value: allPointers[opt].find(r => r.x === p.x).y
+                }
+            })
+        }
+
+        const switchColumn = chartStatisticsColumn => {
+            return () => this.setState({ chartStatisticsColumn })
+        }
+
+        return (
+            <Card className={classes.yearChartCard}>
+                <Typography
+                    className={classes.chartSubTitle}
+                    color="textSecondary"
+                >
+                    {'库存'}
+                </Typography>
+                <Typography className={classes.chartTitle}>
+                    {Object.keys(options).map(opt => (
+                        <span
+                            key={opt}
+                            className={
+                                this.state.chartStatisticsColumn !== opt
+                                    ? classes.titleInactive
+                                    : ''
+                            }
+                            onClick={switchColumn(opt)}
+                        >
+                            {latest[opt]}
+                            <span
+                                className={
+                                    this.state.chartStatisticsColumn !== opt
+                                        ? classes.titleUnitInactive
+                                        : classes.titleUnit
+                                }
+                            >
+                                {options[opt]}
+                            </span>
+                        </span>
+                    ))}
+                </Typography>
+                <AreaChart
+                    data={allPointers[this.state.chartStatisticsColumn]}
+                    xTickers={xTickers}
+                    chartClassName={classes.yearChart}
+                    hintFormat={hintFormat}
+                />
+            </Card>
+        )
+    }
+
     dianpingChart = () => {
         const { classes } = this.props
 
@@ -611,7 +718,7 @@ class Overview extends React.Component {
                 shop_uv_sum: row ? row.shop_uv_sum : 0,
                 view_uv_sum: row ? row.view_uv_sum : 0,
                 buy_uv_sum: row ? row.buy_uv_sum : 0,
-                comment_sum: row ? row.comment_sum: 0
+                comment_sum: row ? row.comment_sum : 0
             }
         })
 
@@ -657,6 +764,7 @@ class Overview extends React.Component {
                 <Typography className={classes.chartTitle}>
                     {Object.keys(options).map(opt => (
                         <span
+                            key={opt}
                             className={
                                 this.state.chartDianpingColumn !== opt
                                     ? classes.titleInactive
@@ -665,11 +773,15 @@ class Overview extends React.Component {
                             onClick={switchColumn(opt)}
                         >
                             {latest[opt]}
-                            <span className={
-                                this.state.chartDianpingColumn !== opt
-                                    ? classes.titleUnitInactive
-                                    : classes.titleUnit
-                            }>{options[opt]}</span>
+                            <span
+                                className={
+                                    this.state.chartDianpingColumn !== opt
+                                        ? classes.titleUnitInactive
+                                        : classes.titleUnit
+                                }
+                            >
+                                {options[opt]}
+                            </span>
                         </span>
                     ))}
                 </Typography>
@@ -910,8 +1022,10 @@ class Overview extends React.Component {
                 <div className={classes.container}>
                     <div className={classes.leftContainer}>
                         {this.yearChart()}
+                        {this.statisticsChart()}
                         {this.lifeChart()}
-                        {this.props.selectedGym.dianping_shop_name && this.dianpingChart()}
+                        {this.props.selectedGym.dianping_shop_name &&
+                            this.dianpingChart()}
                         {this.coachQuadrant()}
                     </div>
                     <div className={classes.rightContainer}>

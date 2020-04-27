@@ -30,6 +30,8 @@ class Kernel extends ConsoleKernel
             ->dailyAt('03:00');
         $schedule->command('crawl:dianping refresh-session')
             ->dailyAt('04:00');
+        $schedule->command('analyze:orders --duration=1')
+            ->dailyAt('05:00');
     }
 
     /**

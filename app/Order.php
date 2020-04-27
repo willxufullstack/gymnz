@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use DateTime;
 
 class Order extends Model
 {
@@ -53,7 +54,7 @@ class Order extends Model
             $accounting = Accounting::where('detail', 'LIKE', '%#' . $this->id . ' %')->first();
         }
 
-        if(empty($accounting)){
+        if (empty($accounting)) {
             return;
         }
         $accounting->order_id = $this->id;
@@ -62,5 +63,55 @@ class Order extends Model
         $accounting->detail .= $this->getAccountingMessage($message);
         $accounting->created_at = $this->created_at;
         $accounting->save();
+    }
+
+    public function hasExpired(?DateTime $day = null){
+
+        if(count($this->schedules) === 0) {
+            return false;
+        }
+        if(!$day) {
+            $day = date('Y-m-d');
+        } else {
+            $day = $day->format('Y-m-d');
+        }
+        return strtotime($this->expiry) <= strtotime($day);
+    }
+
+    public function loadSchedules()
+    {
+        $this->schedules = Schedule::select('date')
+            ->where('order_id', $this->id)
+            ->get();
+    }
+
+    public function getExpiredCount(DateTime $day): int
+    {
+        if($this->hasExpired($day)) {
+            return $this->getStockCount($day);
+        }
+        return 0;
+    }
+
+    public function getStockCount(DateTime $day): int
+    {
+        return $this->course_amount - $this->getFinishedCount($day);
+    }
+
+    public function getFinishedCount(DateTime $day): int
+    {
+        if(!is_array($this->schedules)){
+            $this->loadSchedules();
+        }
+        $threshold = $day->getTimestamp();
+        $finished = 0;
+        foreach($this->schedules as $schedule) {
+            // echo($schedule->date."\n");
+            // echo($schedule['date']."\n");
+            if(strtotime($schedule->date) <= $threshold){
+                $finished ++;
+            }
+        }
+        return $finished;
     }
 }

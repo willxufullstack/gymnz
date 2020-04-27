@@ -27,7 +27,8 @@ const initState = {
             scheduleCount: 0,
             orderPrice: 0
         },
-        dianping: []
+        dianping: [],
+        statistics: []
     },
     customers: [],
     customerPage: {
@@ -651,6 +652,19 @@ const gym = (state = initState, action = NonAction) => {
             return Object.assign({}, state, {
                 loading: false,
                 errorMsg: '查询点评数据失败'
+            })
+
+        case ActionTypes.LOAD_STATISTICS:
+            return Object.assign({}, state, { loading: true })
+        case ActionTypes.LOAD_STATISTICS_SUCCESS: {
+            let report = { ...state.report }
+            report.statistics = action.payload.data
+            return Object.assign({}, state, { loading: false, report })
+        }
+        case ActionTypes.LOAD_STATISTICS_FAIL:
+            return Object.assign({}, state, {
+                loading: false,
+                errorMsg: '查询课程库存数据失败'
             })
 
         case ActionTypes.LOAD_GYM_ORDERS:

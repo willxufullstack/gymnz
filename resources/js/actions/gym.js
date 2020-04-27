@@ -356,6 +356,18 @@ export function loadDianpingSummary(gymId, params) {
     };
 }
 
+export function loadStatistics(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_STATISTICS,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/statistics',
+                params
+            }
+        }
+    };
+}
+
 export function loadGymScheduleCount(gymId, params) {
     return {
         type: ActionTypes.LOAD_GYM_SCHEDULE_COUNT,

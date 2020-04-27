@@ -93,6 +93,7 @@ Route::group([
     Route::post('gym/{gym}/bind', 'GymController@bind');
 
     Route::get('gym/{gym}/dianping', 'DianpingController@index');
+    Route::get('gym/{gym}/statistics', 'StatisticsController@index');
 
     Route::resource('gym', 'GymController');
     Route::resource('gym.coach', 'CoachController');

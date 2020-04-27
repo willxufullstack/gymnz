@@ -92,7 +92,7 @@ class Gym extends Model
         return $gymTime->format($format);
     }
 
-    private static function timeRange(string $date, int $days): DatePeriod
+    public static function timeRange(string $date, int $days): DatePeriod
     {
         $end = new DateTime($date);
         $end->modify("+1 day");
