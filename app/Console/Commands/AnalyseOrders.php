@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Gym;
 use App\Order;
 use App\Statistics;
+use DateTime;
 use Illuminate\Console\Command;
 
 class AnalyseOrders extends Command
@@ -92,6 +93,10 @@ class AnalyseOrders extends Command
                 'finished' => 0
             ];
             foreach ($orders as $order) {
+                $created = (new DateTime($order->created_at))->getTimestamp();
+                if($created > $day->getTimestamp()){
+                    continue;
+                }
                 $ret[$dayStr]['expired'] += $order->getExpiredCount($day);
                 $ret[$dayStr]['finished'] += $order->getFinishedCount($day);
                 $ret[$dayStr]['stock'] += $order->getStockCount($day);
