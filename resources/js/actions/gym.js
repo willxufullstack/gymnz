@@ -469,6 +469,20 @@ export function paySalary(gymId, receiptId, data={}) {
     }
 }
 
+export function updateCustomerProfile(gymId, customerId, data)
+{
+    return {
+        type: ActionTypes.UDPATE_CUSTOMER_PROFILE,
+        payload: {
+            request: {
+                method: 'patch',
+                url: `/gym/${gymId}/customer/${customerId}`,
+                data
+            }
+        }
+    }
+}
+
 export function updateSalaryReceipt(gymId, data) {
     return {
         type: ActionTypes.UPDATE_SALARY_RECEIPT,

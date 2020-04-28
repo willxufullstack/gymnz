@@ -285,4 +285,13 @@ class GymController extends Controller
 
         return response()->json($shopListResp['data'] ?? [], 200);
     }
+
+    public function updateCustomerProfile(Request $request, $gymId, $customerId)
+    {
+        $customer = User::find($customerId);
+        $customer->name = $request->input('name');
+        $customer->email = $request->input('email');
+        $customer->save();
+        return response()->json($customer);
+    }
 }

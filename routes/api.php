@@ -92,6 +92,8 @@ Route::group([
     Route::get('gym/{gym}/sharecover', 'GymController@getShareCover');
     Route::post('gym/{gym}/bind', 'GymController@bind');
 
+    Route::patch('gym/{gym}/customer/{customer}', 'GymController@updateCustomerProfile');
+
     Route::get('gym/{gym}/dianping', 'DianpingController@index');
     Route::get('gym/{gym}/statistics', 'StatisticsController@index');
 

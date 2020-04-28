@@ -207,6 +207,22 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             })
 
+        case ActionTypes.UDPATE_CUSTOMER_PROFILE:
+            return Object.assign({}, state, { loading: true })
+        case ActionTypes.UDPATE_CUSTOMER_PROFILE_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                successMsg: '信息已保存',
+                customers: state.customers.map(s =>
+                    s.id === action.payload.data.id ? action.payload.data : s
+                )
+            })
+        case ActionTypes.UDPATE_CUSTOMER_PROFILE_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '更新用户资料失败',
+                loading: false
+            })
+
         case ActionTypes.UPDATE_GYM_SALARY_SETTING:
             return Object.assign({}, state, { loading: true })
         case ActionTypes.UPDATE_GYM_SALARY_SETTING_SUCCESS:
