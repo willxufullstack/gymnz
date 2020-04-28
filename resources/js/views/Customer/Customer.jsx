@@ -214,7 +214,7 @@ class Customer extends React.Component {
                 {
                     name: 'order_id',
                     label: '订单号',
-                    options: orders.filter(order => order.booked_amount < order.course_amount).map(order => {
+                    options: orders.map(order => {
                         return {
                             value: order.id,
                             label:
