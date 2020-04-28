@@ -150,6 +150,19 @@ export function deleteSchedule(gymId, scheduleId) {
     };
 }
 
+export function updateSchedule(gymId, scheduleId, data) {
+    return {
+        type: ActionTypes.UPDATE_SCHEDULE,
+        payload: {
+            request: {
+                method: 'patch',
+                url: '/gym/' + gymId + '/schedule/' + scheduleId,
+                data
+            }
+        }
+    };
+}
+
 export function completeSchedule(gymId, scheduleId) {
     return {
         type: ActionTypes.COMPLETE_SCHEDULE,

@@ -57,6 +57,9 @@ class CreateNewDialogue extends React.Component {
         let data = {}
         this.explainedFields().forEach(field => {
             data[field.name] = field.value || ''
+            if(field.options) {
+                data[field.name] = field.options.find( opt => opt.value === field.value) || ''
+            }
         })
         this.state = data
     }
@@ -330,7 +333,7 @@ class CreateNewDialogue extends React.Component {
                 >
                     {this.props.title}
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent style={{minHeight: this.props.minHeight}}>
                     <DialogContentText>
                         {this.props.subtitle || ''}
                     </DialogContentText>

@@ -65,12 +65,13 @@ class Order extends Model
         $accounting->save();
     }
 
-    public function hasExpired(?DateTime $day = null){
+    public function hasExpired(?DateTime $day = null)
+    {
 
-        if(count($this->schedules) === 0) {
+        if (count($this->schedules) === 0) {
             return false;
         }
-        if(!$day) {
+        if (!$day) {
             $day = date('Y-m-d');
         } else {
             $day = $day->format('Y-m-d');
@@ -88,7 +89,7 @@ class Order extends Model
 
     public function getExpiredCount(DateTime $day): int
     {
-        if($this->hasExpired($day)) {
+        if ($this->hasExpired($day)) {
             return $this->getStockCount($day);
         }
         return 0;
@@ -101,18 +102,25 @@ class Order extends Model
 
     public function getFinishedCount(DateTime $day): int
     {
-        if(!is_array($this->schedules)){
+        if (!is_array($this->schedules)) {
             $this->loadSchedules();
         }
         $threshold = $day->getTimestamp();
         $finished = 0;
-        foreach($this->schedules as $date) {
+        foreach ($this->schedules as $date) {
             // echo($schedule->date."\n");
             // echo($schedule['date']."\n");
-            if(strtotime($date) <= $threshold){
-                $finished ++;
+            if (strtotime($date) <= $threshold) {
+                $finished++;
             }
         }
         return $finished;
+    }
+
+    public static function refreshBooked(int $orderId)
+    {
+        $order = Order::find($orderId);
+        $order->booked_amount = Schedule::where('order_id', $orderId)->count();
+        $order->save();
     }
 }

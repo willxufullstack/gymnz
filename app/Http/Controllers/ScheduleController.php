@@ -337,6 +337,7 @@ class ScheduleController extends Controller
      */
     public function update(Request $request, $gymId, $id)
     {
+        $oriOrderId = $newOrderId = 0;
         $schedule = Schedule::with(['coach.user', 'customer'])->where(['id' => $id, 'gym_id' => $gymId])->first();
         if (empty($schedule)) {
             return response()->json(array('message' => 'can not find the schedule ' . $id), 500);
@@ -349,8 +350,23 @@ class ScheduleController extends Controller
             $schedule->detail = $request->input('detail');
             $schedule->saveActionDefaultValue();
         }
+        if ($request->has('order_id')) {
+            $oriOrderId = $schedule->order_id;
+            $schedule->order_id = $request->input('order_id');
+            $newOrderId = $schedule->order_id;
+        }
+        if ($request->has('coach_id')) {
+            $schedule->coach_id = $request->input('coach_id');
+        }
         $success = $schedule->save();
         $schedule['balance'] = $schedule->getBalance();
+
+        if($oriOrderId) {
+            Order::refreshBooked($oriOrderId);
+        }
+        if($newOrderId) {
+            Order::refreshBooked($newOrderId);
+        }
         if ($success) {
             return response()->json($schedule, 200);
         }

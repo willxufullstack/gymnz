@@ -617,7 +617,6 @@ class Overview extends React.Component {
                         new Date(b.date).getTime() - new Date(a.date).getTime()
                     )
                 })
-            console.log(rows)
             const row = rows[0]
             data[k] = {
                 monthLabel: utils.getMonthLabel(day.month()),

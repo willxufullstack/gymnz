@@ -514,6 +514,15 @@ const gym = (state = initState, action = NonAction) => {
             customerPage.pendingSchedule = action.data
             return Object.assign({}, state, { customerPage })
         }
+        case ActionTypes.UPDATE_SCHEDULE:
+            return Object.assign({}, state, { loading: true })
+        case ActionTypes.UPDATE_SCHEDULE_SUCCESS:
+            return Object.assign({}, state, { loading: false })
+        case ActionTypes.UPDATE_SCHEDULE_FAIL:
+            return Object.assign({}, state, {
+                loading: false,
+                errorMsg: '修改日程失败'
+            })
 
         case ActionTypes.DELETE_SCHEDULE:
             return Object.assign({}, state, { loading: true })

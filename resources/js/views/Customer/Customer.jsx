@@ -39,6 +39,7 @@ class Customer extends React.Component {
             cancelSchedule: null,
             refundDialogue: false,
             modifyDialogue: false,
+            moveScheduleDialogue: null,
             splitOrderDialogue: false,
             removeOrderDialogue: false
         }
@@ -46,6 +47,10 @@ class Customer extends React.Component {
 
     showCancelConfirmation = schedule => {
         this.setState({ cancelSchedule: schedule })
+    }
+
+    showMoveDialogue = schedule => {
+        this.setState({ moveScheduleDialogue: schedule })
     }
 
     hideCancelConfirmation = () => {
@@ -63,6 +68,8 @@ class Customer extends React.Component {
     completeSchedule = schedule => {
         this.props.actions.completeSchedule(schedule.gym_id, schedule.id)
     }
+
+    moveSchedule = schedule => {}
 
     tapRefund = order => {
         this.setState({ refundDialogue: order })
@@ -182,6 +189,58 @@ class Customer extends React.Component {
         return <CreateNewDialogue {...params} />
     }
 
+    getMoveScheduleDialogue = () => {
+        let orders = this.props.gym.customerPage.orders
+        let params = {
+            dialogue: true,
+            title: '修改',
+            minHeight: 300,
+            onSave: data => {
+                this.props.actions.updateSchedule(this.state.moveScheduleDialogue.gym_id, this.state.moveScheduleDialogue.id, data)
+                .then(() => {
+                    this.props.actions.loadCustomerOrders(this.customerId, {
+                        gym: this.props.selectedGym.id
+                    })
+                    this.props.actions.LoadCustomerSchedule(this.props.selectedGym.id, {
+                        customer: this.state.customerId
+                    })
+                     this.setState({ moveScheduleDialogue: false })
+                })
+            },
+            onCancel: () => {
+                this.setState({ moveScheduleDialogue: false })
+            },
+            inputFields: [
+                {
+                    name: 'order_id',
+                    label: '订单号',
+                    options: orders.filter(order => order.booked_amount < order.course_amount).map(order => {
+                        return {
+                            value: order.id,
+                            label:
+                                '#' + order.id +
+                                ' ' +
+                                order.booked_amount +
+                                '/' +
+                                order.course_amount
+                        }
+                    }),
+                    value: this.state.moveScheduleDialogue.order_id
+                },
+                {
+                    name: 'coach_id',
+                    label: '教练',
+                    options: this.props.gym.coaches.map(coach => {
+                        return { value: coach.id, label: coach.user.name }
+                    }),
+                    value: this.state.moveScheduleDialogue.coach_id
+                }
+            ]
+        }
+
+        return <CreateNewDialogue {...params} />
+    }
+
     getRefundDialogue = order => {
         let params = {
             dialogue: true,
@@ -229,6 +288,7 @@ class Customer extends React.Component {
             return <p>No Orders</p>
         }
         let header = [
+            '订单号',
             L.unitPrice + '/' + L.price,
             L.bookedTotal,
             L.coach,
@@ -273,6 +333,7 @@ class Customer extends React.Component {
                 </React.Fragment>
             )
             return [
+                '#' + r.id,
                 (r.price / r.course_amount).toFixed(0) + '/' + r.price,
                 r.booked_amount + ' / ' + r.course_amount,
                 r.coach.user.name,
@@ -305,7 +366,11 @@ class Customer extends React.Component {
     }
 
     componentWillMount() {
+        this.props.actions.loadCoach(this.props.selectedGym.id)
         this.props.actions.loadCustomerBodyDataOptions()
+        this.props.actions.loadCustomerOrders(this.customerId, {
+            gym: this.props.selectedGym.id
+        })
     }
 
     getUnfinishedTab = () => {
@@ -356,11 +421,35 @@ class Customer extends React.Component {
         if (!finished) {
             return <p>{L.noFinished}</p>
         }
-        let header = [L.date, L.time, L.coach]
+
+        let cancelBtn = s => (
+            <Button
+                size="sm"
+                color="transparentGray"
+                onClick={() => this.showCancelConfirmation(s)}
+            >
+                {L.cancel}
+            </Button>
+        )
+        let moveBtn = s => (
+            <Button
+                size="sm"
+                color="transparentPrimary"
+                onClick={() => this.showMoveDialogue(s)}
+            >
+                {'修改'}
+            </Button>
+        )
+
+        let header = [L.date, L.time, L.coach, '订单号', L.action]
         let tableData = finished.map(r => [
             r.date,
             utils.getTimeStr(r.start),
-            r.coach.user.name
+            r.coach.user.name,
+            '#' + r.order_id,
+            <React.Fragment>
+                {cancelBtn(r)} {moveBtn(r)} {}
+            </React.Fragment>
         ])
 
         return (
@@ -395,17 +484,19 @@ class Customer extends React.Component {
     }
 
     tapTab = tabIndex => {
-        switch (tabIndex) {
-            case 0:
-                break
-            case 1:
-                this.props.actions.loadCustomerOrders(this.customerId, {
-                    gym: this.props.selectedGym.id
-                })
-                break
-            default:
-                break
-        }
+        // switch (tabIndex) {
+        //     case 0:
+        //         break
+        //     case 2:
+        //     case 3:
+        //     case 1:
+        //         this.props.actions.loadCustomerOrders(this.customerId, {
+        //             gym: this.props.selectedGym.id
+        //         })
+        //         break
+        //     default:
+        //         break
+        // }
     }
 
     render() {
@@ -451,6 +542,7 @@ class Customer extends React.Component {
                     this.getModifyDialogue(this.state.modifyDialogue)}
                 {this.state.splitOrderDialogue &&
                     this.getSplitDialogue(this.state.splitOrderDialogue)}
+                {this.state.moveScheduleDialogue && <this.getMoveScheduleDialogue />}
                 <Paper square>
                     <Tabs
                         title={
