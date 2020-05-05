@@ -149,10 +149,21 @@ class OrderController extends Controller
         if (!$order) {
             return response()->json(array('message' => 'cannot find the order'), 404);
         }
-        $order->price = $request->input('price');
-        $order->course_amount = $request->input('course_amount');
-        $gym = Gym::find($gymId);
-        $order->created_at = $request->input('created_at');
+        if ($request->has('price')) {
+            $order->price = $request->input('price');
+        }
+        if ($request->has('course_amount')) {
+            $order->course_amount = $request->input('course_amount');
+        }
+        if ($request->has('created_at')) {
+            $order->created_at = $request->input('created_at');
+        }
+        if ($request->has('expiry')) {
+            $order->expiry = $request->input('expiry');
+        }
+        if ($request->has('duration')) {
+            $order->duration = $request->input('duration');
+        }
         $order->save();
         $order->updateAccounting();
         return response()->json($order, 200);
@@ -167,7 +178,7 @@ class OrderController extends Controller
     public function destroy($gymId, $id)
     {
         $order = Order::find($id);
-        if($order && $order->gym_id === (int)$gymId) {
+        if ($order && $order->gym_id === (int) $gymId) {
             $order->deleteAccounting();
             $order->delete();
             return response()->json(['success' => true], 202);

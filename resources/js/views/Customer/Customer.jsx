@@ -182,6 +182,20 @@ class Customer extends React.Component {
                     type: 'string',
                     placeholder: order.created_at + '',
                     value: order.created_at
+                },
+                {
+                    name: 'duration',
+                    label: '有效期',
+                    type: 'number',
+                    placeholder: order.duration + '',
+                    value: order.duration + ''
+                },
+                {
+                    name: 'expiry',
+                    label: '过期时间',
+                    type: 'string',
+                    placeholder: order.expiry + '',
+                    value: order.expiry
                 }
             ]
         }
