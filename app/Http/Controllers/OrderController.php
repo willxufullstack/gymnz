@@ -93,6 +93,7 @@ class OrderController extends Controller
         $order->price = $request->input('price');
         $order->course_amount = $request->input('amount');
         $order->duration = $request->input('duration');
+        $order->images = json_encode($request->input('images', []));
         // calcuate expiry
         $order->expiry = Carbon::now()->addMonths($order->duration);
         // 3. map user
@@ -198,6 +199,7 @@ class OrderController extends Controller
         $childOrder->created_by = $by;
         $childOrder->customer_id = $customer->id;
         $childOrder->coach_id = $oriOrder->coach_id;
+        $childOrder->images = $oriOrder->images;
         $childOrder->created_at = $oriOrder->created_at;
         $childOrder->duration = $oriOrder->duration;
         $childOrder->expiry = $oriOrder->expiry;
