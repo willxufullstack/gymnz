@@ -118,9 +118,6 @@ class Schedule extends Model
     {
         $detail = json_decode($this->detail);
         $title = '~ 训练 ~';
-        if(empty($detail)){
-            return [];
-        }
 
         foreach ($detail as $row) {
             if ($row->contenttype === 'comments') {

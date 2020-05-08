@@ -177,36 +177,42 @@ class BodyDataController extends Controller
 
     private function getGrap($min, $max)
     {
-        $sacledMin = $min - ($max - $min) * 0.2;
-        $scaledMax = $max + ($max - $min) * 0.2;
+        $sacledMin = $min;
+        $scaledMax = $max + ($max - $min) * 0.1;
 
         // dd($sacledMin, $scaledMax);
         $settings = array(
             'back_colour'       => 'transparent',
-            'stroke_colour'     => 'rgba(255,255,255,0.5)',
-            'line_stroke_width' => 4,
+            'stroke_colour'     => 'rgba(255,255,255)',
+            'line_stroke_width' => 6,
             'back_stroke_width' => 0,
             'back_stroke_colour' => '#4fd2c2',
+            'show_axis_h'       => false,
+            'show_axis_text_h'  => false,
+            'show_grid'         => false,
             'axis_colour'       => '#fff',
             'axis_overlap'      => 2,
-            'axis_font'         => 'Georgia',
-            'axis_font_size'    => 10,
+            'axis_text_space'   => 18,
+            'show_axis_v'       => false,
+            'axis_font'         => 'Arial',
+            'axis_font_size'    => 18,
             'grid_colour'       => '#4fd2c2 ',
             'label_colour'      => '#fff',
             'pad_right'         => 20,
-            'pad_left'          => 20,
+            'pad_left'          => 0,
             'link_base'         => '/',
             'link_target'       => '_top',
             'fill_under'        => array(false, false),
             'marker_size'       => 6,
             'marker_type'       => array('circle'),
-            'marker_colour'     => array('rgba(255,255,255,0.8)'),
+            'marker_colour'     => array('rgba(255,255,255)'),
+            'decimal_digits_y'  => 1,
             'axis_min_v'        => $sacledMin,
             'axis_max_v'        => $scaledMax,
-            'grid_division_v'   => ($scaledMax - $sacledMin) / 4
+            'grid_division_v'   => ($scaledMax - $sacledMin) / 2
         );
 
-        return new SVGGraph(320, 240, $settings);
+        return new SVGGraph(420, 180, $settings);
     }
 
     public function chart(Request $request, $user)
@@ -238,7 +244,6 @@ class BodyDataController extends Controller
                 $max = $row['value'];
             }
         }
-
 
         $date2value = array_reverse($date2value);
         $values = [$date2value];

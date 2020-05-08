@@ -35,7 +35,7 @@ class TimelineController extends Controller
         $ret = [];
         foreach ($schedules as $s) {
             $trainCard =  $s->toTrainCardV2();
-            if(!empty($trainCard)){
+            if (!empty($trainCard)) {
                 $ret[] = $trainCard;
             }
         }
@@ -58,6 +58,8 @@ class TimelineController extends Controller
             $ret[] = $to->toTimelineCard();
         }
 
+        // append body data
+        $ret = array_merge($ret, BodyData::getBodyDataCard($userId, $piv, $dateBefore));
         // order ret by date
         usort($ret, function ($a, $b) {
             return strtotime($a['date']) >= strtotime($b['date']);
@@ -73,7 +75,7 @@ class TimelineController extends Controller
     {
         $userId = Auth::User()->id;
 
-        if ($request->has('v2')){
+        if ($request->has('v2')) {
             return $this->indexV2($request);
         }
 
@@ -96,7 +98,7 @@ class TimelineController extends Controller
         $ret = [];
         foreach ($schedules as $s) {
             $trainCard =  $s->toTrainCard();
-            if(!empty($trainCard)){
+            if (!empty($trainCard)) {
                 $ret[] = $trainCard;
             }
             if ($s->status === 2 && !empty(trim($s->conclusion))) {
