@@ -42,6 +42,22 @@ class TimelineController extends Controller
         if (empty($ret)) {
             return [];
         }
+
+        $piv = end($ret)['date'];
+        // append talk
+        $talks = Talk::with(['from', 'to'])
+            ->where(function ($query) use ($userId) {
+                $query->where('to_id', $userId);
+                $query->orWhere('from_id',  $userId);
+            })
+            ->where('created_at', '>=', substr($piv, 0, 10))
+            ->where('created_at', '<', $dateBefore)
+            ->get();
+
+        foreach ($talks as $to) {
+            $ret[] = $to->toTimelineCard();
+        }
+
         // order ret by date
         usort($ret, function ($a, $b) {
             return strtotime($a['date']) >= strtotime($b['date']);
