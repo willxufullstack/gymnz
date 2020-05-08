@@ -11,6 +11,43 @@ use Illuminate\Support\Facades\Auth;
 class TimelineController extends Controller
 {
     const SCHEDULE_PAGE_SIZE = 5;
+
+    public function indexV2(Request $request)
+    {
+        $userId = Auth::User()->id;
+
+        if ($request->has('user')) {
+            $userId = $request->input('user');
+        }
+
+        // default to tomorrow
+        $tommorrow = strtotime(date('Y-m-d', time()) . ' +1 day');
+        $dateBefore = date('Y-m-d', $tommorrow);
+        if ($request->has('before')) {
+            $dateBefore = $request->input('before');
+        }
+        $schedules = Schedule::where('customer_id', $userId)
+            ->where('date', '<', $dateBefore)
+            ->orderBy('date',  'DESC')
+            ->limit(self::SCHEDULE_PAGE_SIZE)
+            ->get();
+
+        $ret = [];
+        foreach ($schedules as $s) {
+            $trainCard =  $s->toTrainCardV2();
+            if(!empty($trainCard)){
+                $ret[] = $trainCard;
+            }
+        }
+        if (empty($ret)) {
+            return [];
+        }
+        // order ret by date
+        usort($ret, function ($a, $b) {
+            return strtotime($a['date']) >= strtotime($b['date']);
+        });
+        return $ret;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -19,6 +56,10 @@ class TimelineController extends Controller
     public function index(Request $request)
     {
         $userId = Auth::User()->id;
+
+        if ($request->has('v2')){
+            return $this->indexV2($request);
+        }
 
         if ($request->has('user')) {
             $userId = $request->input('user');

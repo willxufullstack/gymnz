@@ -114,6 +114,33 @@ class Schedule extends Model
         return $this->monthCount;
     }
 
+    public function toTrainCardV2()
+    {
+        $detail = json_decode($this->detail);
+        $title = '~ 训练 ~';
+        if(empty($detail)){
+            return [];
+        }
+
+        foreach ($detail as $row) {
+            if ($row->contenttype === 'comments') {
+                $title = $row->comments;
+                break;
+            }
+        }
+
+        return [
+            'type' => 'schedule',
+            'title' => $title,
+            'body' => $this->conclusion ?? '课后批语正在赶来',
+            'date' => $this->getStartDateTime(),
+            'id' => $this->id,
+            'gym' => $this->gym_id,
+            'user_id' => $this->coach->user->id,
+            'avatar' => $this->coach->user->avatar ?? 'http://static.o2-fit.com/image/logo.png?imageView2/1/w/80/h/80/format/jpg'
+        ];
+    }
+
     public function toTrainCard()
     {
         $detail = json_decode($this->detail);
