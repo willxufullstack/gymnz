@@ -59,10 +59,15 @@ class BodyDataController extends Controller
 
         $host = request()->getSchemeAndHttpHost();
         foreach ($rows as $row) {
+            $data =  BodyData::where('user_id', $userId)
+                ->where('option', $row['option'])
+                ->orderBy('date', 'DESC')
+                ->get();
             $ret[] = [
-                'url' => $host . "/api/user/$userId/bodydata/chart?option=" . $row['option'],
+                'url' => count($data) > 1 ? $host . "/api/user/$userId/bodydata/chart?option=" . $row['option'] : '',
                 'unit' => $row['unit'],
-                'option' => $row['option']
+                'option' => $row['option'],
+                'data' => $data
             ];
         }
 
@@ -188,11 +193,11 @@ class BodyDataController extends Controller
             'back_stroke_width' => 0,
             'back_stroke_colour' => '#4fd2c2',
             'show_axis_h'       => false,
-            'show_axis_text_h'  => false,
             'show_grid'         => false,
             'axis_colour'       => '#fff',
             'axis_overlap'      => 2,
-            'axis_text_space'   => 18,
+            'axis_text_space_v'   => 18,
+            'axis_text_space_h'   => 26,
             'show_axis_v'       => false,
             'axis_font'         => 'Arial',
             'axis_font_size'    => 18,
@@ -218,7 +223,7 @@ class BodyDataController extends Controller
     public function chart(Request $request, $user)
     {
         $option = '体重';
-        if($request->has('option')) {
+        if ($request->has('option')) {
             $option = $request->input('option');
         }
         $date = strftime('%Y-%m-%d', time());
@@ -236,7 +241,7 @@ class BodyDataController extends Controller
         $min = PHP_INT_MAX;
         $max = PHP_INT_MIN;
         foreach ($rows as $row) {
-            $date2value[substr($row['date'], 5, 5)] = $row['value'];
+            $date2value[str_replace('-', '/', substr($row['date'], 5, 5))] = $row['value'];
             if ($row['value'] < $min) {
                 $min = $row['value'];
             }

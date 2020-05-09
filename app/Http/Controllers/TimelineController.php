@@ -59,7 +59,7 @@ class TimelineController extends Controller
         }
 
         // append body data
-        $ret = array_merge($ret, BodyData::getBodyDataCard($userId, $piv, $dateBefore));
+        $ret = array_merge($ret, BodyData::getBodyDataCardV2($userId, $piv, $dateBefore));
         // order ret by date
         usort($ret, function ($a, $b) {
             return strtotime($a['date']) >= strtotime($b['date']);
