@@ -74,6 +74,9 @@ class GymSettings extends React.Component {
             disableAppCompleteSchedule: props.setting
                 ? props.setting.disableAppCompleteSchedule
                 : false,
+            enableAppPlanTemplate: props.setting
+                ? props.setting.enableAppPlanTemplate
+                : false,
             workingHours: {
                 max:
                     props.setting &&
@@ -145,6 +148,15 @@ class GymSettings extends React.Component {
         const setting = {
             ...this.props.selectedGym.setting,
             disableAppCompleteSchedule: this.state.disableAppCompleteSchedule
+        }
+        this.props.actions.updateGym(this.state.selectedGymId, {
+            setting
+        })
+    }
+    saveEnableAppPlanTemplate = () => {
+        const setting = {
+            ...this.props.selectedGym.setting,
+            enableAppPlanTemplate: this.state.enableAppPlanTemplate
         }
         this.props.actions.updateGym(this.state.selectedGymId, {
             setting
@@ -421,6 +433,43 @@ class GymSettings extends React.Component {
                             }}
                             className={this.props.classes.bonusSwitch}
                             checked={!!this.state.disableAppCompleteSchedule}
+                            onColor="#ab47bc"
+                            onHandleColor="#ab47bc"
+                            handleDiameter={30}
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                            height={20}
+                            width={48}
+                            className="react-switch"
+                        />
+                    </div>
+                </GridItem>
+                <GridItem
+                    xs={12}
+                    sm={12}
+                    md={6}
+                    classes={{ grid: "setting-option-block" }}
+                >
+                    <div className={this.props.classes.bonusSettingRow}>
+                        <Typography
+                            variant="subtitle1"
+                            paragraph
+                            className={this.props.classes.bounsLabel}
+                        >
+                            <Label fontSize="small" />
+                            启用APP训练模版
+                        </Typography>
+                        <Switch
+                            onChange={enableAppPlanTemplate => {
+                                this.setState(
+                                    { enableAppPlanTemplate },
+                                    this.saveEnableAppPlanTemplate
+                                )
+                            }}
+                            className={this.props.classes.bonusSwitch}
+                            checked={!!this.state.enableAppPlanTemplate}
                             onColor="#ab47bc"
                             onHandleColor="#ab47bc"
                             handleDiameter={30}
