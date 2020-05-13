@@ -34,6 +34,7 @@ class BodyData extends Model
     public static function getBodyDataCardV2($user, $start, $end)
     {
         $data = self::where('user_id', $user)
+            ->where('date', '>=', $start)
             ->where('date', '<', $end)
             ->get();
         // group
