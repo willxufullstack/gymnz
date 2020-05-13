@@ -13,7 +13,7 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
-    const LATEST_SCHEDULE_PREFIX = 'lastest_schedule_';
+    const LATEST_SCHEDULE_PREFIX = 'lastest_schedule__';
 
     public function coach()
     {

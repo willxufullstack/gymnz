@@ -17,6 +17,10 @@ class Coach extends Model
         'gym_id', 'user_id', 'created_by'
     ];
 
+    protected $hidden = [
+        'created_at', 'updated_at', 'created_by'
+    ];
+
 
     /**
      * Get the gym with the coach.
