@@ -311,7 +311,7 @@ class BodyDataController extends Controller
                 'category' => 'basic'
             ],
             [
-                'option' => '大腿围R',
+                'option' => '小腿围R',
                 'unit' => 'cm',
                 'category' => 'basic'
             ],
