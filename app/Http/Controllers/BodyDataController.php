@@ -97,15 +97,17 @@ class BodyDataController extends Controller
         $user = User::find($userId);
         $ret = [];
         foreach ($request->input('batch') as $item) {
-            $bd = new BodyData();
-            $bd->created_by = $by;
-            $bd->value = $item['value'];
-            $bd->option = $item['option'];
-            $bd->unit = $item['unit'];
-            $bd->date = $item['date'];
-            $bd->user()->associate($user);
-            $bd->save();
-            $ret[] = $bd;
+            if ($item['value'] > 0) {
+                $bd = new BodyData();
+                $bd->created_by = $by;
+                $bd->value = $item['value'];
+                $bd->option = $item['option'];
+                $bd->unit = $item['unit'];
+                $bd->date = $item['date'];
+                $bd->user()->associate($user);
+                $bd->save();
+                $ret[] = $bd;
+            }
         }
         return response()->json($ret, 200);
     }
@@ -300,6 +302,16 @@ class BodyDataController extends Controller
             ],
             [
                 'option' => '大臂围R',
+                'unit' => 'cm',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '小腿围L',
+                'unit' => 'cm',
+                'category' => 'basic'
+            ],
+            [
+                'option' => '大腿围R',
                 'unit' => 'cm',
                 'category' => 'basic'
             ],

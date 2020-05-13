@@ -169,7 +169,7 @@ class AuthController extends Controller
         $resp = file_get_contents($url);
         $json = json_decode($resp, true);
         if (!array_key_exists('openid', $json)) {
-            Log::error('cannot get wx openid: ', $resp);
+            Log::error('cannot get wx openid: ', [$resp]);
             return response()->json(array('message' => 'cannot get openid via wx api'), 500);
         }
         $openid = $json['openid'];
