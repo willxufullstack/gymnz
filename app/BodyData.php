@@ -36,6 +36,7 @@ class BodyData extends Model
         $data = self::where('user_id', $user)
             ->where('date', '>=', $start)
             ->where('date', '<', $end)
+            ->where('value', '!=', 0)
             ->get();
         // group
         $grouped = [];

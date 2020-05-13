@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TimelineController extends Controller
 {
-    const SCHEDULE_PAGE_SIZE = 5;
+    const SCHEDULE_PAGE_SIZE = 10;
 
     public function indexV2(Request $request)
     {
