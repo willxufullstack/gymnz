@@ -77,6 +77,9 @@ class GymSettings extends React.Component {
             enableAppPlanTemplate: props.setting
                 ? props.setting.enableAppPlanTemplate
                 : false,
+            enableConfirmInPlanPage: props.setting
+                ? props.setting.enableConfirmInPlanPage
+                : false,
             workingHours: {
                 max:
                     props.setting &&
@@ -157,6 +160,16 @@ class GymSettings extends React.Component {
         const setting = {
             ...this.props.selectedGym.setting,
             enableAppPlanTemplate: this.state.enableAppPlanTemplate
+        }
+        this.props.actions.updateGym(this.state.selectedGymId, {
+            setting
+        })
+    }
+
+    saveEnableConfirmInPlanPage = () => {
+        const setting = {
+            ...this.props.selectedGym.setting,
+            enableConfirmInPlanPage: this.state.enableConfirmInPlanPage
         }
         this.props.actions.updateGym(this.state.selectedGymId, {
             setting
@@ -470,6 +483,43 @@ class GymSettings extends React.Component {
                             }}
                             className={this.props.classes.bonusSwitch}
                             checked={!!this.state.enableAppPlanTemplate}
+                            onColor="#ab47bc"
+                            onHandleColor="#ab47bc"
+                            handleDiameter={30}
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                            height={20}
+                            width={48}
+                            className="react-switch"
+                        />
+                    </div>
+                </GridItem>
+                <GridItem
+                    xs={12}
+                    sm={12}
+                    md={6}
+                    classes={{ grid: "setting-option-block" }}
+                >
+                    <div className={this.props.classes.bonusSettingRow}>
+                        <Typography
+                            variant="subtitle1"
+                            paragraph
+                            className={this.props.classes.bounsLabel}
+                        >
+                            <Label fontSize="small" />
+                            训练计划中确认课程完成
+                        </Typography>
+                        <Switch
+                            onChange={ enableConfirmInPlanPage => {
+                                this.setState(
+                                    { enableConfirmInPlanPage },
+                                    this.saveEnableConfirmInPlanPage
+                                )
+                            }}
+                            className={this.props.classes.bonusSwitch}
+                            checked={!!this.state.enableConfirmInPlanPage}
                             onColor="#ab47bc"
                             onHandleColor="#ab47bc"
                             handleDiameter={30}
