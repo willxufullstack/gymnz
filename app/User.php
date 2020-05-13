@@ -6,11 +6,14 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+
+    const LATEST_SCHEDULE_PREFIX = 'lastest_schedule_';
 
     public function coach()
     {
@@ -132,22 +135,22 @@ class User extends Authenticatable implements JWTSubject
 
     public function getLatestSchedule($status = null, $gymId = null, $coachId = null)
     {
-        return self::getLatestScheduleById($this->id, $status, $gymId, $coachId);
+        return self::getLatestScheduleCache($this->id);
     }
 
     public static function getLatestScheduleById($customerId, $status = null, $gymId = null, $coachId = null)
     {
         $query = Schedule::with(['coach.user'])
             ->where('customer_id', $customerId);
-        if ($status) {
-            $query->where('status', $status);
-        }
-        if ($gymId) {
-            $query->where('gym_id', $gymId);
-        }
-        if ($coachId) {
-            $query->where('coach_id', $coachId);
-        }
+        // if ($status) {
+        //     $query->where('status', $status);
+        // }
+        // if ($gymId) {
+        //     $query->where('gym_id', $gymId);
+        // }
+        // if ($coachId) {
+        //     $query->where('coach_id', $coachId);
+        // }
         $ret = $query->orderBy('date', 'DESC')->first();
         if(empty($ret)){
             return null;
@@ -160,5 +163,24 @@ class User extends Authenticatable implements JWTSubject
             return true;
         }
         return false;
+    }
+
+
+    public static function setLatestScheduleCache($userId)
+    {
+        $key = self::LATEST_SCHEDULE_PREFIX . $userId;
+        $schedule = self::getLatestScheduleById($userId);
+        Redis::set($key, $schedule);
+        return $schedule;
+    }
+
+    public static function getLatestScheduleCache($userId)
+    {
+        $key = self::LATEST_SCHEDULE_PREFIX . $userId;
+        $ret = Redis::get($key);
+        if(empty(Redis::get($key))){
+            $ret = self::setLatestScheduleCache($userId);
+        }
+        return $ret;
     }
 }

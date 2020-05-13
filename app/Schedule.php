@@ -11,7 +11,7 @@ class Schedule extends Model
 
     protected $fillable = ['detail'];
 
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['created_at', 'updated_at', 'created_by', 'dianping_code'];
 
     /**
      * Get the gym.

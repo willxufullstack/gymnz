@@ -303,6 +303,9 @@ class ScheduleController extends Controller
         $order->save();
 
         $schedule['balance'] = $schedule->getBalance();
+
+        // clear cache 'latest_schedule'
+        User::setLatestScheduleCache($schedule->customer_id);
         return response()->json($schedule, 201);
     }
 
@@ -394,7 +397,6 @@ class ScheduleController extends Controller
         if (!empty($schedule->detail) && $schedule->detail !== '[]') {
             Redis::set('tmp_schedule_plan_' . $schedule->customer_id, $schedule->detail);
         }
-
         $success = $schedule->delete();
         if ($success) {
             // update order booked when it's non-trial schedule
@@ -405,6 +407,7 @@ class ScheduleController extends Controller
                 $order->save();
             }
 
+            User::setLatestScheduleCache($schedule->customer_id);
             return response()->json($schedule, 200);
         }
         return response()->json(array('message' => 'fail'), 500);
