@@ -152,7 +152,7 @@ class User extends Authenticatable implements JWTSubject
         if(empty($ret)){
             return null;
         }
-        return $ret->makeHidden('detail');
+        return $ret->makeHidden('detail')->makeHidden('conclusion');
     }
 
     public static function convertSex($sex): bool {
