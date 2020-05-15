@@ -135,7 +135,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getLatestSchedule($status = null, $gymId = null, $coachId = null)
     {
-        return self::getLatestScheduleCache($this->id);
+        return self::getLatestScheduleById($this->id);
     }
 
     public static function getLatestScheduleById($customerId, $status = null, $gymId = null, $coachId = null)
