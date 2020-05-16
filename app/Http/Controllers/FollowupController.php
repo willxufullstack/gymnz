@@ -52,7 +52,7 @@ class FollowupController extends Controller
         $followUpsArr = iterator_to_array($followUps);
         // order by latest schedule
         usort($followUpsArr, function($a, $b){
-            return strtotime($a['latest_schedule']->date) - strtotime($b['latest_schedule']->date);
+            return strtotime($a['latest_schedule']['date']) - strtotime($b['latest_schedule']['date']);
         });
 
         return response()->json($followUpsArr, 200);

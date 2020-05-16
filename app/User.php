@@ -135,7 +135,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getLatestSchedule($status = null, $gymId = null, $coachId = null)
     {
-        return self::getLatestScheduleById($this->id);
+        return self::getLatestScheduleCache($this->id);
     }
 
     public static function getLatestScheduleById($customerId, $status = null, $gymId = null, $coachId = null)
@@ -169,7 +169,7 @@ class User extends Authenticatable implements JWTSubject
     public static function setLatestScheduleCache($userId)
     {
         $key = self::LATEST_SCHEDULE_PREFIX . $userId;
-        $schedule = self::getLatestScheduleById($userId);
+        $schedule = json_encode(self::getLatestScheduleById($userId));
         Redis::set($key, $schedule);
         return $schedule;
     }
@@ -181,6 +181,6 @@ class User extends Authenticatable implements JWTSubject
         if(empty(Redis::get($key))){
             $ret = self::setLatestScheduleCache($userId);
         }
-        return $ret;
+        return json_decode($ret, true);
     }
 }
