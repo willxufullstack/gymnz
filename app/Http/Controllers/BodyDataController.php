@@ -109,6 +109,7 @@ class BodyDataController extends Controller
                 $ret[] = $bd;
             }
         }
+        User::getLatestMeasureDate($userId);
         return response()->json($ret, 200);
     }
 
