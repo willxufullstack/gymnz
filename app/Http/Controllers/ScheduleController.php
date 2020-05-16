@@ -79,6 +79,7 @@ class ScheduleController extends Controller
         if (empty($group)) {
             foreach ($ret as &$row) {
                 $row->monthCount = $row->getMonthCount();
+                $row->last_measure_at = User::getLatestMeasureDate($row->customer_id);
             }
         }
 

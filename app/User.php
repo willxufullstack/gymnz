@@ -14,6 +14,7 @@ class User extends Authenticatable implements JWTSubject
     use Notifiable;
 
     const LATEST_SCHEDULE_PREFIX = 'lastest_schedule__';
+    const LATEST_MEASURE_PREFIX = 'lastest_measure__';
 
     public function coach()
     {
@@ -152,14 +153,15 @@ class User extends Authenticatable implements JWTSubject
         //     $query->where('coach_id', $coachId);
         // }
         $ret = $query->orderBy('date', 'DESC')->first();
-        if(empty($ret)){
+        if (empty($ret)) {
             return null;
         }
         return $ret->makeHidden('detail')->makeHidden('conclusion');
     }
 
-    public static function convertSex($sex): bool {
-        if($sex === 1 || $sex === '1' || $sex === '男') {
+    public static function convertSex($sex): bool
+    {
+        if ($sex === 1 || $sex === '1' || $sex === '男') {
             return true;
         }
         return false;
@@ -178,9 +180,25 @@ class User extends Authenticatable implements JWTSubject
     {
         $key = self::LATEST_SCHEDULE_PREFIX . $userId;
         $ret = Redis::get($key);
-        if(empty(Redis::get($key))){
+        if (empty(Redis::get($key))) {
             $ret = self::setLatestScheduleCache($userId);
         }
         return json_decode($ret, true);
+    }
+
+    public static function getLatestMeasureDate($userId)
+    {
+        $key = self::LATEST_MEASURE_PREFIX . $userId;
+        $ret = Redis::get($key);
+        if (empty($ret)) {
+            $latest = BodyData::where('user_id', $userId)
+                ->orderBy('date', 'DESC')
+                ->first();
+            if(empty($latest)){
+                return '';
+            }
+            Redis::set($key, $latest->date);
+        }
+        return $ret;
     }
 }
