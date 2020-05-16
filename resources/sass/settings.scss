@@ -26,6 +26,11 @@
     font-weight: 600;
     top: 8px;
     position: relative;
+    display: flex;
+    line-height: 36px;
+    img {
+      height: 36px;
+    }
   }
 
   .input-range {
