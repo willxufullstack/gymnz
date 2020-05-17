@@ -96,7 +96,7 @@ class GymController extends Controller
         }
         $success = $gym->update($request->all());
         // when set the dianping shop for the first time, crawl past 180 days data
-        if($request->has('dianping_shop_name') && !empty($request->input('dianping_shop_name'))) {
+        if ($request->has('dianping_shop_name') && !empty($request->input('dianping_shop_name'))) {
             // aync crawl half year
             $gym->crawlDianping('traffic', date('Y-m-d'), 190);
             $gym->crawlDianping('comment', date('Y-m-d'), 190);
@@ -239,7 +239,6 @@ class GymController extends Controller
 
         $activeCustomerCount = count($schedules->groupBy('customer_id')->get('customer_id'));
 
-
         $gym = Gym::find($id);
         $endWithSeconds = $request->input('end') . ' 23:59:59';
         $startGymTimezone = $gym->convertGymTimezoneToUTC($request->input('start'));
@@ -257,7 +256,12 @@ class GymController extends Controller
         $orderPrice = $orders->sum('price');
 
         // trial count
-        $trialCourseCount = $schedules->where('order_id', 0)->count();
+        $trialCourseCount = Schedule::where('gym_id', $id)
+            ->where('status', 2)
+            ->where('date', '>=', $request->input('start'))
+            ->where('date', '<=', $request->input('end'))
+            ->where('order_id', 0)
+            ->count();
 
         $res = [
             'orderCount' => $orderCount,
@@ -269,7 +273,8 @@ class GymController extends Controller
         return response()->json($res, 200);
     }
 
-    public function bind(Request $request, $gymId) {
+    public function bind(Request $request, $gymId)
+    {
         $code = $request->input('code');
 
         $appKey = config('services.dianping.key');
@@ -279,8 +284,8 @@ class GymController extends Controller
         $gym = Gym::find($gymId);
         $gym->dianping_session = $sessionData['access_token'];
         $gym->dianping_refresh_token = $sessionData['refresh_token'];
-        $gym->dianping_expires_in = time() + (int)$sessionData['expires_in'];
-        $gym->dianping_remain_refresh_count = (int)$sessionData['remain_refresh_count'];
+        $gym->dianping_expires_in = time() + (int) $sessionData['expires_in'];
+        $gym->dianping_remain_refresh_count = (int) $sessionData['remain_refresh_count'];
         $gym->dianping_bid = $sessionData['bid'];
         $gym->save();
 
