@@ -263,12 +263,23 @@ class GymController extends Controller
             ->where('order_id', 0)
             ->count();
 
+        // new customer count
+        $newCustomerCount = Order::where('gym_id', $id)
+            ->where('price', '>', 0)
+            ->where('created_at', '>=', $startGymTimezone)
+            ->where('created_at', '<=', $endGymTimezone)
+            ->whereHas('customer', function ($query) use ($startGymTimezone, $endGymTimezone) {
+                $query->where('created_at', '>=', $startGymTimezone)
+                    ->where('created_at', '<=', $endGymTimezone);
+            })->count();
+
         $res = [
             'orderCount' => $orderCount,
             'scheduleCount' => $scheduleCount,
             'orderPrice' => $orderPrice,
             'activeCustomerCount' => $activeCustomerCount,
-            'trialCourseCount' => $trialCourseCount
+            'trialCourseCount' => $trialCourseCount,
+            'newCustomerCount' => $newCustomerCount
         ];
         return response()->json($res, 200);
     }
