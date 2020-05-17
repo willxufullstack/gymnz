@@ -142,19 +142,24 @@ class SalaryReceipt extends Model
         }
 
         // handle free course and normal course with different setting
-        $normalCourseCount = $freeCourseCount = 0;
+        $normalCourseCount = $freeCourseCount = $trialCourseCount = 0;
         foreach($query as $schedule) {
+            if($schedule->order_id === 0){
+                $trialCourseCount ++;
+                continue;
+            }
             if($schedule->getPrice() === 0) {
                 $freeCourseCount ++;
-            } else {
-                $normalCourseCount ++;
+                continue;
             }
+            $normalCourseCount ++;
         }
 
         // update total
         // $count = $query->count();
         $count = count($query);
         $this->course_count = $count;
+        $this->trial_course_count = $trialCourseCount;
         $this->free_course_count = $freeCourseCount;
         $this->total = $this->base
             + $normalCourseCount * $this->course_fixed
@@ -174,8 +179,9 @@ class SalaryReceipt extends Model
             'course_free' => '赠课薪资',
             'sale_percentage' => '销售提成(%）',
 
-            'course_count' => '课程数量',
-            'free_course_count' => '赠课数量',
+            'course_count' => '正常课时',
+            'free_course_count' => '赠课',
+            'trial_course_count' => '体验课',
 
             'tax' => '税费',
             'adjustment' => '调整金额',
