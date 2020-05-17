@@ -256,11 +256,15 @@ class GymController extends Controller
         // order total price
         $orderPrice = $orders->sum('price');
 
+        // trial count
+        $trialCourseCount = $schedules->where('order_id', 0)->count();
+
         $res = [
             'orderCount' => $orderCount,
             'scheduleCount' => $scheduleCount,
             'orderPrice' => $orderPrice,
-            'activeCustomerCount' => $activeCustomerCount
+            'activeCustomerCount' => $activeCustomerCount,
+            'trialCourseCount' => $trialCourseCount
         ];
         return response()->json($res, 200);
     }

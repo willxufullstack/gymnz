@@ -115,6 +115,7 @@ class MonthlyReport extends React.Component {
                 {row(L.scheduleCount, summary.scheduleCount)}
                 {row(L.orderCount, summary.orderCount)}
                 {row(L.orderPrice, summary.orderPrice)}
+                {row('体验课', summary.trialCourseCount)}
             </GridContainer>
         )
     }

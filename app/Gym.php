@@ -78,18 +78,20 @@ class Gym extends Model
 
     public function convertGymTimezoneToUTC($time, $format = 'Y-m-d H:i:s'): string
     {
-        $timezone = $this->getTimezone();
-        $utcTime = new \DateTime($time, new \DateTimeZone($timezone));
-        $utcTime->setTimezone(new \DateTimeZone('UTC'));
-        return $utcTime->format($format);
+        // $timezone = $this->getTimezone();
+        // $utcTime = new \DateTime($time, new \DateTimeZone($timezone));
+        // $utcTime->setTimezone(new \DateTimeZone('UTC'));
+        // return $utcTime->format($format);
+        return $time;
     }
 
     public function convertUTCToGymTimezone($time, $format = 'Y-m-d H:i:s'): string
     {
-        $timezone = $this->getTimezone();
-        $gymTime = new \DateTime($time, new \DateTimeZone('UTC'));
-        $gymTime->setTimezone(new \DateTimeZone($timezone));
-        return $gymTime->format($format);
+        // $timezone = $this->getTimezone();
+        // $gymTime = new \DateTime($time, new \DateTimeZone('UTC'));
+        // $gymTime->setTimezone(new \DateTimeZone($timezone));
+        // return $gymTime->format($format);
+        return $time;
     }
 
     public static function timeRange(string $date, int $days): DatePeriod
