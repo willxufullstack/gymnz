@@ -63,6 +63,19 @@ export function createCoach(gymId, data) {
     }
 }
 
+export function updateCoach(gymId, coachId, data) {
+    return {
+        type: ActionTypes.UPDATE_COACH,
+        payload: {
+            request: {
+                method: 'patch',
+                url: '/gym/' + gymId + '/coach/' + coachId,
+                data
+            }
+        }
+    }
+}
+
 export function deleteCoach($gymId, $coachId) {
     return {
         type: ActionTypes.DELETE_COACH,

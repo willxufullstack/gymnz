@@ -152,6 +152,18 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             })
 
+        case ActionTypes.UPDATE_COACH:
+            return state
+        case ActionTypes.UPDATE_COACH_SUCCESS:
+            return Object.assign({}, state, {
+                showNewCoach: false,
+                successMsg: '保存成功'
+            })
+        case ActionTypes.UPDATE_COACH_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '保存失败',
+            })
+
         case ActionTypes.PAY_SALARY:
             return Object.assign({}, state, { loading: true })
         case ActionTypes.PAY_SALARY_SUCCESS:

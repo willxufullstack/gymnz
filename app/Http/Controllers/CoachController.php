@@ -116,9 +116,20 @@ class CoachController extends Controller
      * @param Request $request
      * @param $id
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $gymId, $coachId)
     {
-        //
+        $coachItem = Coach::where(['id' => $coachId, 'gym_id' => $gymId, 'status' => 1])->first();
+        if (empty($coachItem)) {
+            return response()->json(array('message' => 'can not find coach_id ' . $coachId), 500);
+        }
+        if ($request->has('hidden')) {
+            $coachItem->hidden = (bool) $request->input('hidden');
+        }
+        $success = $coachItem->save();
+        if ($success) {
+            return response()->json($coachItem, 200);
+        }
+        return response()->json(array('message' => 'fail'), 500);
     }
 
     /**
@@ -147,7 +158,7 @@ class CoachController extends Controller
     public function getCoachInfoForAdmin(User $user): Coach
     {
         $gym = Gym::where("created_by", "=", $user->id)->latest('created_at')->first();
-        if($gym) {
+        if ($gym) {
             $coach = Coach::where('gym_id', $gym->id)
                 ->where('status', 1)
                 ->first();
@@ -170,7 +181,7 @@ class CoachController extends Controller
             $ret = $this->getCoachInfoForAdmin($user);
         }
 
-        if ($ret){
+        if ($ret) {
             return response()->json($ret, 200);
         } else {
             return response()->json(array('message' => 'fail'), 500);

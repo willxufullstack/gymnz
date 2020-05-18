@@ -500,7 +500,7 @@ class Dashboard extends React.Component {
                             md={11}
                             classes={{ grid: 'coach-column' }}
                         >
-                            {this.props.gym.coaches.map(c => {
+                            {this.props.gym.coaches.filter(coach=> !coach.hidden).map(c => {
                                 return (
                                     <GridItem item xs key={c.id}>
                                         <Badge
@@ -536,7 +536,7 @@ class Dashboard extends React.Component {
                             md={11}
                             classes={{ grid: 'coach-column' }}
                         >
-                            {this.props.gym.coaches.map(c =>
+                            {this.props.gym.coaches.filter(coach=> !coach.hidden).map(c =>
                                 this.getCoachDayColumn(c)
                             )}
                         </GridItem>

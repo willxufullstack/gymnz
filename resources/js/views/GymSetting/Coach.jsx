@@ -15,6 +15,7 @@ import classNames from 'classnames'
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import Confirmation from '-components/CustomDialogues/Confirmation'
 import i18N from '../../lang'
+import {Switch} from '@material-ui/core'
 
 const L = i18N('Coach')
 class Coach extends React.Component {
@@ -87,6 +88,17 @@ class Coach extends React.Component {
         )
     }
 
+    onChangeHidden(coach, event) {
+        const newCoach = {
+            hidden: event.target.checked
+        }
+        this.props.actions
+            .updateCoach(this.props.selectedGym.id, coach.id, newCoach)
+            .then(() => {
+                this.props.actions.loadCoach(this.props.selectedGym.id)
+            })
+    }
+
     render() {
         const deleteCoachParams = {
             message:
@@ -144,29 +156,32 @@ class Coach extends React.Component {
                                     <GridItem
                                         key={item.id}
                                         xs={12}
-                                        sm={6}
-                                        md={4}
-                                        lg={4}
+                                        sm={4}
+                                        md={3}
+                                        lg={3}
                                     >
                                         <Card>
-                                            <CardHeader color='rose' icon>
-                                                <CardIcon
-                                                    color='rose'
-                                                    style={{ width: '100%' }}
-                                                >
-                                                    <h4>{item.user.email}</h4>
-                                                </CardIcon>
-                                            </CardHeader>
                                             <CardBody>
                                                 <h3>{item.user.name}</h3>
+                                                <h4>{item.user.email}</h4>
+                                                <p>隐藏<span style={{float:'right', position: 'relative', top: -8}}><Switch
+                                                    checked={!!item.hidden}
+                                                    onChange={(e) => this.onChangeHidden(item, e)}
+                                                    name="checkedA"
+                                                    color="primary"
+                                                    inputProps={{
+                                                        'aria-label':
+                                                            'secondary checkbox'
+                                                    }}
+                                                /></span></p>
                                             </CardBody>
                                             <CardFooter
                                                 stats
                                                 style={{ marginTop: 0 }}
                                             >
                                                 <Button
-                                                    size='sm'
-                                                    color='transparentGray'
+                                                    size="sm"
+                                                    color="transparentGray"
                                                     onClick={this.showDeleteCoachConfirmation(
                                                         item
                                                     )}
@@ -174,8 +189,8 @@ class Coach extends React.Component {
                                                     {L.delete}
                                                 </Button>
                                                 <Button
-                                                    size='sm'
-                                                    color='transparentPrimary'
+                                                    size="sm"
+                                                    color="transparentPrimary"
                                                     onClick={this.showResetPasswordConfirmation(
                                                         item
                                                     )}
@@ -189,10 +204,10 @@ class Coach extends React.Component {
                             })}
                             {/*here add new coach*/}
                             <Button
-                                color='transparentGray'
+                                color="transparentGray"
                                 justIcon
                                 round
-                                className='new-coach-btn'
+                                className="new-coach-btn"
                                 onClick={this.showNewCoach}
                             >
                                 <Add />
