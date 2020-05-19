@@ -48,6 +48,7 @@ class BonusListener
         $order->customer_id = $schedule->customer_id;
         $order->gym_id = $schedule->gym_id;
         $order->coach_id = $schedule->coach_id;
+        $order->source = '赠送';
         // calcuate expiry
         $order->expiry = Carbon::createFromFormat('Y-m-d', $schedule->date)->addMonths(120);
         $order->created_at = Carbon::createFromFormat('Y-m-d', $schedule->date)->toDateTimeString();

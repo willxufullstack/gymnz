@@ -163,6 +163,17 @@ class Customer extends React.Component {
             },
             inputFields: [
                 {
+                    name: 'source',
+                    label: '来源',
+                    value: order.source,
+                    options: [{ value: '团购', label: '团购' },
+                    { value: '介绍', label: '介绍' },
+                    { value: '续课', label: '续课' },
+                    { value: '赠送', label: '赠送' },
+                    { value: '其他', label: '其他' },
+                    { value: '未记录', label: '未记录' }]
+                },
+                {
                     name: 'price',
                     label: '金额',
                     type: 'number',
@@ -196,7 +207,7 @@ class Customer extends React.Component {
                     type: 'string',
                     placeholder: order.expiry + '',
                     value: order.expiry
-                }
+                },
             ]
         }
 
@@ -303,6 +314,7 @@ class Customer extends React.Component {
         }
         let header = [
             '订单号',
+            '来源',
             L.unitPrice + '/' + L.price,
             L.bookedTotal,
             L.coach,
@@ -348,6 +360,7 @@ class Customer extends React.Component {
             )
             return [
                 '#' + r.id,
+                r.source ? r.source : '未记录',
                 (r.price / r.course_amount).toFixed(0) + '/' + r.price,
                 r.booked_amount + ' / ' + r.course_amount,
                 r.coach.user.name,

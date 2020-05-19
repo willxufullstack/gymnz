@@ -260,6 +260,7 @@ class Dashboard extends React.Component {
                         { value: '团购', label: '团购' },
                         { value: '介绍', label: '介绍' },
                         { value: '续课', label: '续课' },
+                        { value: '赠送', label: '赠送' },
                         { value: '其他', label: '其他' }
                     ]
                 },

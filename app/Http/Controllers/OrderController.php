@@ -165,6 +165,9 @@ class OrderController extends Controller
         if ($request->has('duration')) {
             $order->duration = $request->input('duration');
         }
+        if ($request->has('source')) {
+            $order->source = $request->input('source');
+        }
         $order->save();
         $order->updateAccounting();
         return response()->json($order, 200);
