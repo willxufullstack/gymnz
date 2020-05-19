@@ -254,6 +254,16 @@ class Dashboard extends React.Component {
                     })
                 },
                 {
+                    name: 'source',
+                    label: '来源',
+                    options: [
+                        { value: '团购', label: '团购' },
+                        { value: '介绍', label: '介绍' },
+                        { value: '续课', label: '续课' },
+                        { value: '其他', label: '其他' }
+                    ]
+                },
+                {
                     name: 'customer_phone',
                     label: '客户',
                     type: 'customer',
@@ -500,23 +510,25 @@ class Dashboard extends React.Component {
                             md={11}
                             classes={{ grid: 'coach-column' }}
                         >
-                            {this.props.gym.coaches.filter(coach=> !coach.hidden).map(c => {
-                                return (
-                                    <GridItem item xs key={c.id}>
-                                        <Badge
-                                            className="coach-name"
-                                            color="secondary"
-                                            badgeContent={
-                                                this.props.gym.schedules.filter(
-                                                    s => s.coach.id === c.id
-                                                ).length
-                                            }
-                                        >
-                                            {c.user.name}
-                                        </Badge>
-                                    </GridItem>
-                                )
-                            })}
+                            {this.props.gym.coaches
+                                .filter(coach => !coach.hidden)
+                                .map(c => {
+                                    return (
+                                        <GridItem item xs key={c.id}>
+                                            <Badge
+                                                className="coach-name"
+                                                color="secondary"
+                                                badgeContent={
+                                                    this.props.gym.schedules.filter(
+                                                        s => s.coach.id === c.id
+                                                    ).length
+                                                }
+                                            >
+                                                {c.user.name}
+                                            </Badge>
+                                        </GridItem>
+                                    )
+                                })}
                         </GridItem>
                     </GridContainer>
                 </Paper>
@@ -536,9 +548,9 @@ class Dashboard extends React.Component {
                             md={11}
                             classes={{ grid: 'coach-column' }}
                         >
-                            {this.props.gym.coaches.filter(coach=> !coach.hidden).map(c =>
-                                this.getCoachDayColumn(c)
-                            )}
+                            {this.props.gym.coaches
+                                .filter(coach => !coach.hidden)
+                                .map(c => this.getCoachDayColumn(c))}
                         </GridItem>
                     </GridContainer>
                 </Paper>

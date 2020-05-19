@@ -94,6 +94,7 @@ class OrderController extends Controller
         $order->course_amount = $request->input('amount');
         $order->duration = $request->input('duration');
         $order->images = json_encode($request->input('images', []));
+        $order->source = $request->input('source', null);
         // calcuate expiry
         $order->expiry = Carbon::now()->addMonths($order->duration);
         // 3. map user
