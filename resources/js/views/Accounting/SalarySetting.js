@@ -1,20 +1,13 @@
 import React from 'react'
-import MaterialTable from 'material-table'
 import i18N from '../../lang'
+import SalarySettingItem from './SalarySettingItem'
+import { Grid } from '@material-ui/core'
+import withStyles from '@material-ui/core/styles/withStyles'
 
 const L = i18N('SalarySetting')
 const styles = {
-    datePicker: {
-        width: 62,
-        position: 'relative',
-        top: 5,
-        marginRight: 200
-    },
-    actionBtn: {
-        float: 'right'
-    },
-    search: {
-        borderBottomColor: '#9c27b0'
+    item: {
+        padding: '4px 8px'
     }
 }
 
@@ -23,52 +16,35 @@ class SalarySetting extends React.Component {
         super(props)
     }
 
-    getTable = () => {
-        const columns = [
-            { title: L.name, field: 'coach.user.name', editable: 'never' },
-            { title: L.base, field: 'base', type: 'numeric' },
-            { title: L.courseFixed, field: 'course_fixed', type: 'numeric' },
-            { title: L.courseFree, field: 'course_free', type: 'numeric' },
-            { title: L.coursePercent, field: 'course_percentage', type: 'numeric' },
-            { title: L.salePercent, field: 'sale_percentage', type: 'numeric' },
-            { title: L.tax, field: 'tax', type: 'numeric' }
-        ]
-        const data = this.props.gym.salarySettings
-        return (
-            <div>
-                <MaterialTable
-                    title={L.salarySetting}
-                    columns={columns}
-                    data={data}
-                    editable={{
-                        onRowUpdate: (newData, oldData) =>
-                            new Promise((resolve, reject) => {
-                                // call update
-                                // WARNING: https://github.com/mbrn/material-table/issues/615
-                                this.props.actions
-                                    .updateGymSalarySetting(
-                                        this.props.selectedGym.id,
-                                        newData
-                                    )
-                                    .then(resolve)
-                            })
-                    }}
-                    options={{
-                        search: false,
-                        paging: false
-                    }}
-                />
-            </div>
-        )
-    }
-
     componentWillMount() {
         this.props.actions.loadGymSalarySetting(this.props.selectedGym.id)
     }
 
+    onSave = (data) => {
+        this.props.actions.updateGymSalarySetting(
+            this.props.selectedGym.id,
+            data
+        )
+    }
+
     render() {
-        return <React.Fragment>{this.getTable()}</React.Fragment>
+        const data = this.props.gym.salarySettings
+        const { classes } = this.props
+        return (
+            <Grid container spacing={2}>
+                {data.map(row => (
+                    <Grid
+                        key={row.coach.user.email}
+                        className={classes.item}
+                        item
+                        xs={4}
+                    >
+                        <SalarySettingItem data={row} onSave={this.onSave} />
+                    </Grid>
+                ))}
+            </Grid>
+        )
     }
 }
 
-export default SalarySetting
+export default withStyles(styles)(SalarySetting)

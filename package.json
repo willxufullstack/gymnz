@@ -19,6 +19,7 @@
     "babel-preset-expo": "^5.1.1",
     "chartist": "0.10.1",
     "classnames": "^2.2.6",
+    "color-hash": "^1.0.3",
     "dayjs": "^1.8.15",
     "eslint-config-airbnb": "^17.1.0",
     "history": "4.7.2",

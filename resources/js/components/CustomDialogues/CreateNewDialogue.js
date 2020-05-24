@@ -64,20 +64,23 @@ class CreateNewDialogue extends React.Component {
         this.state = data
     }
 
-    cancel = () => {
+    cancel = (e) => {
         this.props.onCancel()
+        e.stopPropagation()
     }
 
-    save = () => {
+    save = (e) => {
+        e.stopPropagation()
         let data = {}
         Object.keys(this.state).forEach(k => {
-            if (this.state[k]) {
+            if (this.state[k] && !k.startsWith('__')) {
                 data[k] = this.state[k]
                 if (data[k].label) {
                     data[k] = data[k].value
                 }
             }
         })
+        this.setState({__show: false})
         this.props.onSave(data)
     }
 
@@ -323,7 +326,7 @@ class CreateNewDialogue extends React.Component {
         return (
             <Dialog
                 fullWidth={true}
-                open={true}
+                open={this.props.open === undefined ? true : this.props.open}
                 onClose={this.cancel}
                 aria-labelledby="form-dialog-title"
             >
