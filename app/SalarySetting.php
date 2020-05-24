@@ -8,7 +8,7 @@ use App\SalaryReceipt;
 class SalarySetting extends Model
 {
     protected $fillable = [
-        'created_by', 'base', 'course_free', 'course_fixed', 'course_percentage', 'sale_percentage', 'tax', 'gym_id', 'coach_id'
+        'created_by', 'base', 'course_free', 'course_trial', 'course_fixed', 'course_percentage', 'sale_percentage', 'tax', 'gym_id', 'coach_id'
     ];
 
     public function gym()
