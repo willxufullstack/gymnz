@@ -125,6 +125,7 @@ class SalarySettingItem extends React.Component {
         const options = {
             base: L.base,
             course_fixed: L.courseFixed,
+            course_trial: '课提(体验课)',
             course_free: L.courseFree,
             course_percentage: L.coursePercent,
             sale_percentage: L.salePercent,

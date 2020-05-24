@@ -39,6 +39,8 @@ class SalaryReceipt extends Model
 
         $this->base = $setting->base;
         $this->course_fixed = $setting->course_fixed;
+        $this->course_trial = $setting->course_trial;
+        $this->course_free = $setting->course_free;
         $this->course_percentage = $setting->course_percentage;
         $this->sale_percentage = $setting->sale_percentage;
         $this->tax = $setting->tax;
@@ -116,7 +118,8 @@ class SalaryReceipt extends Model
             ->get();
 
         $moneyByCoursePercentage = 0;
-        // get percentage by price
+        // !!!get percentage by price
+        // SPECIAL CASES!!!!!
         if ($this->course_percentage) {
             foreach ($query as $s) {
                 $money = 120;
@@ -164,6 +167,7 @@ class SalaryReceipt extends Model
         $this->total = $this->base
             + $normalCourseCount * $this->course_fixed
             + $freeCourseCount * $this->course_free
+            + $trialCourseCount * $this->course_trial
             + $this->adjustment
             + $moneyByCoursePercentage
             + $moneyByOrderPercentage

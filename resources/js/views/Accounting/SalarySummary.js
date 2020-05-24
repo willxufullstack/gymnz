@@ -93,17 +93,6 @@ class SalarySummary extends React.Component {
                 }
             },
             {
-                title: L.amount, field: 'total', editable: 'never',
-                cellStyle: {
-                    width: 100,
-                    maxWidth: 100
-                },
-                headerStyle: {
-                    width: 80,
-                    maxWidth: 80
-                }
-            },
-            {
                 title: L.baseTax, field: 'tax', editable: 'never', cellStyle: {
                     width: 160,
                     maxWidth: 160
@@ -115,13 +104,24 @@ class SalarySummary extends React.Component {
                 render: rowData => `${rowData.base} - ${rowData.tax}`
             },
             {
-                title: L.course,
+                title: '课提' + '(正常 + 赠课 + 体验课)',
                 field: 'course_count',
-                 editable: 'never',
-                render: rowData => `${rowData.course_fixed} * ${rowData.course_count - rowData.free_course_count} + ${rowData.course_free} * ${rowData.free_course_count}`
+                editable: 'never',
+                render: rowData => `${rowData.course_fixed}*${rowData.course_count - rowData.free_course_count - rowData.trial_course_count} + ${rowData.course_free}*${rowData.free_course_count} + ${rowData.course_trial}*${rowData.trial_course_count}`
             },
             { title: L.adjustment, field: 'adjustment' },
             { title: L.comments, field: 'adjustment_reason' },
+            {
+                title: '合计', field: 'total', editable: 'never',
+                cellStyle: {
+                    width: 100,
+                    maxWidth: 100
+                },
+                headerStyle: {
+                    width: 80,
+                    maxWidth: 80
+                }
+            },
             { title: '', editable: 'never', render: rowData => rowData.status === 2 ? <Success><Done /></Success> : <Button onClick={() => this.tapPay(rowData)} color='transparentPrimary'><Pay />{L.pay}</Button> }
         ];
         const data = this.props.gym.salaryReceipts;
