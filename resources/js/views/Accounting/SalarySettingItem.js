@@ -11,6 +11,7 @@ import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import CreateIcon from '@material-ui/icons/Create'
 import { useState, useEffect } from 'react'
 import i18N from '../../lang'
+import SalaryTierSettingItem from './SalaryTierSettingItem'
 
 const L = i18N('SalarySetting')
 
@@ -24,19 +25,19 @@ const styles = {
         padding: '6px 8px',
         color: '#333',
         '&:hover': {
-            background: '#ececec',
+            background: '#F3F3F3',
             borderRadius: 4
         }
     },
     option: {
         flex: 1,
-        fontWeight: '900',
-        textAlign: 'right'
+        fontWeight: '900'
     },
     value: {
         flex: 1,
         textAlign: 'left',
-        paddingLeft: '18%'
+        paddingLeft: '18%',
+        fontWeight: '500'
     },
     editIcon: {
         fontSize: 14,
@@ -119,6 +120,41 @@ class SalarySettingItem extends React.Component {
         )
     }
 
+    get simpleOptions() {
+        return {
+            base: L.base,
+            course_trial: '课提(体验课)',
+            course_free: L.courseFree,
+            course_percentage: L.coursePercent,
+            sale_percentage: L.salePercent,
+            tax: L.tax
+        }
+    }
+
+    courseFixedRow = () => {
+        let setting = this.props.data.course_fixed_configuration
+        if (!setting || !setting.mode) {
+            setting = {
+                mode: 'unified',
+                rows: [
+                    {
+                        amount: 0,
+                        amountUnit: '节',
+                        value: this.props.data.course_fixed,
+                        valueUnit: '元'
+                    }
+                ]
+            }
+        }
+
+        const save = (updated) => {
+            const newSetting = { ...this.props.data, course_fixed_configuration : JSON.stringify(updated) }
+            this.props.onSave(newSetting)
+        }
+
+        return <SalaryTierSettingItem setting={setting} label={'课提'} onSaveSetting={save} />
+    }
+
     render() {
         const { data, classes } = this.props
         const color = new ColorHash().hex(data.coach.user.name)
@@ -139,14 +175,14 @@ class SalarySettingItem extends React.Component {
                             style={{ backgroundColor: color }}
                             aria-label="recipe"
                         >
-                            {data.coach.user.name.substr(0,1)}
+                            {data.coach.user.name.substr(0, 1)}
                         </Avatar>
                     }
                     title={data.coach.user.name}
                     subheader={data.coach.user.email}
                 />
                 <CardContent className={classes.cardContent}>
-                    {Object.keys(options).map(opt => {
+                    {Object.keys(this.simpleOptions).map(opt => {
                         return (
                             <this.SimpleRow
                                 key={opt}
@@ -160,6 +196,7 @@ class SalarySettingItem extends React.Component {
                             />
                         )
                     })}
+                    <this.courseFixedRow />
                 </CardContent>
             </Card>
         )
