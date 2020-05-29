@@ -121,7 +121,7 @@ class SalarySummary extends React.Component {
                 render: rowData => `${rowData.base} - ${rowData.tax}`
             },
             {
-                title: '销售(正课)',
+                title: '销售',
                 field: 'sale',
                 editable: 'never'
             },

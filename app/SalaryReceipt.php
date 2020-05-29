@@ -192,15 +192,13 @@ class SalaryReceipt extends Model
         }
 
         $orderPrice = 0;
-        if ($this->sale_percentage) {
-            $orders = Order::where('coach_id', $this->coach_id)
-                ->where('gym_id', $this->gym_id)
-                ->where('created_at', '>=', date('Y-m-d H:i:s', $start))
-                ->where('created_at', '<=', date('Y-m-d H:i:s', $end))
-                ->get();
-            foreach ($orders as $order) {
-                $orderPrice += $order->price;
-            }
+        $orders = Order::where('coach_id', $this->coach_id)
+            ->where('gym_id', $this->gym_id)
+            ->where('created_at', '>=', date('Y-m-d H:i:s', $start))
+            ->where('created_at', '<=', date('Y-m-d H:i:s', $end))
+            ->get();
+        foreach ($orders as $order) {
+            $orderPrice += $order->price;
         }
 
         // handle free course and normal course with different setting
