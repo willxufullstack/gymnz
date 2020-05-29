@@ -28,6 +28,8 @@ class SalarySetting extends Model
         $receipt->course_fixed = $this->course_fixed;
         $receipt->course_percentage = $this->course_percentage;
         $receipt->sale_percentage = $this->sale_percentage;
+        $receipt->course_fixed_configuration = $this->course_fixed_configuration;
+        $receipt->sale_configuration = $this->sale_configuration;
         $receipt->tax = $this->tax;
         $receipt->gym_id = $this->gym_id;
         $receipt->coach_id = $this->coach_id;

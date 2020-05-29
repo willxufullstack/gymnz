@@ -33,7 +33,7 @@ class SalaryReceipt extends Model
             'coach_id' => $this->coach_id,
             'gym_id' => $this->gym_id
         ])->first();
-        if(empty($setting)) {
+        if (empty($setting)) {
             return;
         }
 
@@ -43,7 +43,67 @@ class SalaryReceipt extends Model
         $this->course_free = $setting->course_free;
         $this->course_percentage = $setting->course_percentage;
         $this->sale_percentage = $setting->sale_percentage;
+        $this->course_fixed_configuration = $setting->course_fixed_configuration;
+        $this->sale_configuration = $setting->sale_configuration;
         $this->tax = $setting->tax;
+    }
+
+    private static function calcByTier(int $courseCount, array $configuration): int
+    {
+        $ret = 0;
+        $tierValue = 0;
+        foreach ($configuration['rows'] as $row) {
+            if ($courseCount > $row['amount']) {
+                $ret += ($courseCount - $row['amount']) * ($row['value'] - $tierValue);
+                $tierValue = $row['value'];
+            }
+        }
+
+        return $ret;
+    }
+
+    private static function calcByUnified(int $courseCount, array $configuration): int
+    {
+        $ret = 0;
+        foreach ($configuration['rows'] as $row) {
+            if ($courseCount > $row['amount']) {
+                $ret = $courseCount * $row['value'];
+            }
+        }
+
+        return $ret;
+    }
+
+    private function calcCourseSalaryByConfiguration(int $courseCount): int
+    {
+        if (empty($this->course_fixed_configuration)) {
+            return $courseCount * $this->course_fixed;
+        }
+
+        $setting = json_decode($this->course_fixed_configuratio, true);
+        if ($setting['mode'] === 'tier') {
+            return self::calcByTier($courseCount, $setting);
+        }
+        if ($setting['mode'] === 'unified') {
+            return self::calcByUnified($courseCount, $setting);
+        }
+        return 0;
+    }
+
+    private function calcSaleSalaryByConfiguration(int $orderPrice): int
+    {
+        if (empty($this->sale_configuration)) {
+            return $orderPrice * $this->sale_percentage / 100;
+        }
+
+        $setting = json_decode($this->sale_configuration, true);
+        if ($setting['mode'] === 'tier') {
+            return self::calcByTier($orderPrice, $setting) / 100;
+        }
+        if ($setting['mode'] === 'unified') {
+            return self::calcByUnified($orderPrice, $setting) / 100;
+        }
+        return 0;
     }
 
     public function updateKPI()
@@ -131,7 +191,7 @@ class SalaryReceipt extends Model
             }
         }
 
-        $moneyByOrderPercentage = 0;
+        $orderPrice = 0;
         if ($this->sale_percentage) {
             $orders = Order::where('coach_id', $this->coach_id)
                 ->where('gym_id', $this->gym_id)
@@ -139,23 +199,22 @@ class SalaryReceipt extends Model
                 ->where('created_at', '<=', date('Y-m-d H:i:s', $end))
                 ->get();
             foreach ($orders as $order) {
-                $moneyByOrderPercentage += $order->price;
+                $orderPrice += $order->price;
             }
-            $moneyByOrderPercentage = $moneyByOrderPercentage * $this->sale_percentage / 100;
         }
 
         // handle free course and normal course with different setting
         $normalCourseCount = $freeCourseCount = $trialCourseCount = 0;
-        foreach($query as $schedule) {
-            if($schedule->order_id === 0){
-                $trialCourseCount ++;
+        foreach ($query as $schedule) {
+            if ($schedule->order_id === 0) {
+                $trialCourseCount++;
                 continue;
             }
-            if($schedule->getPrice() === 0) {
-                $freeCourseCount ++;
+            if ($schedule->getPrice() === 0) {
+                $freeCourseCount++;
                 continue;
             }
-            $normalCourseCount ++;
+            $normalCourseCount++;
         }
 
         // update total
@@ -164,25 +223,28 @@ class SalaryReceipt extends Model
         $this->course_count = $count;
         $this->trial_course_count = $trialCourseCount;
         $this->free_course_count = $freeCourseCount;
+        $this->sale = $orderPrice;
         $this->total = $this->base
-            + $normalCourseCount * $this->course_fixed
+            + $this->calcCourseSalaryByConfiguration($normalCourseCount)
             + $freeCourseCount * $this->course_free
             + $trialCourseCount * $this->course_trial
             + $this->adjustment
             + $moneyByCoursePercentage
-            + $moneyByOrderPercentage
+            + $this->calcSaleSalaryByConfiguration($orderPrice);
             - $this->tax;
     }
 
-    public function transform() {
+    public function transform()
+    {
         $formatted = [];
         $map = [
             'base' => '底薪',
-            'course_fixed' => '课程薪资(元）',
+            // 'course_fixed' => '课程薪资(元）',
             'course_percentage' => '课程薪资(%）',
             'course_free' => '赠课薪资',
-            'sale_percentage' => '销售提成(%）',
+            // 'sale_percentage' => '销售提成(%）',
 
+            'sale' => '销售',
             'course_count' => '正常课时',
             'free_course_count' => '赠课',
             'trial_course_count' => '体验课',
@@ -194,8 +256,8 @@ class SalaryReceipt extends Model
             'total' => '合计'
         ];
         foreach ($map as $k => $v) {
-            if($this->{$k}){
-                $formatted[]= [
+            if ($this->{$k}) {
+                $formatted[] = [
                     'option' => $v,
                     'value' => $this->{$k}
                 ];
