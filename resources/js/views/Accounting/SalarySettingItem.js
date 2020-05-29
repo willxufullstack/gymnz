@@ -126,13 +126,36 @@ class SalarySettingItem extends React.Component {
             course_trial: '课提(体验课)',
             course_free: L.courseFree,
             course_percentage: L.coursePercent,
-            sale_percentage: L.salePercent,
             tax: L.tax
         }
     }
 
+    saleRow = () => {
+        let setting = JSON.parse(this.props.data.sale_configuration)
+        if (!setting || !setting.mode) {
+            setting = {
+                mode: 'unified',
+                rows: [
+                    {
+                        amount: 0,
+                        amountUnit: '元',
+                        value: this.props.data.sale_percentage,
+                        valueUnit: '%'
+                    }
+                ]
+            }
+        }
+
+        const save = (updated) => {
+            const newSetting = { ...this.props.data, sale_configuration : JSON.stringify(updated) }
+            this.props.onSave(newSetting)
+        }
+
+        return <SalaryTierSettingItem setting={setting} label={'销提'} onSaveSetting={save} />
+    }
+
     courseFixedRow = () => {
-        let setting = this.props.data.course_fixed_configuration
+        let setting = JSON.parse(this.props.data.course_fixed_configuration)
         if (!setting || !setting.mode) {
             setting = {
                 mode: 'unified',
@@ -164,7 +187,6 @@ class SalarySettingItem extends React.Component {
             course_trial: '课提(体验课)',
             course_free: L.courseFree,
             course_percentage: L.coursePercent,
-            sale_percentage: L.salePercent,
             tax: L.tax
         }
         return (
@@ -197,6 +219,7 @@ class SalarySettingItem extends React.Component {
                         )
                     })}
                     <this.courseFixedRow />
+                    <this.saleRow />
                 </CardContent>
             </Card>
         )
