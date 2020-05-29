@@ -57,6 +57,15 @@ class Customers extends React.Component {
                         name: 'email',
                         label: '电话',
                         value: this.state.editProfileDialogue.email
+                    },
+                    {
+                        name: 'sex',
+                        label: '性别',
+                        options: [
+                            { value: 0, label: '女' },
+                            { value: 1, label: '男' }
+                        ],
+                        value: this.state.editProfileDialogue.sex
                     }
                 ]}
                 dialogue={true}
