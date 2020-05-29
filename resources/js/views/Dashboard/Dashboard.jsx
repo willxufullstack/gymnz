@@ -297,12 +297,30 @@ class Dashboard extends React.Component {
         }
         return <CreateNewDialogue {...fields} />
     }
+    getWorkingHours = () => {
+        return {
+            min:
+                this.props &&
+                this.props.setting &&
+                this.props.setting.workingHours &&
+                this.props.setting.workingHours.min
+                    ? this.props.setting.workingHours.min
+                    : 28,
+            max:
+            this.props.setting &&
+            this.props.setting.workingHours &&
+            this.props.setting.workingHours.max
+                    ? this.props.setting.workingHours.max
+                    : 96
+        }
+    }
     getTimeAxisColumn = () => {
+        const workhours = this.getWorkingHours()
         return (
             <GridItem xs={1} sm={1} md={1} classes={{ grid: 'time-column' }}>
                 <List>
                     {utils
-                        .getTimeRange(config.startTime, config.endTime - 1)
+                        .getTimeRange(workhours.min, workhours.max+1)
                         .map(t => (
                             <ListItem className="time-slot" key={t}>
                                 {t[4] === '5' ? ' ' : t}
@@ -409,10 +427,12 @@ class Dashboard extends React.Component {
             sealed[s.end] = '-end' + suffix
             // sealed[s.end - 1] = '-end';
         })
+
+        const workhours = this.getWorkingHours()
         return (
             <GridItem item xs key={c.id}>
                 <List>
-                    {utils.range(config.startTime, config.endTime).map(t => {
+                    {utils.range(workhours.min, workhours.max + 1).map(t => {
                         let borderCls = 'none'
                         let timeStr = utils.getTimeStr(t)
                         let s = scheduleList[t]
@@ -665,6 +685,7 @@ Dashboard.propTypes = {
 const mapStoreToProps = store => {
     return {
         selectedGym: store.setting.selectedGym,
+        setting: store.setting.selectedGym.setting,
         gym: store.gym
     }
 }
