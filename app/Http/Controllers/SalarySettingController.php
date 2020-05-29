@@ -15,9 +15,16 @@ class SalarySettingController extends Controller
      */
     public function index(Request $request, $gymId)
     {
-        return SalarySetting::with('coach.user')
+        $ret = [];
+        $all = SalarySetting::with('coach.user')
             ->where('gym_id', $gymId)
             ->get();
+        foreach ($all as $row) {
+            if ($row->coach->status === 1) {
+                $ret[] = $row;
+            }
+        }
+        return $ret;
     }
 
     /**

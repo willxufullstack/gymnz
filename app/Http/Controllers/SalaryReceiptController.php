@@ -32,10 +32,14 @@ class SalaryReceiptController extends Controller
         $receipts = $query->get();
 
         if (count($receipts) == 0) {
-
             // 1. inital from salary setting
-            $settings = SalarySetting::where('gym_id', $gymId)->get();
+            $settings = SalarySetting::with('coach')
+                ->where('gym_id', $gymId)
+                ->get();
             foreach ($settings as $setting) {
+                if ($setting->coach->status !== 1) {
+                    continue;
+                }
                 $receipt = $setting->toSalaryReceipt();
                 $receipt->month = $request->input('month');
                 $receipt->created_by = Auth::User()->id;
