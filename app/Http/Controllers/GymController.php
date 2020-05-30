@@ -311,6 +311,7 @@ class GymController extends Controller
         $customer = User::find($customerId);
         $customer->name = $request->input('name');
         $customer->email = $request->input('email');
+        $customer->sex = $request->input('sex');
         $customer->save();
         return response()->json($customer);
     }
