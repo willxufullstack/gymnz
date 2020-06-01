@@ -307,6 +307,7 @@ class ScheduleController extends Controller
 
         // clear cache 'latest_schedule'
         User::setLatestScheduleCache($schedule->customer_id);
+        User::clearLatestMeasureDate($schedule->customer_id);
         return response()->json($schedule, 201);
     }
 

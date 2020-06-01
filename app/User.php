@@ -201,4 +201,10 @@ class User extends Authenticatable implements JWTSubject
         }
         return $ret;
     }
+
+    public static function clearLatestMeasureDate($userId)
+    {
+        $key = self::LATEST_MEASURE_PREFIX . $userId;
+        Redis::del($key);
+    }
 }
