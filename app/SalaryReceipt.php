@@ -76,7 +76,7 @@ class SalaryReceipt extends Model
 
     private function calcCourseSalaryByConfiguration(int $courseCount): int
     {
-        if (empty($this->course_fixed_configuration)) {
+        if (empty($this->course_fixed_configuration) || $this->course_fixed_configuration === 'null') {
             return $courseCount * $this->course_fixed;
         }
 
@@ -92,7 +92,7 @@ class SalaryReceipt extends Model
 
     private function calcSaleSalaryByConfiguration(int $orderPrice): int
     {
-        if (empty($this->sale_configuration)) {
+        if (empty($this->sale_configuration) || $this->course_fixed_configuration === 'null') {
             return $orderPrice * $this->sale_percentage / 100;
         }
 
