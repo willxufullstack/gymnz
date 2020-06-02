@@ -273,7 +273,7 @@ class BodyDataController extends Controller
             ],
             [
                 'option' => '腰围',
-                'unit' => 'kg',
+                'unit' => 'cm',
                 'category' => 'basic'
             ],
             [
