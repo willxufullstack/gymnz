@@ -70,6 +70,15 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    public function getAvatarAttribute($avatar)
+    {
+        if(empty($avatar)){
+            $firstLetter = mb_substr($this->name, 0, 1);
+            return "https://ui-avatars.com/api/?background=4fd2c2&color=fff&name=$firstLetter";
+        }
+        return $avatar;
+    }
+
 
     public function getCourseBalance($gymId)
     {
