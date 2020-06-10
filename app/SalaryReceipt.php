@@ -228,7 +228,7 @@ class SalaryReceipt extends Model
             + $trialCourseCount * $this->course_trial
             + $this->adjustment
             + $moneyByCoursePercentage
-            + $this->calcSaleSalaryByConfiguration($orderPrice);
+            + $this->calcSaleSalaryByConfiguration($orderPrice)
             - $this->tax;
     }
 
