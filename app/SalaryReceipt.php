@@ -243,7 +243,7 @@ class SalaryReceipt extends Model
             // 'sale_percentage' => '销售提成(%）',
 
             'sale' => '销售',
-            'course_count' => '正常课时',
+            'course_count' => '所有课时(含赠课/体验课)',
             'free_course_count' => '赠课',
             'trial_course_count' => '体验课',
 
