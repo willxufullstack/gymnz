@@ -183,6 +183,9 @@ class SalaryReceipt extends Model
         if ($this->course_percentage) {
             foreach ($query as $s) {
                 $money = 120;
+                if ($s->order_id === 0) {
+                    continue;
+                }
                 $p = $s->getPrice();
                 if ($p) {
                     $money = $p * $this->course_percentage / 100;
@@ -243,7 +246,7 @@ class SalaryReceipt extends Model
             // 'sale_percentage' => '销售提成(%）',
 
             'sale' => '销售',
-            'course_count' => '所有课时(含赠课/体验课)',
+            'course_count' => '所有课时(含赠/体验)',
             'free_course_count' => '赠课',
             'trial_course_count' => '体验课',
 

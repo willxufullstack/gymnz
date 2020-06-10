@@ -126,7 +126,7 @@ class SalarySummary extends React.Component {
                 editable: 'never'
             },
             {
-                title: '课程(正课)',
+                title: '课程(含体验/赠课)',
                 field: 'course_count',
                 editable: 'never'
             },
