@@ -80,7 +80,7 @@ class SalaryReceipt extends Model
             return $courseCount * $this->course_fixed;
         }
 
-        $setting = json_decode($this->course_fixed_configuratio, true);
+        $setting = json_decode($this->course_fixed_configuration, true);
         if ($setting['mode'] === 'tier') {
             return self::calcByTier($courseCount, $setting);
         }
