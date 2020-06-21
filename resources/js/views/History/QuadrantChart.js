@@ -9,7 +9,7 @@ class QuadrantChart extends React.Component {
             bottom: this.props.margin,
             top: this.props.margin
         }
-        const top = this.props.width/2
+        const top = this.props.height/2
         const left = top - this.props.margin/2
         const legends = this.props.legends ? this.props.legends : []
         const sizeRange = this.props.sizeRange ? this.props.sizeRange: [4, 14]
@@ -17,7 +17,7 @@ class QuadrantChart extends React.Component {
         const colorRange = this.props.colorRange ? this.props.colorRange : ['#8e24aa', '#f48024', '#aaa', '#4fd2c2', '#999', 'red']
         return (<div style={{position: 'relative', top: -16}}>
                 <div style={{position: 'absolute', top: 16, margin: 'auto',textAlign: 'center', color:'#333', fontSize:'700', width: this.props.width + this.props.margin}}>{this.props.title}</div>
-                <XYPlot colorRange={colorRange} margin={MARGIN} xDomain={this.props.xRange} yDomain={this.props.yRange} width={this.props.width + this.props.margin} height={this.props.width}>
+                <XYPlot colorRange={colorRange} margin={MARGIN} xDomain={this.props.xRange} yDomain={this.props.yRange} width={this.props.width + this.props.margin} height={this.props.height}>
                 <XAxis top={top} hideTicks/>
                 <XAxis title={this.props.xTitle} />
                 <YAxis left={left}  hideTicks/>

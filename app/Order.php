@@ -24,6 +24,14 @@ class Order extends Model
         return $this->belongsTo('App\Coach');
     }
 
+    public function getIsFirstOrderAttribute()
+    {
+        return Order::where('gym_id', $this->gym_id)
+            ->where('customer_id', $this->customer_id)
+            ->where('created_at', '<', $this->created_at)
+            ->count() === 0;
+    }
+
     public function formatTimestamp()
     {
         $gym = Gym::find($this->gym_id);

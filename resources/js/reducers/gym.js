@@ -14,6 +14,7 @@ const initState = {
     salarySettings: [],
     salaryReceipts: [],
     dianpingShopList: [],
+    hotmap: {},
     report: {
         orders: [],
         scheduleCountByMonthPerCoach: [],
@@ -28,7 +29,11 @@ const initState = {
             orderPrice: 0
         },
         dianping: [],
-        statistics: []
+        statistics: [],
+
+        monthCourseByCustomerType: {},
+        monthSaleByType: {},
+        monthActiveByType: {}
     },
     customers: [],
     customerPage: {
@@ -80,6 +85,17 @@ const gym = (state = initState, action = NonAction) => {
             return Object.assign({}, state, {
                 errorMsg: 'Load customer list failed, please refresh the page',
                 loading: false
+            })
+
+        case ActionTypes.LOAD_CUSTOMER_HOTMAP:
+            return state
+        case ActionTypes.LOAD_CUSTOMER_HOTMAP_SUCCESS:
+            return Object.assign({}, state, {
+                hotmap: action.payload.data
+            })
+        case ActionTypes.LOAD_CUSTOMER_HOTMAP_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: 'Load customer list failed, please refresh the page'
             })
 
         case ActionTypes.LOAD_COACH:
@@ -161,7 +177,7 @@ const gym = (state = initState, action = NonAction) => {
             })
         case ActionTypes.UPDATE_COACH_FAIL:
             return Object.assign({}, state, {
-                errorMsg: '保存失败',
+                errorMsg: '保存失败'
             })
 
         case ActionTypes.PAY_SALARY:
@@ -794,16 +810,64 @@ const gym = (state = initState, action = NonAction) => {
                 loading: true
             })
         case ActionTypes.AUTH_DIANPING_SUCCESS:
-            return {
+            return Object.assign({}, state, {
                 loading: false,
                 dianpingShopList: action.payload.data
-            }
+            })
 
         case ActionTypes.AUTH_DIANPING_FAIL:
-            return {
+            return Object.assign({}, state, {
                 loading: false,
                 errorMsg: '查询店铺列表失败'
+            })
+
+        case ActionTypes.LOAD_MONTH_COURSE_BY_CUSTOMER_TYPE:
+            return state
+        case ActionTypes.LOAD_MONTH_COURSE_BY_CUSTOMER_TYPE_SUCCESS: {
+            let report = {
+                ...state.report,
+                monthCourseByCustomerType: action.payload.data
             }
+            return Object.assign({}, state, {
+                report
+            })
+        }
+        case ActionTypes.LOAD_MONTH_COURSE_BY_CUSTOMER_TYPE_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '加载失败'
+            })
+
+        case ActionTypes.LOAD_MONTH_SALE_BY_TYPE:
+            return state
+        case ActionTypes.LOAD_MONTH_SALE_BY_TYPE_SUCCESS: {
+            let report = {
+                ...state.report,
+                monthSaleByType: action.payload.data
+            }
+            return Object.assign({}, state, {
+                report
+            })
+        }
+        case ActionTypes.LOAD_MONTH_SALE_BY_TYPE_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '加载失败'
+            })
+
+        case ActionTypes.LOAD_MONTH_ACTIVE_BY_TYPE:
+            return state
+        case ActionTypes.LOAD_MONTH_ACTIVE_BY_TYPE_SUCCESS: {
+            let report = {
+                ...state.report,
+                monthActiveByType: action.payload.data
+            }
+            return Object.assign({}, state, {
+                report
+            })
+        }
+        case ActionTypes.LOAD_MONTH_ACTIVE_BY_TYPE_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '加载失败'
+            })
         default:
             return state
     }

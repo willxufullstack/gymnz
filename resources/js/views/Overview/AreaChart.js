@@ -9,17 +9,16 @@ import {
     LineMarkSeries,
     GradientDefs,
     Hint
-  } from 'react-vis'
-
+} from 'react-vis'
 
 export default class AreaChart extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props)
         this.state = {
             current: null
         }
     }
-    getYDomainSet = (data) => {
+    getYDomainSet = data => {
         const valueSet = data.map(d => d.y)
         return utils.getRange(valueSet)
     }
@@ -27,46 +26,84 @@ export default class AreaChart extends React.Component {
         this.props.toggle()
     }
 
-    _onHover = (v) => {
-        this.setState({current: v})
-
+    _onHover = v => {
+        console.log('------')
+        this.setState({ current: v })
     }
-    _onBlur = () => this.setState({current: null})
+    _onBlur = () => {
+        console.log('xxxxx')
+        this.setState({ current: null })
+    }
 
-    render(){
-        const {data, yTitle, xTickers, chartClassName, hintFormat} = this.props
-        const yDomain=this.getYDomainSet(data)
-        return (<XYPlot margin={{right: 30}} width={700} height={200} yDomain={yDomain} className={chartClassName}>
-                    <XAxis tickSize={2} tickFormat={v => xTickers[v]} />
-                    <HorizontalGridLines tickTotal={5} style={{strokeDasharray:"2"}}/>
-                    <YAxis tickSize={2} tickTotal={5} title={yTitle}/>
-                    <GradientDefs>
-                        <linearGradient id="CoolGradient" x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="0%" stopColor="#8e24aa" stopOpacity={0.3}/>
-                        <stop offset="80%" stopColor="#8e24aa" stopOpacity={0.05} />
+    render() {
+        const {
+            data,
+            yTitle,
+            xTickers,
+            chartClassName,
+            hintFormat
+        } = this.props
+        const yDomain = this.getYDomainSet(data)
+        return (
+            <XYPlot
+                margin={{ right: 30 }}
+                width={this.props.width ? this.props.width : 700 }
+                height={this.props.height ? this.props.height : 200}
+                yDomain={yDomain}
+                className={chartClassName}
+            >
+                <XAxis tickSize={2} tickFormat={v => xTickers[v]} />
+                <HorizontalGridLines
+                    tickTotal={5}
+                    style={{ strokeDasharray: '2' }}
+                />
+                <YAxis tickSize={2} tickTotal={5} title={yTitle} />
+                <GradientDefs>
+                    <linearGradient
+                        id="CoolGradient1"
+                        x1="0"
+                        x2="0"
+                        y1="0"
+                        y2="1"
+                    >
+                        <stop
+                            offset="0%"
+                            stopColor="#D0F0EC"
+                            stopOpacity={1}
+                        />
+                        <stop
+                            offset="30%"
+                            stopColor="#D0F0EC"
+                            stopOpacity={0.6}
+                        />
                         <stop offset="100%" stopColor="#fff" stopOpacity={0} />
-                        </linearGradient>
-                    </GradientDefs>
-                    <AreaSeries
-                        color={'url(#CoolGradient)'}
-                        data={data}
-                    />
-                    <LineMarkSeries
-                        lineStyle={{
-                            strokeWidth: '2px',
-                            stroke: '#8e24aa'
-                        }}
-                        markStyle={{
-                            stroke: 'rgba(141,44,168, 0.4)',
-                            strokeWidth: '6px',
-                            fill: '#8e24aa',
-                        }}
-                        onValueMouseOver={this._onHover}
-                        onValueMouseOut={this._onBlur}
-                        data={data}
-                    />
-                    {this.state.current ? <Hint value={this.state.current} format={hintFormat} /> : null}
-                </XYPlot>)
-
+                    </linearGradient>
+                </GradientDefs>
+                <AreaSeries
+                    color={'url(#CoolGradient1)'}
+                    curve={'curveMonotoneX'}
+                    data={data}
+                />
+                <LineMarkSeries
+                    curve={'curveMonotoneX'}
+                    lineStyle={{
+                        strokeWidth: '2px',
+                        stroke: 'rgba(41, 170, 153, 0.6)'
+                    }}
+                    markStyle={{
+                        stroke: 'rgba(41,170,153,0.25)',
+                        strokeWidth: '6px',
+                        fill: '#29AA99',
+                        r: 4
+                    }}
+                    onValueMouseOver={this._onHover}
+                    onValueMouseOut={this._onBlur}
+                    data={data}
+                />
+                {this.state.current ? (
+                    <Hint value={this.state.current} format={hintFormat} />
+                ) : null}
+            </XYPlot>
+        )
     }
 }

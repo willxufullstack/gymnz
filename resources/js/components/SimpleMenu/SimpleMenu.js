@@ -1,20 +1,20 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import React from 'react'
+import Button from '@material-ui/core/Button'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import ClickAwayListener from '@material-ui/core/ClickAwayListener'
 
 function SimpleMenu({ ...props }) {
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = React.useState(null)
 
     function handleClick(event) {
-        setAnchorEl(event.currentTarget);
+        setAnchorEl(event.currentTarget)
     }
 
     function handleClose(item) {
-        return function () {
-            setAnchorEl(null);
-            item && item.onSelect && item.onSelect();
+        return function() {
+            setAnchorEl(null)
+            item && item.onSelect && item.onSelect()
         }
     }
 
@@ -24,25 +24,38 @@ function SimpleMenu({ ...props }) {
                 <div>
                     <Button
                         aria-owns={anchorEl ? 'simple-menu' : undefined}
-                        aria-haspopup='true'
+                        aria-haspopup="true"
                         onClick={handleClick}
                         style={{
-                            fontSize: props.fontSize ? props.fontSize : '12px',
-                            color: props.textColor ? props.textColor : 'white'
+                            fontSize: props.fontSize ? props.fontSize : '14px',
+                            color: props.textColor ? props.textColor : 'white',
+                            padding: 0,
+                            justifyContent: 'flex-start'
                         }}
                     >
                         {props.displayText || ''}
                         {props.icon || ''}
                     </Button>
 
-                    <Menu id="simple-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                        {props.items.map(item => <MenuItem key={item.text}
-                                                           onClick={handleClose(item)}>{item.text}</MenuItem>)}
+                    <Menu
+                        id="simple-menu"
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                    >
+                        {props.items.map(item => (
+                            <MenuItem
+                                key={item.text}
+                                onClick={handleClose(item)}
+                            >
+                                {item.text}
+                            </MenuItem>
+                        ))}
                     </Menu>
                 </div>
             </ClickAwayListener>
         </div>
-    );
+    )
 }
 
-export default SimpleMenu;
+export default SimpleMenu

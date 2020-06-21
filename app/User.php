@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -72,7 +73,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getAvatarAttribute($avatar)
     {
-        if(empty($avatar)){
+        if (empty($avatar)) {
             $firstLetter = mb_substr($this->name, 0, 1);
             return "https://ui-avatars.com/api/?background=4fd2c2&color=fff&name=$firstLetter";
         }
@@ -115,25 +116,16 @@ class User extends Authenticatable implements JWTSubject
         return $query->orderBy('created_at', 'ASC')->first();
     }
 
-    public function getHotMap($date, $durationDays = 7, $gymId = null)
+    /*
+    * build a hot map which marks days with schedule as 1, otherwise 0
+    * eg.
+    *  "110000"  => there are schedules in the first 2 days
+    */
+    public static function schedulesToHotmap($schedules, $endDate, $durationDays)
     {
-        $fromDate = date('Y-m-d', strtotime($date . " -{$durationDays} day"));
-        $query = Schedule::where('customer_id', $this->id)
-            ->where('date', '>', $fromDate)
-            ->where('date', '<=', $date);
-        if ($gymId) {
-            $query->where('gym_id', $gymId);
-        }
-        $schedules = $query->get();
-
-        /*
-         * build a hot map which marks days with schedule as 1, otherwise 0
-         * eg.
-         *  "110000"  => there are schedules in the first 2 days
-         */
         $dateMap = [];
         for ($i = $durationDays - 1; $i >= 0; $i--) {
-            $dateStr = date('Y-m-d', strtotime($date . " -{$i} day"));
+            $dateStr = date('Y-m-d', strtotime($endDate . " -{$i} day"));
             $dateMap[$dateStr] = 0;
         }
 
@@ -141,6 +133,42 @@ class User extends Authenticatable implements JWTSubject
             $dateMap[$schedule->date] = 1;
         }
         return implode('', array_values($dateMap));
+    }
+
+    public static function getUserIdToHotmap($gymId, $endDate, $durationDays = 7)
+    {
+        $fromDate = date('Y-m-d', strtotime($endDate . " -{$durationDays} day"));
+        $query = Schedule::where('date', '>', $fromDate)
+            ->where('date', '<=', $endDate)
+            ->where('gym_id', $gymId);
+
+        $schedules = $query->get();
+        $userIdToSchedules = [];
+        foreach ($schedules as $s) {
+            $userIdToSchedules[$s->customer_id] = array_key_exists($s->customer_id, $userIdToSchedules) ? $userIdToSchedules[$s->customer_id] : [];
+            $userIdToSchedules[$s->customer_id][] = $s;
+        }
+
+        $userIdToHotmap = [];
+        foreach ($userIdToSchedules as $userId => $userSchedules) {
+            $userIdToHotmap[$userId] = self::schedulesToHotmap($userSchedules, $endDate, $durationDays);
+        }
+
+        return $userIdToHotmap;
+    }
+
+    public function getHotMap($endDate, $durationDays = 7, $gymId = null)
+    {
+        $fromDate = date('Y-m-d', strtotime($endDate . " -{$durationDays} day"));
+        $query = Schedule::where('customer_id', $this->id)
+            ->where('date', '>', $fromDate)
+            ->where('date', '<=', $endDate);
+        if ($gymId) {
+            $query->where('gym_id', $gymId);
+        }
+        $schedules = $query->get();
+
+        return self::schedulesToHotmap($schedules, $endDate, $durationDays);
     }
 
     public function getLatestSchedule($status = null, $gymId = null, $coachId = null)
@@ -203,7 +231,7 @@ class User extends Authenticatable implements JWTSubject
             $latest = BodyData::where('user_id', $userId)
                 ->orderBy('date', 'DESC')
                 ->first();
-            if(empty($latest)){
+            if (empty($latest)) {
                 return '';
             }
             Redis::set($key, $latest->date);
@@ -215,5 +243,20 @@ class User extends Authenticatable implements JWTSubject
     {
         $key = self::LATEST_MEASURE_PREFIX . $userId;
         Redis::del($key);
+    }
+
+    public function isNew(Carbon $pivDate)
+    {
+        $pivDate->setDay(1)->addMonth();
+
+        $pivDate->subMonth();
+        return $this->created_at->gte($pivDate);
+    }
+
+    public function isRecent(Carbon $pivDate)
+    {
+        // in 6 month
+        $pivDate->setDay(1)->addMonth()->subMonths(6);
+        return $this->created_at->gte($pivDate);
     }
 }

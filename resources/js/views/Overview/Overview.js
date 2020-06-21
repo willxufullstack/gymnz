@@ -4,15 +4,9 @@ import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import * as utils from '-utils'
 import dayjs from 'dayjs'
-import Card from '@material-ui/core/Card'
-import {
-    withStyles,
-    Avatar,
-    ListItem,
-    ListItemAvatar,
-    ListItemText,
-    List
-} from '@material-ui/core'
+import HeatMap from 'react-heatmap-grid'
+import { withStyles, Avatar, ListItem, List, Grid } from '@material-ui/core'
+import Button from '@material-ui/core/Button'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import SimpleMenu from '-components/SimpleMenu/SimpleMenu'
 import Typography from '@material-ui/core/Typography'
@@ -22,48 +16,72 @@ import AreaChart from './AreaChart'
 import { Hint } from 'react-vis'
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import DayjsUtils from '@date-io/dayjs'
-
+import Titlebar from '../../components/TitleBar/Titlebar'
+import ClickableBadge from '../../components/ClickableBadge/ClickableBadge'
+import Panel from '../../components/Panel/Panel'
+import DoubleArrowIcon from '-assets/img/double_arrow.svg'
+import LineChart from '../../components/LineChart/LineChart'
+import BarChart from '../../components/BarChart/BarChart'
+import BarChartPanel from '../../components/BarChart/BarChartPanel'
 const styles = {
     container: {
-        display: 'flex'
+        display: 'flex',
+        height: '100%'
     },
     leftContainer: {
-        maxWidth: 740
+        maxWidth: 770,
+        overflow: 'scroll',
+        display: 'flex',
+        flexDirection: 'column',
+        paddingRight: 12
     },
-    rightContainer: {
+    leftTitleContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        flex: 1
+    },
+    leftTitle: {
+        flex: 1
+    },
+    containerHeader: {
+        display: 'flex',
+        marginBottom: 16
+    },
+    containerBody: {
         flex: 1,
-        paddingLeft: 8,
-        paddingTop: 20
+        height: 'calc(100% - 50px)',
+        overflowY: 'scroll',
+        overflowX: 'hidden'
     },
-    dotTabs: {
+    rightContainerBody: {
+        flex: 1,
+        height: 'calc(100% - 50px)',
+        overflow: 'scroll',
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    filterContainer: {
         display: 'flex'
     },
+    rightContainer: {
+        paddingLeft: 16,
+        flex: 1,
+        overflow: 'scroll',
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    dotTabs: {
+        display: 'flex',
+        alignItems: 'center'
+    },
     tabDescription: {
-        textAlign: 'center',
         fontSize: 12,
         marginTop: 4,
         color: '#666',
         marginBottom: 6
     },
     dotTab: {
-        flex: 1,
-        display: 'flex',
-        paddingTop: 8,
-        paddingBottom: 8,
-        background: '#f3f3f3'
-    },
-    activeTab: {
-        background: '#fff'
-    },
-    dotTabDot: {
-        width: 12,
-        height: 12,
-        borderRadius: 6,
-        display: 'inline-block'
-    },
-    dotTabTitle: {
-        display: 'inline-block',
-        paddingLeft: 4
+        padding: '8px 2px 8px 0'
     },
     filterBar: {
         display: 'flex',
@@ -71,17 +89,48 @@ const styles = {
         width: '100%'
     },
     filterItem: {
-        display: 'flex',
         maxWidth: 150,
-        flex: 1
+        marginLeft: 32
+    },
+    filterItemFlex: {
+        flex: 1,
+        marginLeft: 32
     },
     filterTitle: {
         width: 60,
-        lineHeight: '36px',
-        textAlign: 'center',
-        fontSize: 13,
-        fontWeight: '800',
+        lineHeight: '12px',
+        textAlign: 'left',
+        fontSize: 12,
         color: '#999'
+    },
+    filterDropdownIcon: {
+        marginLeft: 6
+    },
+    customerProfile: {
+        paddingLeft: 8,
+        flex: 1
+    },
+    customerProfileName: {
+        fontSize: 14,
+        fontWeight: 500,
+        color: '#333',
+        marginBottom: -2
+    },
+    customerProfileLastSchedule: {
+        fontSize: 12,
+        fontWeight: 500,
+        color: '#999'
+    },
+    customerProfileCoach: {
+        flex: 1,
+        fontSize: 16,
+        fontWeight: 900,
+        color: '#666',
+        minWidth: 72,
+        textAlign: 'center'
+    },
+    customerProfileHotmap: {
+        flex: 1
     },
     coachQuadrantFilter: {
         position: 'absolute',
@@ -125,17 +174,22 @@ const styles = {
         position: 'relative',
         maxWidth: 740,
         paddingLeft: 0,
-        paddingTop: 16,
-        marginTop: 20
+        paddingTop: 16
     },
     coachQuadrantCard: {
-        maxWidth: 300,
-        marginTop: 20,
         paddingTop: 16,
-        position: 'relative'
+        position: 'relative',
+        flex: 1
     },
     yearChart: {
         // margin: 'auto'
+    },
+    noData: {
+        textAlign: 'center',
+        marginTop: 40,
+        fontSize: 22,
+        fontWeight: '900',
+        color: '#999'
     }
 }
 
@@ -143,14 +197,8 @@ class Overview extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            chart0ActiveIndex: 0,
-            chart0Value: null,
-            chart1Value: null,
-            chartDianpingColumn: 'shop_uv_sum',
-            chartStatisticsColumn: 'stock',
             date: dayjs(),
             coach: 0,
-            yearChartData: [],
             activeCustomerTab: 0,
             coachQuadrantFilter: {
                 year: dayjs().format('YYYY'),
@@ -181,11 +229,44 @@ class Overview extends React.Component {
     filterBar = () => {
         const { classes } = this.props
         return (
-            <Card className={classes.filterBar}>
-                {this.monthFilter()}
-                {this.durationFilter()}
-                {this.coachFilter()}
-            </Card>
+            <div className={classes.leftTitleContainer}>
+                <Titlebar label="数据" />
+                <div className={classes.filterContainer}>
+                    {this.gymFilter()}
+                    {this.monthFilter()}
+                    {this.durationFilter()}
+                    {/* {this.coachFilter()} */}
+                </div>
+            </div>
+        )
+    }
+
+    gymFilter = () => {
+        const { classes } = this.props
+        let menuItems = this.props.gyms.map(gym => {
+            return {
+                text: gym.name,
+                onSelect: () => {
+                    this.props.actions.switchGym(gym)
+                    this.props.actions.loadCustomer(gym.id, { hotmap: 1 })
+                }
+            }
+        })
+        return (
+            <div className={classes.filterItemFlex}>
+                <div className={classes.filterTitle}>店铺</div>
+                <SimpleMenu
+                    icon={
+                        <ExpandMore
+                            fontSize="small"
+                            className={classes.filterDropdownIcon}
+                        />
+                    }
+                    textColor={'#666'}
+                    displayText={this.props.setting.selectedGym.name}
+                    items={menuItems}
+                />
+            </div>
         )
     }
 
@@ -209,8 +290,13 @@ class Overview extends React.Component {
             <div className={classes.filterItem}>
                 <div className={classes.filterTitle}>教练</div>
                 <SimpleMenu
-                    icon={<ExpandMore />}
-                    textColor={'#333'}
+                    icon={
+                        <ExpandMore
+                            fontSize="small"
+                            className={classes.filterDropdownIcon}
+                        />
+                    }
+                    textColor={'#666'}
                     displayText={filters[this.state.coach]}
                     items={opts}
                 />
@@ -222,15 +308,32 @@ class Overview extends React.Component {
         const { classes } = this.props
         return (
             <div className={classes.filterItem}>
+                <div className={classes.filterTitle}>月份</div>
                 <MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>
                     <DatePicker
                         format="MM/YYYY"
+                        TextFieldComponent={({ onClick, value }) => (
+                            <Button
+                                aria-haspopup="true"
+                                onClick={onClick}
+                                style={{
+                                    fontSize: '15px',
+                                    color: '#666',
+                                    padding: 0,
+                                    justifyContent: 'left'
+                                }}
+                            >
+                                {value}
+                                <ExpandMore
+                                    fontSize="small"
+                                    className={classes.filterDropdownIcon}
+                                />
+                            </Button>
+                        )}
                         className={classes.dateFilter}
                         style={{
                             maxWidth: 60,
-                            position: 'relative',
-                            bottom: -2,
-                            marginLeft: 20
+                            position: 'relative'
                         }}
                         openTo="month"
                         views={['year', 'month']}
@@ -243,35 +346,80 @@ class Overview extends React.Component {
         )
     }
 
-    customerCard = (customer, color) => {
+    customerCard = (customerId, color) => {
         const { classes } = this.props
         const customerWithLatestSchedule = this.props.gym.customers.find(
-            item => item.id === customer.id
+            item => item.id === parseInt(customerId)
         )
-        const subtitle = schedule =>
-            schedule ? schedule.date + ' | ' + schedule.coach.user.name : '--'
+        const hotmapData = userId => {
+            const hotmapStr = this.props.gym.hotmap[userId + '']
+            if (!hotmapStr) {
+                return utils.range(0, 7).map(() => utils.range(0, 5))
+            }
+            const data = utils.range(0, 7).map(() => [])
+            hotmapStr
+                .split('')
+                .map(v => parseInt(v))
+                .forEach((v, i) => {
+                    data[parseInt(i / 7)].push(v)
+                })
+            return data
+        }
+        // + ' | ' + schedule.coach.user.name
         return (
-            <ListItem key={customer.id}>
-                <ListItemAvatar className={classes.customerCard}>
-                    <Avatar
-                        src={customer.avatar}
-                        style={{
-                            borderWidth: 2,
-                            borderColor: color,
-                            borderStyle: 'solid'
+            <ListItem key={customerWithLatestSchedule.id}>
+                <Avatar
+                    src={customerWithLatestSchedule.avatar}
+                    style={{
+                        borderWidth: 1,
+                        borderColor: '#ececec',
+                        width: 32,
+                        height: 32
+                    }}
+                />
+                <div className={classes.customerProfile}>
+                    <div className={classes.customerProfileName}>
+                        {customerWithLatestSchedule.name}
+                    </div>
+                    <div className={classes.customerProfileLastSchedule}>
+                        {dayjs(
+                            customerWithLatestSchedule.latest_schedule.date
+                        ).format('MM/DD')}
+                    </div>
+                </div>
+                <div className={classes.customerProfileHotmap}>
+                    <HeatMap
+                        background={color}
+                        height={6}
+                        xLabelWidth={0}
+                        yLabelWidth={0}
+                        xLabels={['', '', '', '', '', '', '']}
+                        yLabels={['', '', '', '', '']}
+                        data={hotmapData(customerWithLatestSchedule.id)}
+                        cellStyle={(background, value) => {
+                            const style = {
+                                maxWidth: '6px',
+                                background: '#ececec',
+                                borderRadius: '3px'
+                            }
+                            if (value) {
+                                return {
+                                    ...style,
+                                    background: background,
+                                    opacity: 0.4
+                                }
+                            }
+                            return style
                         }}
                     />
-                </ListItemAvatar>
-                <ListItemText
-                    primary={customer.name}
-                    secondary={
-                        customerWithLatestSchedule
-                            ? subtitle(
-                                  customerWithLatestSchedule.latest_schedule
-                              )
-                            : '- -'
-                    }
-                />
+                </div>
+                <img src={DoubleArrowIcon} />
+                <div className={classes.customerProfileCoach}>
+                    {customerWithLatestSchedule.latest_schedule
+                        ? customerWithLatestSchedule.latest_schedule.coach.user
+                              .name
+                        : '- -'}
+                </div>
             </ListItem>
         )
     }
@@ -296,7 +444,7 @@ class Overview extends React.Component {
                     currentMonthCustomersMap[customerId][0].customer
             }
         })
-        return Object.values(ret).map(c => this.customerCard(c, 'red'))
+        return Object.keys(ret)
     }
 
     getHotCustomers = () => {
@@ -319,7 +467,7 @@ class Overview extends React.Component {
                 ret.push(currentMonthCustomersMap[customerId][0].customer)
             }
         })
-        return ret.map(c => this.customerCard(c, 'green'))
+        return Object.keys(ret)
     }
 
     getCoolCustomers = () => {
@@ -341,7 +489,7 @@ class Overview extends React.Component {
                 ret[customerId] = lastMonthCustomersMap[customerId][0].customer
             }
         })
-        return Object.values(ret).map(c => this.customerCard(c, 'gray'))
+        return Object.keys(ret)
     }
 
     getCustomerMapByMonth = day => {
@@ -371,8 +519,7 @@ class Overview extends React.Component {
         const { classes } = this.props
         const filters = {
             6: '6个月',
-            12: '12个月',
-            24: '24个月'
+            12: '12个月'
         }
         const opts = Object.keys(filters).map(k => ({
             text: filters[k],
@@ -389,60 +536,18 @@ class Overview extends React.Component {
             <div className={classes.filterItem}>
                 <div className={classes.filterTitle}>间隔</div>
                 <SimpleMenu
-                    icon={<ExpandMore />}
-                    textColor={'#333'}
+                    icon={
+                        <ExpandMore
+                            fontSize="small"
+                            className={classes.filterDropdownIcon}
+                        />
+                    }
+                    textColor={'#666'}
                     displayText={filters[this.state.duration]}
                     items={opts}
                 />
             </div>
         )
-    }
-
-    aggregateYearData = filter => {
-        const { _, end } = utils.getMonthStartEnd(this.state.date)
-        const endDay = dayjs(end)
-        const data = {}
-        utils.range(0, this.state.duration).forEach(i => {
-            const day = endDay.add(-i, 'month')
-            const k = day.format('YYYY') + '-' + day.format('M')
-            data[k] = {
-                year: day.year(),
-                month: day.month(),
-                monthLabel: utils.getMonthLabel(day.month()),
-                customers: {},
-                courseCount: 0,
-                customerCount: 0,
-                customerLiveDays: 0,
-                avgCustomerLiveDays: 0
-            }
-        })
-        const { scheduleCountByMonthPerCoach } = this.props.gym.report
-
-        const filtered = scheduleCountByMonthPerCoach.filter(row => {
-            if (this.state.coach == 0) {
-                return true
-            }
-            return row.coach_id == this.state.coach
-        })
-
-        filtered.forEach(row => {
-            const k = row['year(date)'] + '-' + row['month(date)']
-            if (!data[k]) {
-                return
-            }
-            if (!data[k].customers[row.customer_id]) {
-                data[k].customerLiveDays += row.liveDays
-            }
-            data[k].customers[row.customer_id] = 1
-            data[k].courseCount += row.course_amount
-        })
-        Object.keys(data).forEach(k => {
-            data[k].customerCount = Object.keys(data[k].customers).length
-            data[k].avgCustomerLiveDays += Math.floor(
-                data[k].customerLiveDays / data[k].customerCount
-            )
-        })
-        return data
     }
     refreshYearData = () => {
         const { _, end } = utils.getMonthStartEnd(this.state.date)
@@ -468,146 +573,41 @@ class Overview extends React.Component {
             start,
             end
         })
-    }
-
-    getCoachQuadrantData = () => {
-        const { scheduleCountByMonthPerCoach } = this.props.gym.report
-        const year = this.state.coachQuadrantFilter.year
-        const month = this.state.coachQuadrantFilter.month
-        const data = {}
-        scheduleCountByMonthPerCoach.forEach(row => {
-            if (row['year(date)'] == year && row['month(date)'] == month) {
-                if (!data[row.coach_id]) {
-                    data[row.coach_id] = {
-                        x: 0,
-                        y: 0,
-                        coach: row.coach,
-                        color: '#8e24aa'
-                    }
-                }
-                data[row.coach_id].x += row.course_amount
-                data[row.coach_id].y += row.customer_amount
+        this.props.actions.loadMonthcourseByCustomerType(
+            this.props.selectedGym.id,
+            {
+                end,
+                duration: this.state.duration
             }
-        })
-        return Object.values(data)
-    }
-
-    coachYearMonthDropdown = () => {
-        const { classes } = this.props
-        const { scheduleCountByMonthPerCoach } = this.props.gym.report
-        const displayText = (year, month) =>
-            dayjs(year + '-' + month + '-1').format('YYYY-MM')
-        const yearMonthSet = {}
-        scheduleCountByMonthPerCoach.forEach(row => {
-            const k = displayText(row['year(date)'], row['month(date)'])
-            yearMonthSet[k] = {
-                year: row['year(date)'],
-                month: row['month(date)']
-            }
-        })
-        const opts = Object.values(yearMonthSet).map(item => {
-            return {
-                text: displayText(item.year, item.month),
-                onSelect: () => {
-                    this.setState({
-                        coachQuadrantFilter: item
-                    })
-                }
-            }
-        })
-        opts.sort((a, b) => {
-            return (
-                new Date(a.text + '-01').getTime() -
-                new Date(b.text + '-01').getTime()
-            )
-        })
-
-        return (
-            <SimpleMenu
-                icon={<ExpandMore />}
-                textColor={'#999'}
-                displayText={displayText(
-                    this.state.coachQuadrantFilter.year,
-                    this.state.coachQuadrantFilter.month
-                )}
-                items={opts}
-            />
         )
+        this.props.actions.loadMonthSaleByType(this.props.selectedGym.id, {
+            end,
+            duration: this.state.duration
+        })
+        this.props.actions.loadMonthActiveByType(this.props.selectedGym.id, {
+            end,
+            duration: this.state.duration
+        })
+
+        let hotmapDate = dayjs(end)
+        if (dayjs(end).isAfter(dayjs())) {
+            hotmapDate = dayjs()
+        }
+        this.props.actions.loadCustomerHotmap(this.props.selectedGym.id, {
+            date: hotmapDate.format('YYYY-MM-DD'),
+            duration: 35
+        })
     }
 
-    coachQuadrant = () => {
-        const { classes } = this.props
-        const data = this.getCoachQuadrantData()
-        const { xRange, yRange } = utils.getPointEdge(data)
-        xRange[0] = 0
-        yRange[0] = 0
+    statisticsChart = React.memo(({ data, date, duration }) => {
+        const rawData = data
 
-        const _onHover = v => {
-            this.setState({ chart1Value: v })
-        }
-        const _onBlur = () => this.setState({ chart1Value: null })
-        const _hintFormat = v => {
-            return [
-                {
-                    title: '教练',
-                    value: this.state.chart1Value.coach.user.name
-                },
-                {
-                    title: '课程',
-                    value: this.state.chart1Value.x
-                },
-                {
-                    title: '客户',
-                    value: this.state.chart1Value.y
-                }
-            ]
-        }
-
-        return (
-            <Card className={classes.coachQuadrantCard}>
-                <Typography
-                    className={classes.titleUnit + ' ' + classes.chartTitle}
-                >
-                    教练分析
-                </Typography>
-                <div className={classes.coachQuadrantFilter}>
-                    {this.coachYearMonthDropdown()}
-                </div>
-                <QuadrantChart
-                    title={''}
-                    dataSet={data}
-                    margin={36}
-                    width={250}
-                    xRange={xRange}
-                    yRange={yRange}
-                    xTitle={'课程'}
-                    yTitle={'客户'}
-                    onHover={_onHover}
-                    onBlur={_onBlur}
-                    hint={
-                        this.state.chart1Value ? (
-                            <Hint
-                                value={this.state.chart1Value}
-                                format={_hintFormat}
-                            />
-                        ) : null
-                    }
-                />
-            </Card>
-        )
-    }
-
-    statisticsChart = () => {
-        const { classes } = this.props
-
-        const rawData = this.props.gym.report.statistics
-
-        const { _, end } = utils.getMonthStartEnd(this.state.date)
+        const { _, end } = utils.getMonthStartEnd(dayjs(date))
         const endDay = dayjs(end)
-        // !!!
-        const data = {}
-        // !!!
-        utils.range(0, this.state.duration).forEach(i => {
+        const wrappedData = []
+
+        const xLabels = []
+        utils.range(0, duration).forEach(i => {
             const day = endDay.add(-i, 'month')
             const k = day.format('YYYY-MM')
             const rows = rawData
@@ -618,97 +618,28 @@ class Overview extends React.Component {
                     )
                 })
             const row = rows[0]
-            data[k] = {
-                monthLabel: utils.getMonthLabel(day.month()),
-                expired: row ? row.expired : 0,
-                stock: row ? row.stock : 0
-                // total: row ? row.total : 0,
-                // finished: row ? row.finished : 0,
-            }
+            xLabels.push(utils.getMonthLabel(day.month()));
+
+            wrappedData.push([row ? row.stock : 0, row ? row.stock - row.expired : 0])
         })
-
-        const latest = data[Object.keys(data)[0]]
-        const ascKeys = Object.keys(data).reverse()
-        const xTickers = ascKeys.map(k => data[k].monthLabel)
-
-        const options = {
-            expired: '过期',
-            stock: '库存'
-        }
-
-        const allPointers = {}
-        Object.keys(options).forEach(key => {
-            allPointers[key] = ascKeys.map((k, i) => ({
-                x: i,
-                y: data[k][key] || 0
-            }))
-        })
-        const hintFormat = p => {
-            return Object.keys(options).map(opt => {
-                return {
-                    title: options[opt],
-                    value: allPointers[opt].find(r => r.x === p.x).y
-                }
-            })
-        }
-
-        const switchColumn = chartStatisticsColumn => {
-            return () => this.setState({ chartStatisticsColumn })
-        }
 
         return (
-            <Card className={classes.yearChartCard}>
-                <Typography
-                    className={classes.chartSubTitle}
-                    color="textSecondary"
-                >
-                    {'库存'}
-                </Typography>
-                <Typography className={classes.chartTitle}>
-                    {Object.keys(options).map(opt => (
-                        <span
-                            key={opt}
-                            className={
-                                this.state.chartStatisticsColumn !== opt
-                                    ? classes.titleInactive
-                                    : ''
-                            }
-                            onClick={switchColumn(opt)}
-                        >
-                            {latest[opt]}
-                            <span
-                                className={
-                                    this.state.chartStatisticsColumn !== opt
-                                        ? classes.titleUnitInactive
-                                        : classes.titleUnit
-                                }
-                            >
-                                {options[opt]}
-                            </span>
-                        </span>
-                    ))}
-                </Typography>
-                <AreaChart
-                    data={allPointers[this.state.chartStatisticsColumn]}
-                    xTickers={xTickers}
-                    chartClassName={classes.yearChart}
-                    hintFormat={hintFormat}
-                />
-            </Card>
+            <BarChartPanel
+                title={'库存'}
+                colors={['#D0F0EC', '#29aa99']}
+                data={wrappedData}
+                legends={['总库存', '未过期']}
+                xLabels={xLabels}
+                unit={'节'}
+            />
         )
-    }
+    })
 
-    dianpingChart = () => {
-        const { classes } = this.props
-
-        const rawData = this.props.gym.report.dianping
-
-        const { _, end } = utils.getMonthStartEnd(this.state.date)
+    dianpingChart = React.memo(({ rawData, date, duration }) => {
+        const { _, end } = utils.getMonthStartEnd(date)
         const endDay = dayjs(end)
-        // !!!
         const data = {}
-        // !!!
-        utils.range(0, this.state.duration).forEach(i => {
+        utils.range(0, duration).forEach(i => {
             const day = endDay.add(-i, 'month')
             const k = day.format('YYYY-MM')
             const row = rawData.find(r => r.months === k)
@@ -721,10 +652,6 @@ class Overview extends React.Component {
             }
         })
 
-        const latest = data[Object.keys(data)[0]]
-        const ascKeys = Object.keys(data).reverse()
-        const xTickers = ascKeys.map(k => data[k].monthLabel)
-
         const options = {
             shop_uv_sum: '点击',
             view_uv_sum: '曝光',
@@ -732,306 +659,211 @@ class Overview extends React.Component {
             comment_sum: '评论'
         }
 
-        const allPointers = {}
-        Object.keys(options).forEach(key => {
-            allPointers[key] = ascKeys.map((k, i) => ({
-                x: i,
-                y: data[k][key] || 0
-            }))
-        })
-        const hintFormat = p => {
-            return Object.keys(options).map(opt => {
-                return {
-                    title: options[opt],
-                    value: allPointers[opt].find(r => r.x === p.x).y
-                }
-            })
-        }
-
-        const switchColumn = chartDianpingColumn => {
-            return () => this.setState({ chartDianpingColumn })
-        }
-
         return (
-            <Card className={classes.yearChartCard}>
-                <Typography
-                    className={classes.chartSubTitle}
-                    color="textSecondary"
-                >
-                    {'大众点评'}
-                </Typography>
-                <Typography className={classes.chartTitle}>
-                    {Object.keys(options).map(opt => (
-                        <span
-                            key={opt}
-                            className={
-                                this.state.chartDianpingColumn !== opt
-                                    ? classes.titleInactive
-                                    : ''
-                            }
-                            onClick={switchColumn(opt)}
-                        >
-                            {latest[opt]}
-                            <span
-                                className={
-                                    this.state.chartDianpingColumn !== opt
-                                        ? classes.titleUnitInactive
-                                        : classes.titleUnit
-                                }
-                            >
-                                {options[opt]}
-                            </span>
-                        </span>
-                    ))}
-                </Typography>
-                <AreaChart
-                    data={allPointers[this.state.chartDianpingColumn]}
-                    xTickers={xTickers}
-                    chartClassName={classes.yearChart}
-                    hintFormat={hintFormat}
-                />
-            </Card>
+            <LineChart
+                options={options}
+                title={'大众点评'}
+                xTicker={'monthLabel'}
+                defaultColumn={'shop_uv_sum'}
+                data={data}
+                width={760}
+                height={200}
+            />
         )
-    }
-
-    lifeChart = () => {
-        const { classes } = this.props
-        const rawData = this.aggregateYearData()
-
-        const ascKeys = Object.keys(rawData).reverse()
-        const xTickers = ascKeys.map(k => rawData[k].monthLabel)
-
-        const avgCustomerLiveDays = ascKeys.map((k, i) => ({
-            x: i,
-            y: rawData[k].avgCustomerLiveDays || 0
-        }))
-        const yTitle = '天'
-        const hintFormat = p => {
-            return [
-                {
-                    title: '平均年龄',
-                    value: p.y
-                }
-            ]
-        }
-
-        return (
-            <Card className={classes.yearChartCard}>
-                <Typography
-                    className={classes.chartSubTitle}
-                    color="textSecondary"
-                >
-                    {'活跃客户平均年龄'}
-                </Typography>
-                <Typography className={classes.chartTitle}>
-                    <span>
-                        {avgCustomerLiveDays[avgCustomerLiveDays.length - 1].y}
-                        <span className={classes.titleUnit}>{yTitle}</span>
-                    </span>
-                    {/* <span className={classes.titleUnitInactive}>
-                    </span> */}
-                </Typography>
-                <AreaChart
-                    data={avgCustomerLiveDays}
-                    yTitle={yTitle}
-                    xTickers={xTickers}
-                    chartClassName={classes.yearChart}
-                    hintFormat={hintFormat}
-                />
-            </Card>
-        )
-    }
-
-    yearChart = () => {
-        const { classes } = this.props
-        const rawData = this.aggregateYearData()
-
-        const ascKeys = Object.keys(rawData).reverse()
-        const xTickers = ascKeys.map(k => rawData[k].monthLabel)
-
-        const dataCourseCount = ascKeys.map((k, i) => ({
-            x: i,
-            y: rawData[k].courseCount
-        }))
-        const dataCustomerCount = ascKeys.map((k, i) => ({
-            x: i,
-            y: rawData[k].customerCount
-        }))
-
-        const dataSet = [dataCourseCount, dataCustomerCount]
-        const yTitle = ['课程', '客户']
-        const hintFormat = p => {
-            return [
-                {
-                    title: '时间',
-                    value: xTickers[p.x]
-                },
-                {
-                    title: '课程',
-                    value: dataCourseCount[p.x].y
-                },
-                {
-                    title: '客户',
-                    value: dataCustomerCount[p.x].y
-                }
-            ]
-        }
-        const activeIndex = this.state.chart0ActiveIndex
-        const inactiveIndex = 1 - activeIndex
-        const dataSetForRender =
-            activeIndex === 0
-                ? [dataCourseCount, dataCustomerCount]
-                : [dataCustomerCount, dataCourseCount]
-        return (
-            <Card className={classes.yearChartCard}>
-                <Typography
-                    className={classes.chartSubTitle}
-                    color="textSecondary"
-                >
-                    耗课节数 | 活跃客户人数
-                </Typography>
-                <Typography className={classes.chartTitle}>
-                    <span
-                        className={
-                            activeIndex === 1 ? classes.titleInactive : ''
-                        }
-                        onClick={() => this.setState({ chart0ActiveIndex: 0 })}
-                    >
-                        {dataSet[0][dataSet[0].length - 1].y}
-                        <span
-                            className={
-                                activeIndex === 1
-                                    ? classes.titleUnitInactive
-                                    : classes.titleUnit
-                            }
-                        >
-                            {yTitle[0]}
-                        </span>
-                    </span>
-                    <span className={classes.titleSeparator}>|</span>
-                    <span
-                        className={
-                            activeIndex === 0 ? classes.titleInactive : ''
-                        }
-                        onClick={() => this.setState({ chart0ActiveIndex: 1 })}
-                    >
-                        {dataSet[1][dataSet[1].length - 1].y}
-                        <span
-                            className={
-                                activeIndex === 0
-                                    ? classes.titleUnitInactive
-                                    : classes.titleUnit
-                            }
-                        >
-                            {yTitle[1]}
-                        </span>
-                    </span>
-                </Typography>
-                <DoubleAreaChart
-                    dataSet={dataSetForRender}
-                    yTitle={yTitle}
-                    xTickers={xTickers}
-                    onValueClick={dataPoint => {
-                        const delta = xTickers.length - dataPoint.x - 1
-                        const selected = this.state.date.add(-delta, 'month')
-                        // console.log(selected.format('YYYY-MM-DD'))
-                        this.setState({ selectedDate: selected })
-                    }}
-                    chartClassName={classes.yearChart}
-                    hintFormat={hintFormat}
-                    toggle={() =>
-                        this.setState({ chart0ActiveIndex: 1 - activeIndex })
-                    }
-                />
-            </Card>
-        )
-    }
+    })
 
     customerListTab = () => {
         const { classes } = this.props
-        const selectedDate = this.state.selectedDate
-            ? this.state.selectedDate
-            : this.state.date
         const dots = [
             {
-                name: '新活跃',
-                color: 'red',
+                name: '新增',
+                color: '#56C3E5',
                 getCustomers: this.getNewCustomers,
                 description: '上月未出勤但本月出勤的客户'
             },
             {
-                name: '高活跃',
-                color: 'green',
+                name: '活跃',
+                color: '#29aa99',
                 getCustomers: this.getHotCustomers,
                 description: '本月出勤超过8次的客户'
             },
             {
-                name: '新冷却',
-                color: 'gray',
+                name: '冷却',
+                color: '#FF5050',
                 getCustomers: this.getCoolCustomers,
                 description: '上月出勤但本月未出勤的客户'
             }
         ]
 
+        const getCard = i => {
+            return dots[i]
+                .getCustomers()
+                .map(c => this.customerCard(c, dots[i].color))
+        }
+
         return (
             <React.Fragment>
-                <div className={classes.dotTabs}>
-                    {dots.map((dot, i) => (
-                        <div
-                            key={dot.color}
-                            onClick={() =>
-                                this.setState({ activeCustomerTab: i })
-                            }
-                            className={
-                                classes.dotTab +
-                                ' ' +
-                                (i === this.state.activeCustomerTab
-                                    ? classes.activeTab
-                                    : '')
-                            }
-                        >
-                            <div style={{ margin: 'auto' }}>
-                                <span
-                                    className={classes.dotTabDot}
-                                    style={{ background: dot.color }}
+                <div className={classes.containerHeader}>
+                    <Titlebar label="焦点" />
+                    <div className={classes.dotTabs}>
+                        {dots.map((dot, i) => (
+                            <div key={dot.color} className={classes.dotTab}>
+                                <ClickableBadge
+                                    tooltip={dot.description}
+                                    label={dot.name}
+                                    number={dot.getCustomers().length}
+                                    color={dot.color}
+                                    selected={
+                                        i === this.state.activeCustomerTab
+                                    }
+                                    onClick={() =>
+                                        this.setState({ activeCustomerTab: i })
+                                    }
                                 />
-                                <div className={classes.dotTabTitle}>
-                                    {dot.name}
-                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-                <p className={classes.tabDescription}>
-                    {selectedDate.format('YYYY-MM')}
-                </p>
-                <p className={classes.tabDescription}>
-                    {dots[this.state.activeCustomerTab].description}
-                </p>
-                <List>{dots[this.state.activeCustomerTab].getCustomers()}</List>
+                <div className={classes.rightContainerBody}>
+                    <Panel flex scroll>
+                        {dots[this.state.activeCustomerTab].getCustomers()
+                            .length ? (
+                            <List>{getCard(this.state.activeCustomerTab)}</List>
+                        ) : (
+                            <p className={classes.noData}>暂无数据</p>
+                        )}
+                    </Panel>
+                </div>
             </React.Fragment>
+        )
+    }
+
+    courseBarChart = () => {
+        const { monthCourseByCustomerType } = this.props.gym.report
+        const xLabels = Object.keys(monthCourseByCustomerType)
+        const data = Object.values(monthCourseByCustomerType).map(row => {
+            return [row.all, row.recent, row.new]
+        })
+
+        return (
+            <BarChartPanel
+                title={'耗课'}
+                colors={['#D0F0EC', '#81F6D2', '#29aa99']}
+                data={data}
+                legends={['所有', '半年内新客', '本月新客']}
+                xLabels={xLabels}
+                unit={'节'}
+            />
+        )
+    }
+    activeCustomerBarChart = () => {
+        const { monthActiveByType } = this.props.gym.report
+        const xLabels = Object.keys(monthActiveByType)
+        const data = Object.values(monthActiveByType).map(row => {
+            return [row.all, row.recent]
+        })
+
+        return (
+            <BarChartPanel
+                title={'活跃客户'}
+                colors={['#D0F0EC', '#29aa99']}
+                data={data}
+                legends={['所有', '半年内新客']}
+                xLabels={xLabels}
+                unit={'人'}
+            />
+        )
+    }
+
+    saleBarChart = () => {
+        const { monthSaleByType } = this.props.gym.report
+        const xLabels = Object.keys(monthSaleByType)
+        const data = Object.values(monthSaleByType).map(row => {
+            return [row.all, row.new]
+        })
+
+        return (
+            <BarChartPanel
+                title={'销售'}
+                colors={['#D0F0EC', '#29aa99']}
+                data={data}
+                legends={['所有', '新客']}
+                xLabels={xLabels}
+                unit={'元'}
+            />
         )
     }
 
     render() {
         const { classes } = this.props
         return (
-            <div>
-                {this.filterBar()}
-                <div className={classes.container}>
-                    <div className={classes.leftContainer}>
-                        {this.yearChart()}
-                        {this.statisticsChart()}
-                        {this.lifeChart()}
-                        {this.props.selectedGym.dianping_shop_name &&
-                            this.dianpingChart()}
-                        {this.coachQuadrant()}
+            <div className={classes.container}>
+                <div className={classes.leftContainer}>
+                    <div className={classes.containerHeader}>
+                        {this.filterBar()}
                     </div>
-                    <div className={classes.rightContainer}>
-                        <Card style={{ flex: 1 }}>
-                            {this.customerListTab()}
-                        </Card>
+                    <div className={classes.containerBody}>
+                        <Grid container spacing={1}>
+                            <Grid
+                                item
+                                xs={6}
+                                justify="center"
+                                alignItems="center"
+                                container
+                            >
+                                <this.courseBarChart />
+                            </Grid>
+                            <Grid
+                                item
+                                xs={6}
+                                justify="center"
+                                alignItems="center"
+                                container
+                            >
+                                <this.saleBarChart />
+                            </Grid>
+                            <Grid
+                                item
+                                xs={6}
+                                justify="center"
+                                alignItems="center"
+                                container
+                            >
+                                <this.activeCustomerBarChart />
+                            </Grid>
+                            <Grid
+                                item
+                                xs={6}
+                                justify="center"
+                                alignItems="center"
+                                container
+                            >
+                                <this.statisticsChart
+                                    date={this.state.date}
+                                    duration={this.state.duration}
+                                    data={this.props.gym.report.statistics}
+                                />
+                            </Grid>
+                            <Grid
+                                item
+                                xs={12}
+                                justify="center"
+                                alignItems="center"
+                                container
+                            >
+                                {this.props.selectedGym.dianping_shop_name && (
+                                    <this.dianpingChart
+                                        date={this.state.date}
+                                        duration={this.state.duration}
+                                        rawData={this.props.gym.report.dianping}
+                                    />
+                                )}
+                            </Grid>
+                        </Grid>
                     </div>
+                </div>
+                <div className={classes.rightContainer}>
+                    <this.customerListTab />
                 </div>
             </div>
         )
@@ -1041,7 +873,9 @@ class Overview extends React.Component {
 const mapStoreToProps = store => {
     return {
         selectedGym: store.setting.selectedGym,
-        gym: store.gym
+        gym: store.gym,
+        gyms: store.organization.gym,
+        setting: store.setting
     }
 }
 

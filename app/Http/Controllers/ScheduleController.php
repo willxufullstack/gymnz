@@ -9,7 +9,6 @@ use App\User;
 use App\Coach;
 use App\Console\Commands\DianpingCrawler;
 use App\Events\BonusEvent;
-use App\Followup;
 use Carbon\Carbon;
 use App\Order;
 use App\Schedule;
@@ -368,10 +367,10 @@ class ScheduleController extends Controller
         $success = $schedule->save();
         $schedule['balance'] = $schedule->getBalance();
 
-        if($oriOrderId) {
+        if ($oriOrderId) {
             Order::refreshBooked($oriOrderId);
         }
-        if($newOrderId) {
+        if ($newOrderId) {
             Order::refreshBooked($newOrderId);
         }
         if ($success) {
@@ -506,7 +505,7 @@ class ScheduleController extends Controller
     {
         $schedule = Schedule::where(['id' => $id, 'gym_id' => $gymId])
             ->first();
-        if(empty($schedule)){
+        if (empty($schedule)) {
             return response()->json(array('message' => 'cannot find schedule'), 406);
         }
 

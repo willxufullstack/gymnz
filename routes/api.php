@@ -47,6 +47,9 @@ Route::group([], function () {
     Route::get('gym/{gym}/bonus', 'ScheduleController@bonusCheck');
     // paste route here to skip auth when debug
     // Route::get('gym/{gym}/refreshCustomerCreatedAt', 'GymController@refreshCustomerCreatedAt');
+    // Route::get('gym/{gym}/chart/monthcoursebycustomertype', 'GymController@monthCourseByCustomerType');
+    // Route::get('gym/{gym}/chart/monthsalebytype', 'GymController@monthSaleByType');
+    // Route::get('gym/{gym}/chart/monthactivebytype', 'GymController@monthActiveByType');
 
 });
 
@@ -67,6 +70,7 @@ Route::group([
     Route::get('coach', 'CoachController@getCoachInfoByUserId');
 
     Route::get('gym/{gym}/customer', 'GymController@getCustomerList');
+    Route::get('gym/{gym}/hotmap', 'GymController@getHotmaps');
     Route::get('gym/{gym}/available', 'GymController@getAvailableTime');
     Route::get('gym/{gym}/summary', 'GymController@getSummary');
     Route::get('gym/{gym}/workload', 'ScheduleController@workload');
@@ -102,6 +106,9 @@ Route::group([
     Route::get('gym/{gym}/coach/{coach}/reset', 'CoachController@reset');
 
     Route::resource('gym.order', 'OrderController');
+    Route::get('gym/{gym}/chart/monthcoursebycustomertype', 'GymController@monthCourseByCustomerType');
+    Route::get('gym/{gym}/chart/monthsalebytype', 'GymController@monthSaleByType');
+    Route::get('gym/{gym}/chart/monthactivebytype', 'GymController@monthActiveByType');
     Route::post('gym/{gym}/order/{order}/refund', 'OrderController@refund');
     Route::post('gym/{gym}/order/{order}/split', 'OrderController@split');
     Route::resource('gym/{gym}/csv', 'CsvImportController');

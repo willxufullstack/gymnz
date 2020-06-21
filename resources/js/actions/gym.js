@@ -101,12 +101,28 @@ export function resetCoachPwd($gymId, $coachId) {
 
 
 /********LOAD CUSTOMER*********/
-export function loadCustomer(gymId) {
+export function loadCustomer(gymId, extra = null) {
+    const params = extra ? extra : {}
     return {
         type: ActionTypes.LOAD_CUSTOMER,
         payload: {
             request: {
-                url: '/gym/' + gymId + '/customer'
+                url: '/gym/' + gymId + '/customer',
+                params
+            }
+        }
+    };
+}
+
+/********LOAD CUSTOMER HOTMAP*********/
+export function loadCustomerHotmap(gymId, extra = null) {
+    const params = extra ? extra : {}
+    return {
+        type: ActionTypes.LOAD_CUSTOMER_HOTMAP,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/hotmap',
+                params
             }
         }
     };
@@ -569,6 +585,42 @@ export function authDianping(gymId, code) {
                 method: 'post',
                 url: '/gym/' + gymId + '/bind/',
                 data: { code }
+            }
+        }
+    }
+}
+
+export function loadMonthcourseByCustomerType(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_MONTH_COURSE_BY_CUSTOMER_TYPE,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/chart/monthcoursebycustomertype',
+                params
+            }
+        }
+    }
+}
+
+export function loadMonthSaleByType(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_MONTH_SALE_BY_TYPE,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/chart/monthsalebytype',
+                params
+            }
+        }
+    }
+}
+
+export function loadMonthActiveByType(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_MONTH_ACTIVE_BY_TYPE,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/chart/monthactivebytype',
+                params
             }
         }
     }

@@ -9,9 +9,8 @@ use App\Console\Commands\DianpingCrawler;
 use App\Schedule;
 use App\User;
 use Auth;
-
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class GymController extends Controller
 {
@@ -149,9 +148,15 @@ class GymController extends Controller
         }
         return response()->json(['updated' => $i], 200);
     }
+    public function getHotmaps(Request $request, $id)
+    {
+        $date = $request->input('date', date('Y-m-d'));
+        $duration = $request->input('duration', 7);
+        return User::getUserIdToHotmap($id, $date, $duration);
+    }
 
 
-    public function getCustomerList($id)
+    public function getCustomerList(Request $request, $id)
     {
         // TODO permission check
         $customers = Order::with('customer')
@@ -181,6 +186,13 @@ class GymController extends Controller
         // add schedule data to ret
         foreach ($ret as &$item) {
             $item['latest_schedule'] = User::getLatestScheduleById($item['id'], 2);
+        }
+
+        if ($request->has('hotmap')) {
+            $allHotmaps = User::getUserIdToHotmap($id, date('Y-m-d'), 35);
+            foreach ($ret as &$item) {
+                $item['hotmap'] = $allHotmaps[$item['id']] ?? str_repeat('0', 35);
+            }
         }
 
         return response()->json($ret, 200);
@@ -314,5 +326,124 @@ class GymController extends Controller
         $customer->sex = $request->input('sex');
         $customer->save();
         return response()->json($customer);
+    }
+
+    public function monthCourseByCustomerType(Request $request, $gymId)
+    {
+        if (!$request->has('end')) {
+            return response()->json(array('message' => 'missing time range'), 500);
+        }
+
+        $ret = [];
+
+        $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'));
+        $duration = $request->input('duration', 6);
+
+        for ($i = 0; $i <= $duration; $i++) {
+            $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => 0, 'recent' => 0, 'new' => 0];
+            $currentMonth->subMonth();
+        }
+
+        $ret = array_reverse($ret);
+
+        $end =  Carbon::createFromFormat('Y-m-d', $request->input('end'))->setDay(1)->addMonth()->subDay();
+        $start =  Carbon::createFromFormat('Y-m-d', $request->input('end'))->setDay(1)->addMonth()->subMonths($duration);
+
+        $schedules = Schedule::with(['customer'])
+            ->where('gym_id', $gymId)
+            ->where('status', 2)
+            ->where('date', '>=', $start->format('Y-m-d'))
+            ->where('date', '<=', $end->format('Y-m-d'))
+            ->get();
+        foreach ($schedules as $schedule) {
+            $month = Carbon::createFromFormat('Y-m-d', $schedule->date)->locale('zh')->translatedFormat('F');
+            $ret[$month]['all'] += 1;
+            if ($schedule->customer->isNew($end)) {
+                $ret[$month]['new'] += 1;
+            }
+            if ($schedule->customer->isRecent($end)) {
+                $ret[$month]['recent'] += 1;
+            }
+        }
+
+        return $ret;
+    }
+
+    public function monthSaleByType(Request $request, $gymId)
+    {
+        if (!$request->has('end')) {
+            return response()->json(array('message' => 'missing time range'), 500);
+        }
+
+        $ret = [];
+
+        $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'));
+        $duration = $request->input('duration', 6);
+
+        for ($i = 0; $i <= $duration; $i++) {
+            $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => 0, 'new' => 0];
+            $currentMonth->subMonth();
+        }
+
+        $ret = array_reverse($ret);
+
+        $end =  Carbon::createFromFormat('Y-m-d', $request->input('end'))->setDay(1)->addMonth()->subDay();
+        $start =  Carbon::createFromFormat('Y-m-d', $request->input('end'))->setDay(1)->addMonth()->subMonths($duration);
+
+        $orders = Order::with(['customer'])
+            ->where('gym_id', $gymId)
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->get();
+
+        foreach ($orders as $order) {
+            $month = $order->created_at->locale('zh')->translatedFormat('F');
+            $ret[$month]['all'] += $order->price;
+            if ($order->isFirstOrder) {
+                $ret[$month]['new'] += $order->price;
+            }
+        }
+
+        return $ret;
+    }
+
+    public function monthActiveByType(Request $request, $gymId)
+    {
+        if (!$request->has('end')) {
+            return response()->json(array('message' => 'missing time range'), 500);
+        }
+
+        $ret = [];
+
+        $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'));
+        $duration = $request->input('duration', 6);
+
+        for ($i = 0; $i <= $duration; $i++) {
+            $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => 0, 'recent' => 0];
+            $currentMonth->subMonth();
+        }
+
+        $ret = array_reverse($ret);
+
+        $end =  Carbon::createFromFormat('Y-m-d', $request->input('end'))->setDay(1)->addMonth()->subDay();
+        $start =  Carbon::createFromFormat('Y-m-d', $request->input('end'))->setDay(1)->addMonth()->subMonths($duration);
+
+        $schedules = Schedule::with(['customer'])
+            ->where('gym_id', $gymId)
+            ->where('status', 2)
+            ->where('order_id', '>', 0)
+            ->where('date', '>=', $start->format('Y-m-d'))
+            ->where('date', '<=', $end->format('Y-m-d'))
+            ->groupBy('customer_id')
+            ->get();
+        foreach ($schedules as $schedule) {
+            $month = Carbon::createFromFormat('Y-m-d', $schedule->date)->locale('zh')->translatedFormat('F');
+            $ret[$month]['all'] += 1;
+            if ($schedule->customer->isRecent($end)) {
+                $ret[$month]['recent'] += 1;
+            }
+        }
+
+        return $ret;
     }
 }

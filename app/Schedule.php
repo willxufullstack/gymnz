@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 
@@ -80,7 +81,7 @@ class Schedule extends Model
             $hash = [];
         }
         foreach ($detail as $action) {
-            if($action['contenttype'] === 'action'){
+            if ($action['contenttype'] === 'action') {
                 $action['lastUsed'] = $this->date;
                 $hash[$action['id']] = $action;
             }
@@ -142,7 +143,7 @@ class Schedule extends Model
     {
         $detail = json_decode($this->detail);
         $title = '~ 训练 ~';
-        if(empty($detail)){
+        if (empty($detail)) {
             return [];
         }
 
@@ -166,7 +167,7 @@ class Schedule extends Model
 
     public function toConclusionCard()
     {
-        if(empty(trim($this->conclusion))){
+        if (empty(trim($this->conclusion))) {
             return [];
         }
         return [
@@ -268,7 +269,6 @@ class Schedule extends Model
             $followup->save();
         }
     }
-
 
     public function triggerNewFollowp($postponeDays = 1)
     {
