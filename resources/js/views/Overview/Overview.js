@@ -9,11 +9,6 @@ import { withStyles, Avatar, ListItem, List, Grid } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import SimpleMenu from '-components/SimpleMenu/SimpleMenu'
-import Typography from '@material-ui/core/Typography'
-import QuadrantChart from '../History/QuadrantChart'
-import DoubleAreaChart from './DoubleAreaChart'
-import AreaChart from './AreaChart'
-import { Hint } from 'react-vis'
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import DayjsUtils from '@date-io/dayjs'
 import Titlebar from '../../components/TitleBar/Titlebar'
@@ -21,7 +16,6 @@ import ClickableBadge from '../../components/ClickableBadge/ClickableBadge'
 import Panel from '../../components/Panel/Panel'
 import DoubleArrowIcon from '-assets/img/double_arrow.svg'
 import LineChart from '../../components/LineChart/LineChart'
-import BarChart from '../../components/BarChart/BarChart'
 import BarChartPanel from '../../components/BarChart/BarChartPanel'
 const styles = {
     container: {
@@ -351,13 +345,10 @@ class Overview extends React.Component {
         const customerWithLatestSchedule = this.props.gym.customers.find(
             item => item.id === parseInt(customerId)
         )
-        if(!customerWithLatestSchedule) {
-            return ''
-        }
-        const hotmapData = userId => {
+        const getHotmapData = userId => {
             const hotmapStr = this.props.gym.hotmap[userId + '']
             if (!hotmapStr) {
-                return utils.range(0, 7).map(() => utils.range(0, 5))
+                return utils.range(0, 7).map(() => [0, 0, 0, 0, 0])
             }
             const data = utils.range(0, 7).map(() => [])
             hotmapStr
@@ -368,6 +359,9 @@ class Overview extends React.Component {
                 })
             return data
         }
+
+        const hotmapData = getHotmapData(customerWithLatestSchedule.id)
+
         // + ' | ' + schedule.coach.user.name
         return (
             <ListItem key={customerWithLatestSchedule.id}>
@@ -398,7 +392,7 @@ class Overview extends React.Component {
                         yLabelWidth={0}
                         xLabels={['', '', '', '', '', '', '']}
                         yLabels={['', '', '', '', '']}
-                        data={hotmapData(customerWithLatestSchedule.id)}
+                        data={hotmapData}
                         cellStyle={(background, value) => {
                             const style = {
                                 maxWidth: '6px',
@@ -470,7 +464,7 @@ class Overview extends React.Component {
                 ret.push(currentMonthCustomersMap[customerId][0].customer)
             }
         })
-        return Object.keys(ret)
+        return ret.map(c => c.id)
     }
 
     getCoolCustomers = () => {

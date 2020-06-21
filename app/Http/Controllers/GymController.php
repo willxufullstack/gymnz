@@ -352,6 +352,7 @@ class GymController extends Controller
         $schedules = Schedule::with(['customer'])
             ->where('gym_id', $gymId)
             ->where('status', 2)
+            ->where('order_id', '>', 0)
             ->where('date', '>=', $start->format('Y-m-d'))
             ->where('date', '<=', $end->format('Y-m-d'))
             ->get();

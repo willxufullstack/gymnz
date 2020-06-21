@@ -40,7 +40,6 @@ const LineChart = React.memo(({
 }) => {
     const [currentColumn, switchColumn] = useState(defaultColumn)
 
-    console.log(title)
     const current = data[Object.keys(data)[0]]
     const prev = data[Object.keys(data)[1]]
 
