@@ -625,6 +625,8 @@ class Overview extends React.Component {
 
             wrappedData.push([row ? row.stock : 0, row ? row.stock - row.expired : 0])
         })
+        xLabels.reverse()
+        wrappedData.reverse()
 
         return (
             <BarChartPanel

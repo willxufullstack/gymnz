@@ -7,7 +7,7 @@ const styles = {
     container: {
         flex: 1,
         cursor: 'pointer',
-        minWidth: 72,
+        minWidth: 80,
         display: 'flex',
         flexDirection: 'column'
     },

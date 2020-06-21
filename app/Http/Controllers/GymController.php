@@ -420,7 +420,7 @@ class GymController extends Controller
         $duration = $request->input('duration', 6);
 
         for ($i = 0; $i <= $duration; $i++) {
-            $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => 0, 'recent' => 0];
+            $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => [], 'recent' => []];
             $currentMonth->subMonth();
         }
 
@@ -440,10 +440,15 @@ class GymController extends Controller
         foreach ($schedules as $schedule) {
             $monthObj = Carbon::createFromFormat('Y-m-d', $schedule->date);
             $month = $monthObj->locale('zh')->translatedFormat('F');
-            $ret[$month]['all'] += 1;
+            $ret[$month]['all'][$schedule->customer_id] = 1;
             if ($schedule->customer->isRecent($monthObj)) {
-                $ret[$month]['recent'] += 1;
+                $ret[$month]['recent'][$schedule->customer_id] = 1;
             }
+        }
+
+        foreach($ret as &$row){
+            $row['all'] = count($row['all']);
+            $row['recent'] = count($row['recent']);
         }
 
         return $ret;
