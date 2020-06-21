@@ -356,12 +356,13 @@ class GymController extends Controller
             ->where('date', '<=', $end->format('Y-m-d'))
             ->get();
         foreach ($schedules as $schedule) {
-            $month = Carbon::createFromFormat('Y-m-d', $schedule->date)->locale('zh')->translatedFormat('F');
+            $monthObj = Carbon::createFromFormat('Y-m-d', $schedule->date);
+            $month =$monthObj->locale('zh')->translatedFormat('F');
             $ret[$month]['all'] += 1;
-            if ($schedule->customer->isNew($end)) {
+            if ($schedule->customer->isNew(Carbon::createFromFormat('Y-m-d', $schedule->date))) {
                 $ret[$month]['new'] += 1;
             }
-            if ($schedule->customer->isRecent($end)) {
+            if ($schedule->customer->isRecent(Carbon::createFromFormat('Y-m-d', $schedule->date))) {
                 $ret[$month]['recent'] += 1;
             }
         }
@@ -437,9 +438,10 @@ class GymController extends Controller
             ->groupBy('customer_id')
             ->get();
         foreach ($schedules as $schedule) {
-            $month = Carbon::createFromFormat('Y-m-d', $schedule->date)->locale('zh')->translatedFormat('F');
+            $monthObj = Carbon::createFromFormat('Y-m-d', $schedule->date);
+            $month = $monthObj->locale('zh')->translatedFormat('F');
             $ret[$month]['all'] += 1;
-            if ($schedule->customer->isRecent($end)) {
+            if ($schedule->customer->isRecent($monthObj)) {
                 $ret[$month]['recent'] += 1;
             }
         }

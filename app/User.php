@@ -247,9 +247,9 @@ class User extends Authenticatable implements JWTSubject
 
     public function isNew(Carbon $pivDate)
     {
-        $pivDate->setDay(1)->addMonth();
+        $pivDate->setDay(1);
+        // dd($this->created_at."\n");
 
-        $pivDate->subMonth();
         return $this->created_at->gte($pivDate);
     }
 
