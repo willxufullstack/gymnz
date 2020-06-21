@@ -435,7 +435,6 @@ class GymController extends Controller
             ->where('order_id', '>', 0)
             ->where('date', '>=', $start->format('Y-m-d'))
             ->where('date', '<=', $end->format('Y-m-d'))
-            ->groupBy('customer_id')
             ->get();
         foreach ($schedules as $schedule) {
             $monthObj = Carbon::createFromFormat('Y-m-d', $schedule->date);
