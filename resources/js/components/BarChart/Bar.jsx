@@ -50,13 +50,33 @@ const BarItem = ({ classes, width, value, max, color }) => {
     )
 }
 
-const Bar = ({ classes, data, colors, max = 100, width = 10 }) => {
-    const containerStyle = {}
+const Bar = ({ classes, data, colors, legends, max = 100, width = 10 }) => {
+    const TooltipTitle = ({ data, colors }) => {
+        return (
+            <React.Fragment>
+                {data.map((row, i) => {
+                    return (
+                        <div key={i + ''} style={{ display: 'flex', alignItems: 'center' }}>
+                            <span
+                                style={{
+                                    background: colors[i],
+                                    width: 8,
+                                    height: 8,
+                                    borderRadius: 4,
+                                    marginRight: 6
+                                }}
+                            />
+                            <span>{legends[i]}: {row}</span>
+                        </div>
+                    )
+                })}
+            </React.Fragment>
+        )
+    }
 
-    const title = data.join(' | ')
     return (
-        <div className={classes.container} style={containerStyle}>
-            <Tooltip title={title}>
+        <div className={classes.container}>
+            <Tooltip placement="right" title={<TooltipTitle data={data} colors={colors} />}>
                 <div className={classes.flexContainer}>
                     {data.map((v, i) => (
                         <BarItem

@@ -358,7 +358,7 @@ class GymController extends Controller
             ->get();
         foreach ($schedules as $schedule) {
             $monthObj = Carbon::createFromFormat('Y-m-d', $schedule->date);
-            $month =$monthObj->locale('zh')->translatedFormat('F');
+            $month = $monthObj->locale('zh')->translatedFormat('F');
             $ret[$month]['all'] += 1;
             if ($schedule->customer->isNew(Carbon::createFromFormat('Y-m-d', $schedule->date))) {
                 $ret[$month]['new'] += 1;
@@ -383,7 +383,7 @@ class GymController extends Controller
         $duration = $request->input('duration', 6);
 
         for ($i = 0; $i <= $duration; $i++) {
-            $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => 0, 'new' => 0];
+            $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => 0, 'recent' => 0, 'new' => 0];
             $currentMonth->subMonth();
         }
 
@@ -401,8 +401,11 @@ class GymController extends Controller
         foreach ($orders as $order) {
             $month = $order->created_at->locale('zh')->translatedFormat('F');
             $ret[$month]['all'] += $order->price;
-            if ($order->isFirstOrder) {
+            if ($order->customer->isNew($order->created_at)) {
                 $ret[$month]['new'] += $order->price;
+            }
+            if ($order->customer->isRecent($order->created_at)) {
+                $ret[$month]['recent'] += $order->price;
             }
         }
 
@@ -421,7 +424,7 @@ class GymController extends Controller
         $duration = $request->input('duration', 6);
 
         for ($i = 0; $i <= $duration; $i++) {
-            $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => [], 'recent' => []];
+            $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => [], 'new' => [], 'recent' => []];
             $currentMonth->subMonth();
         }
 
@@ -441,13 +444,17 @@ class GymController extends Controller
             $monthObj = Carbon::createFromFormat('Y-m-d', $schedule->date);
             $month = $monthObj->locale('zh')->translatedFormat('F');
             $ret[$month]['all'][$schedule->customer_id] = 1;
-            if ($schedule->customer->isRecent($monthObj)) {
+            if ($schedule->customer->isNew(Carbon::createFromFormat('Y-m-d', $schedule->date))) {
+                $ret[$month]['new'][$schedule->customer_id] = 1;
+            }
+            if ($schedule->customer->isRecent(Carbon::createFromFormat('Y-m-d', $schedule->date))) {
                 $ret[$month]['recent'][$schedule->customer_id] = 1;
             }
         }
 
-        foreach($ret as &$row){
+        foreach ($ret as &$row) {
             $row['all'] = count($row['all']);
+            $row['new'] = count($row['new']);
             $row['recent'] = count($row['recent']);
         }
 

@@ -81,6 +81,7 @@ const BarChart = ({
             data={row}
             isLast={i === data.length - 1}
             colors={colors}
+            legends={legends}
             max={maxYAxis}
         />
     ))

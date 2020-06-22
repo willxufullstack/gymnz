@@ -22,8 +22,8 @@ const styles = {
     },
     chartTitle: {
         color: '#333',
-        fontWeight: '400',
-        fontSize: 20,
+        fontWeight: '700',
+        fontSize: 22,
         flex: 1
     }
 }

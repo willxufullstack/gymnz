@@ -345,6 +345,9 @@ class Overview extends React.Component {
         const customerWithLatestSchedule = this.props.gym.customers.find(
             item => item.id === parseInt(customerId)
         )
+        if (!customerWithLatestSchedule) {
+            return ''
+        }
         const getHotmapData = userId => {
             const hotmapStr = this.props.gym.hotmap[userId + '']
             if (!hotmapStr) {
@@ -359,7 +362,6 @@ class Overview extends React.Component {
                 })
             return data
         }
-
         const hotmapData = getHotmapData(customerWithLatestSchedule.id)
 
         // + ' | ' + schedule.coach.user.name
@@ -615,9 +617,12 @@ class Overview extends React.Component {
                     )
                 })
             const row = rows[0]
-            xLabels.push(utils.getMonthLabel(day.month()));
+            xLabels.push(utils.getMonthLabel(day.month()))
 
-            wrappedData.push([row ? row.stock : 0, row ? row.stock - row.expired : 0])
+            wrappedData.push([
+                row ? row.stock : 0,
+                row ? row.stock - row.expired : 0
+            ])
         })
         xLabels.reverse()
         wrappedData.reverse()
@@ -665,7 +670,7 @@ class Overview extends React.Component {
                 xTicker={'monthLabel'}
                 defaultColumn={'shop_uv_sum'}
                 data={data}
-                width={760}
+                width={740}
                 height={200}
             />
         )
@@ -725,7 +730,8 @@ class Overview extends React.Component {
                 </div>
                 <div className={classes.rightContainerBody}>
                     <Panel flex scroll>
-                        {dots[this.state.activeCustomerTab].getCustomers()
+                        {this.props.gym.customers.length &&
+                        dots[this.state.activeCustomerTab].getCustomers()
                             .length ? (
                             <List>{getCard(this.state.activeCustomerTab)}</List>
                         ) : (
@@ -759,15 +765,15 @@ class Overview extends React.Component {
         const { monthActiveByType } = this.props.gym.report
         const xLabels = Object.keys(monthActiveByType)
         const data = Object.values(monthActiveByType).map(row => {
-            return [row.all, row.recent]
+            return [row.all, row.recent, row.new]
         })
 
         return (
             <BarChartPanel
                 title={'活跃客户'}
-                colors={['#D0F0EC', '#29aa99']}
+                colors={['#D0F0EC', '#81F6D2', '#29aa99']}
                 data={data}
-                legends={['所有', '半年内新客']}
+                legends={['所有', '半年内新客', '本月新客']}
                 xLabels={xLabels}
                 unit={'人'}
             />
@@ -778,15 +784,15 @@ class Overview extends React.Component {
         const { monthSaleByType } = this.props.gym.report
         const xLabels = Object.keys(monthSaleByType)
         const data = Object.values(monthSaleByType).map(row => {
-            return [row.all, row.new]
+            return [row.all, row.recent, row.new]
         })
 
         return (
             <BarChartPanel
                 title={'销售'}
-                colors={['#D0F0EC', '#29aa99']}
+                colors={['#D0F0EC', '#81F6D2', '#29aa99']}
                 data={data}
-                legends={['所有', '新客']}
+                legends={['所有', '半年内新客', '本月新客']}
                 xLabels={xLabels}
                 unit={'元'}
             />
