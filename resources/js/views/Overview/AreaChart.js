@@ -27,11 +27,9 @@ export default class AreaChart extends React.Component {
     }
 
     _onHover = v => {
-        console.log('------')
         this.setState({ current: v })
     }
     _onBlur = () => {
-        console.log('xxxxx')
         this.setState({ current: null })
     }
 

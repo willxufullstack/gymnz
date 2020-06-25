@@ -1,11 +1,8 @@
 /* eslint-disable */
 import React, { Suspense } from 'react'
-import PropTypes from 'prop-types'
 import { Switch, Route, Redirect } from 'react-router-dom'
 // creates a beautiful scrollbar
 import 'perfect-scrollbar/css/perfect-scrollbar.css'
-// @material-ui/core components
-import withStyles from '@material-ui/core/styles/withStyles'
 // core components
 import Sidebar from '-components/Sidebar/Sidebar.jsx'
 import routes from '../routes.js'
@@ -13,7 +10,6 @@ import routes from '../routes.js'
 import { bindActionCreators } from 'redux'
 import * as Actions from '../actions'
 import connect from 'react-redux/es/connect/connect'
-import dashboardStyle from '-assets/jss/material-dashboard-react/layouts/dashboardStyle.jsx'
 import Snackbar from '-components/Snackbar/Snackbar'
 import './Admin.scss'
 

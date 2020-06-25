@@ -20,7 +20,9 @@ const styles = {
     value: {
         color: '#515151',
         fontSize: 16,
-        fontWeight: '700'
+        fontWeight: '700',
+        display: 'flex',
+        lineHeight: '32px'
     },
     unselected: {
         filter: 'opacity(0.5)'

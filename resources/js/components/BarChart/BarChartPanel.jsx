@@ -11,7 +11,6 @@ const styles = {
         flexDirection: 'column',
         padding: '12px 24px',
         flex: 1,
-        height: '100%',
         width: '100%'
     },
     chartTitleContainer: {

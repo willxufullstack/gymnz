@@ -5,7 +5,7 @@
 @import "variables";
 
 // Bootstrap
-@import "~bootstrap/scss/bootstrap";
+// @import "~bootstrap/scss/bootstrap";
 @import "~react-vis/dist/style";
 
 .nzg-container {
@@ -106,14 +106,6 @@
   > span {
     top: -2px;
     right: -5px;
-  }
-}
-
-.ct-series-a {
-  .ct-line,
-  .ct-point {
-    /* Set the colour of this series line */
-    stroke: #9c27b0 !important;
   }
 }
 
