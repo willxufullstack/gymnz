@@ -101,8 +101,9 @@ const styles = {
         marginLeft: 6
     },
     customerProfile: {
-        paddingLeft: 8,
-        flex: 1
+        flex: 2,
+        paddingLeft: 12,
+        paddingTop: 4
     },
     customerProfileName: {
         fontSize: 14,
@@ -116,7 +117,7 @@ const styles = {
         color: '#999'
     },
     customerProfileCoach: {
-        flex: 1,
+        flex: 2,
         fontSize: 16,
         fontWeight: 900,
         color: '#666',
@@ -124,7 +125,8 @@ const styles = {
         textAlign: 'center'
     },
     customerProfileHotmap: {
-        flex: 1
+        flex: 2,
+        minWidth: 60
     },
     coachQuadrantFilter: {
         position: 'absolute',
@@ -366,14 +368,14 @@ class Overview extends React.Component {
 
         // + ' | ' + schedule.coach.user.name
         return (
-            <ListItem key={customerWithLatestSchedule.id}>
+            <ListItem key={customerWithLatestSchedule.id} style={{margin: '8px auto'}}>
                 <Avatar
                     src={customerWithLatestSchedule.avatar}
                     style={{
                         borderWidth: 1,
                         borderColor: '#ececec',
-                        width: 32,
-                        height: 32
+                        width: 36,
+                        height: 36
                     }}
                 />
                 <div className={classes.customerProfile}>
@@ -412,7 +414,7 @@ class Overview extends React.Component {
                         }}
                     />
                 </div>
-                <img src={DoubleArrowIcon} />
+                <img src={DoubleArrowIcon} style={{flex: 1}} />
                 <div className={classes.customerProfileCoach}>
                     {customerWithLatestSchedule.latest_schedule
                         ? customerWithLatestSchedule.latest_schedule.coach.user

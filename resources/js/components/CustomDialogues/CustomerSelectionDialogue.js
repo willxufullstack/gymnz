@@ -1,116 +1,174 @@
-import React from "react";
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Button from '-components/CustomButtons/Button';
-import { withStyles } from '@material-ui/styles';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import CustomInput from "-components/CustomInput/CustomInput.jsx";
-import { pinyin } from "-utils";
-import Typography from '@material-ui/core/Typography';
+import React from 'react'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import Dialog from '@material-ui/core/Dialog'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import { withStyles } from '@material-ui/styles'
+import classNames from 'classnames'
+import { pinyin } from '-utils'
 import i18N from '../../lang'
+import Titlebar from '../TitleBar/Titlebar'
+import RoundButton from '../RoundButton/RoundButton'
+import dayjs from 'dayjs'
+import SearchInput from '../SearchInput/SearchInput'
 
 const L = i18N('CustomerSelectionDialogue')
 const styles = {
-    dialogTitle: {
-        paddingTop: 0,
-        paddingBottom: 0,
-    },
-    title: {
-        background: '#9c27b0',
-        color: 'white',
-        padding: '12px 24px'
+    time: {
+        color: '#999',
+        position: 'relative',
+        margin: '0 0 -6px 24px',
+        fontSize: 18,
+        flex: 1
     },
     searchBox: {
         marginTop: 0
     },
     searchBoxInput: {
-        color: '#9c27b0',
+        color: '#9c27b0'
     },
     customerList: {
-        height: 320,
+        height: 320
     },
     customerName: {
-        color: '#666'
+        color: '#666',
+        flex: 2,
+        '&> span': {
+            fontWeight: '700'
+        }
+    },
+    customerNameSelected: {
+        color: '#29aa99',
+        flex: 2,
+        '&> span': {
+            color: '#29aa99',
+            fontWeight: '700'
+        }
+    },
+    lastDate: {
+        flex: 3,
+        fontWeight: '400 !important',
+        paddingLeft: 64,
+        color: '#999'
+    },
+    customerRow: {
+        borderRadius: 8,
+        '&:hover': {
+            backgroundColor: '#F3F3F3'
+        }
     },
     selectedCustomer: {
-        height: 80,
-        boxShadow: '0 1px 12px 0 rgba(0, 0, 0, 0.14)'
-    },
-};
+        borderRadius: 8,
+        backgroundColor: '#fff !important',
+        '&> span': {
+            fontWeight: '700',
+            color: '#29aa99'
+        }
+    }
+}
 
 class CustomerSelectionDialogue extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             selectedCustomer: null,
             input: ''
         }
     }
 
-    onTapCustomer = (selectedCustomer) => () => {
-        this.setState({ selectedCustomer });
-    };
+    onTapCustomer = selectedCustomer => () => {
+        this.setState({ selectedCustomer })
+    }
 
-    getCustomerRow = (customer) => {
-        const { classes } = this.props;
-        return this.state.selectedCustomer && customer.id === this.state.selectedCustomer.id ?
-            <ListItem key={customer.id} className={classes.selectedCustomer}>
-                <ListItemText className={classes.customerName} primary={customer.name} />
-                <ListItemSecondaryAction>
-                    <Button color='primary' onClick={() => this.props.onSelect(this.state.selectedCustomer)}>{L.schedule}</Button>
-                </ListItemSecondaryAction>
+    getCustomerRow = customer => {
+        const { classes } = this.props
+        const selected =
+            this.state.selectedCustomer &&
+            customer.id === this.state.selectedCustomer.id
+        const lastDate = customer.latest_schedule
+            ? dayjs(customer.latest_schedule.date).format('MM/DD')
+            : '- -'
+        return (
+            <ListItem
+                onClick={this.onTapCustomer(customer)}
+                key={customer.id}
+                button
+                disableRipple
+                className={
+                    selected ? classes.selectedCustomer : classes.customerRow
+                }
+            >
+                <ListItemText
+                    className={
+                        selected
+                            ? classes.customerNameSelected
+                            : classes.customerName
+                    }
+                    primary={customer.name}
+                />
+                <span className={classes.lastDate}>{lastDate}</span>
+                <RoundButton
+                    color="#29aa99"
+                    label={L.schedule}
+                    extend={8}
+                    shadow
+                    style={{ visibility: selected ? 'visible' : 'hidden', opacity: selected ? 1 : 0, transition: 'opacity 0.15s linear, visibility 0.15s linear' }}
+                    onClick={() =>
+                        customerthis.props.onSelect(this.state.selectedCustomer)
+                    }
+                />
             </ListItem>
-            :
-            <ListItem key={customer.id} onClick={this.onTapCustomer(customer)} button>
-                <ListItemText className={classes.customerName} primary={customer.name} />
-            </ListItem>;
-    };
+        )
+    }
 
     filteredCustomer = () => {
         if (!this.state.input) {
-            return this.props.customers;
+            return this.props.customers || []
         }
-        return this.props.customers.filter(c => pinyin.getInitChars(c.name).indexOf(this.state.input.toLowerCase()) >= 0);
-    };
+        return this.props.customers.filter(
+            c =>
+                c.name.indexOf(this.state.input) >= 0 ||
+                pinyin
+                    .getInitChars(c.name)
+                    .indexOf(this.state.input.toLowerCase()) >= 0
+        )
+    }
 
-    onSearchKeyChanged = (e) => {
+    onSearchKeyChanged = e => {
         this.setState({
             selectedCustomer: null,
             input: e.currentTarget.value
-        });
-    };
+        })
+    }
 
     render() {
-        const { title, onCancel, classes } = this.props;
-
-        return (<Dialog open={true} onClose={onCancel} fullWidth={true}>
-            <Typography className={classes.title}>{title}</Typography>
-            <DialogTitle className={classes.dialogTitle}>
-                <CustomInput
-                    id={'Search'}
-                    formControlProps={{
-                        fullWidth: true,
-                        className: classes.searchBox,
-                    }}
-                    inputProps={{
-                        value: this.state.input,
-                        onChange: this.onSearchKeyChanged,
-                        placeholder: L.search,
-                        className: classes.searchBoxInput
-                    }}
-                />
-            </DialogTitle>
-            <DialogContent>
-                <List className={classes.customerList}>
-                    {this.filteredCustomer().map(customer => this.getCustomerRow(customer))}
-                </List>
-            </DialogContent>
-        </Dialog>);
+        const { title, time, onCancel, classes } = this.props
+        return (
+            <Dialog open={this.props.open} onClose={onCancel} fullWidth={true}>
+                <DialogTitle>
+                    <Titlebar label={title} style={{ padding: '0' }}>
+                        <React.Fragment>
+                            <div className={classes.time}>{time}</div>
+                            <SearchInput
+                                onChange={this.onSearchKeyChanged}
+                                value={this.state.input}
+                                placeholder={'姓名/首字母'}
+                            />
+                        </React.Fragment>
+                    </Titlebar>
+                </DialogTitle>
+                <DialogContent style={{ paddingTop: 0 }}>
+                    <List className={classes.customerList}>
+                        {this.filteredCustomer().map(customer =>
+                            this.getCustomerRow(customer)
+                        )}
+                    </List>
+                </DialogContent>
+            </Dialog>
+        )
     }
 }
 
-export default withStyles(styles)(CustomerSelectionDialogue);
+export default withStyles(styles)(CustomerSelectionDialogue)

@@ -1,4 +1,5 @@
 import { withStyles } from '@material-ui/core'
+import classNames from 'classnames'
 import React from 'react'
 
 const styles = {
@@ -21,15 +22,16 @@ const styles = {
         display: 'inline-block',
         borderRadius: 4,
         marginRight: 24,
-        boxShadow: '0px 2px 12px rgba(0, 0, 0, 0.15)'
+        boxShadow: '0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);'
     }
 }
 
-const Titlebar = ({ classes, label }) => {
+const Titlebar = ({ classes, label, children, className, style }) => {
     return (
-        <div className={classes.container}>
+        <div className={classNames(className, classes.container)} style={style}>
             <span className={classes.vr} />
             <span className={classes.title}>{label}</span>
+            {children}
         </div>
     )
 }

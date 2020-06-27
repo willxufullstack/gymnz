@@ -24,13 +24,6 @@
   filter: blur(4px);
 }
 
-.add-order {
-  position: fixed !important;
-  right: 30px;
-  bottom: 20px;
-  z-index: 1000;
-}
-
 .hide {
   display: none !important;
 }
@@ -77,16 +70,6 @@
       border: none !important;
     }
   }
-}
-.MuiPickersToolbar-toolbar {
-  background: linear-gradient(60deg, #ab47bc, #8e24aa);
-}
-.MuiPickersMonth-monthSelected {
-  color: #9c27b0 !important;
-}
-
-.MuiButton-textPrimary {
-  color: #9c27b0 !important;
 }
 
 .gym-summary-row {

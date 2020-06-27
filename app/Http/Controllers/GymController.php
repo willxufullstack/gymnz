@@ -184,18 +184,24 @@ class GymController extends Controller
 
         // get latest schedule info by customer_id
         // add schedule data to ret
+        $filtered = [];
+        $saved = [];
         foreach ($ret as &$item) {
-            $item['latest_schedule'] = User::getLatestScheduleById($item['id'], 2);
+            if (!array_key_exists($item['id'], $saved)) {
+                $item['latest_schedule'] = User::getLatestScheduleById($item['id'], 2);
+                $saved[$item['id']] = 1;
+                $filtered[] = $item;
+            }
         }
 
         if ($request->has('hotmap')) {
             $allHotmaps = User::getUserIdToHotmap($id, date('Y-m-d'), 35);
-            foreach ($ret as &$item) {
+            foreach ($filtered as &$item) {
                 $item['hotmap'] = $allHotmaps[$item['id']] ?? str_repeat('0', 35);
             }
         }
 
-        return response()->json($ret, 200);
+        return response()->json($filtered, 200);
     }
 
     public function getAvailableTime(Request $request, $id)

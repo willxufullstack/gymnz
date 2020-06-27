@@ -1,36 +1,76 @@
 .summary-card {
   margin-bottom: 0 !important
 }
-.gym-day-view-container {
-  margin-top: 20px;
-  .gymd-day-picker {
-    max-width: 50px;
-    text-align: center;
-    margin: auto;
-    input {
-      text-align: center;
-    }
+.add-order {
+  position: unset;
+  margin-left: 20px;
+  z-index: 1000;
+  background: #29aa99 !important;
+  // box-shadow: 0px 4px 12px rgba(41, 170, 153, 0.5);
+  box-shadow: 0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);
+  color: #fff;
+  transition: box-shadow .2s linear;
+
+  &:hover {
+    box-shadow: 0 1px 3px 0 rgba(60,64,67,0.302), 0 4px 8px 3px rgba(60,64,67,0.149);
   }
+}
+.gym-day-view-container {
+  margin-top: 24px;
+  border: 1px solid #f1f1f1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+
   .coach-name {
     text-align: center;
-    font-size: 18px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    font-size: 16px;
     font-weight: 500;
-    color: #666;
-    > span {
-      position: relative;
-      top: 10px;
-      right: 6px;
-      background: #9c27b0;
+    color: #333;
+  }
+  .coach-course-count {
+    position: relative;
+    background: #89ECC2;
+    width: 16px;
+    border-radius: 50%;
+    height: 16px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 16px;
+    border: solid 1px #89ECC2;
+    color: #fff;
+    font-weight: 400;
+    margin-left: 4px;
+    box-shadow: 0px 1px 4px #89ECC2;
+
+    &.red {
+      border: solid 1px #FFC56D;
+      background: #FFC56D;
+      box-shadow: 0px 1px 4px #FFC56D;
     }
   }
   .gym-day-view-header {
     padding-right: 10px;
-    > div {
-      margin: 0 !important;
+    display: flex;
+    background: #F3F3F3;
+
+    .gym-day-view-date-picker {
+      width: 68px;
+      display: flex;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 0;
+    }
+    .gym-day-view-coaches {
+      display: flex;
+      flex: 1;
     }
     .coach-column {
+      flex: 1;
+      align-items: center;
+      display: flex;
+      justify-content: center;
       > div {
         padding: 0 !important;
         text-align: center;
@@ -42,7 +82,21 @@
     padding-right: 10px;
     max-height: calc(100vh - 203px);
     overflow-y: scroll;
-    box-shadow: 0px 6px 6px -3px rgba(0, 0, 0, 0.2) inset;
+    display:flex;
+
+    .gym-day-view-body-hour-axis {
+      margin-top: -10px;
+    }
+
+    .gym-day-view-body-cols {
+      flex: 1;
+      display: flex;
+
+      .gym-day-view-body-col {
+        flex: 1;
+      }
+    }
+
     .time-column {
       position: relative;
       top: -11px;
@@ -57,14 +111,16 @@
     }
     .time-slot {
       height: 22px;
+      font-size: 16px;
+      font-weight: 500;
     }
     .schedule-slot,
     .schedule-slot-x,
     .schedule-slot-start,
     .schedule-slot-end {
-      border-top: #dcdcdc solid 1px;
+      border-top: #ececec dashed 1px;
       &.dot {
-        border-top: #999 dotted 1px;
+        border-top: #ececec dashed 1px;;
       }
       &.none {
         border-top-color: white;
@@ -74,27 +130,34 @@
     .schedule-slot-x,
     .schedule-slot-start,
     .schedule-slot-end {
-      background: #fff0f5;
-      color:rgb(189, 0, 78);
-      border-left: 4px solid rgb(189, 0, 78);
+      background: #E1F3EC;
+      color:#29aa99;
+      border-left: 6px solid #29aa99;
       padding-right: 4px;
+      padding-left: 6px;
       display: flex;
       .schedule-action {
-        margin-left: 30px;
+        margin-bottom: 4px;
+        margin-left: 8px;
+        margin-right: 4px;
+
         &.complete {
-          background: rgb(189, 0, 78);
+          background: #29aa99;
           color: #fff0f5;
           font-size: 12px;
           padding: 0 8px;
         }
       }
       .schedule-desc {
+        font-weight: 700;
         flex: 1;
+        display: flex;
+        align-items: center;
       }
       &.done{
-        background: rgb(224, 247, 217);
-        color: rgb(54, 98, 44);
-        border-left: 4px solid rgb(54, 98, 44);
+        background: #E7E7E7;
+        color: #8B8B8B;
+        border-left: 6px solid #8B8B8B;
       }
     }
 
@@ -105,9 +168,11 @@
 
     .schedule-slot-start {
       border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
     }
     .schedule-slot-end {
       border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
     }
   }
 }
