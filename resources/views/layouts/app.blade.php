@@ -21,7 +21,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app-release.css')?v=53 }}" rel="stylesheet">
+    <link href="{{ asset('css/app-release.css')}}?v=53" rel="stylesheet">
     <style>
         body {
             font-family: Nunito,sans-serif;
