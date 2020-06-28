@@ -33,16 +33,18 @@ const styles = {
         height: 320
     },
     customerName: {
-        color: '#666',
+        color: '#333',
         flex: 2,
         '&> span': {
-            fontWeight: '700'
+            fontWeight: '700',
+            fontSize: 14
         }
     },
     customerNameSelected: {
         color: '#29aa99',
         flex: 2,
         '&> span': {
+            fontSize: 14,
             color: '#29aa99',
             fontWeight: '700'
         }
@@ -51,6 +53,7 @@ const styles = {
         flex: 3,
         fontWeight: '400 !important',
         paddingLeft: 64,
+        fontSize: 14,
         color: '#999'
     },
     customerRow: {
@@ -63,6 +66,7 @@ const styles = {
         borderRadius: 8,
         backgroundColor: '#fff !important',
         '&> span': {
+            fontSize: 14,
             fontWeight: '700',
             color: '#29aa99'
         }
@@ -116,7 +120,7 @@ class CustomerSelectionDialogue extends React.Component {
                     shadow
                     style={{ visibility: selected ? 'visible' : 'hidden', opacity: selected ? 1 : 0, transition: 'opacity 0.15s linear, visibility 0.15s linear' }}
                     onClick={() =>
-                        customerthis.props.onSelect(this.state.selectedCustomer)
+                        customer && this.props.onSelect(this.state.selectedCustomer)
                     }
                 />
             </ListItem>

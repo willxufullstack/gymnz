@@ -37,14 +37,14 @@ class Confirmation extends React.Component {
                         color='#29aa99'
                         variant={'outline'}
                         onClick={onCancel}
-                        fontSize={16}
+                        fontSize={14}
                         label={cancelText || L.cancel}
                     />
                     <RoundButton
                         extend={8}
                         color='#29aa99'
                         onClick={onConfirm}
-                        fontSize={16}
+                        fontSize={14}
                         label={confirmText || L.ok}
                     />
                 </DialogActions>
