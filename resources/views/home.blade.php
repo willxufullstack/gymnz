@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <!-- Styles -->
-    <link href="{{ asset('css/app-release.css') }}?v=53" rel="stylesheet">
+    <link href="{{ asset('css/app-release.css') }}?v=54" rel="stylesheet">
 </head>
 
 <body>
@@ -37,9 +37,9 @@
     var username = "{{ Auth::user() ? Auth::user()->name : "
     GUEST " }}";
 </script>
-<script src="http://static.o2-fit.com/pro/js/manifest.js?v=53" defer></script>
-<script src="http://static.o2-fit.com/pro/js/vendor.js?v=53" defer></script>
-<script src="http://static.o2-fit.com/pro/js/app.js?v=53" defer></script>
+<script src="http://static.o2-fit.com/pro/js/manifest.js?v=54" defer></script>
+<script src="http://static.o2-fit.com/pro/js/vendor.js?v=54" defer></script>
+<script src="http://static.o2-fit.com/pro/js/app.js?v=54" defer></script>
 <!-- <script src="{{ asset('js/manifest.js') }}?v=34" defer></script>
 <script src="{{ asset('js/vendor.js') }}?v=34" defer></script>
 <script src="{{ asset('js/app.js') }}?v=34" defer></script> -->
