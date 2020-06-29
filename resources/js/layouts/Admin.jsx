@@ -12,8 +12,7 @@ import * as Actions from '../actions'
 import connect from 'react-redux/es/connect/connect'
 import Snackbar from '-components/Snackbar/Snackbar'
 import './Admin.scss'
-
-const LoadingMessage = () => "I'm loading..."
+import HashLoader from 'react-spinners/HashLoader'
 
 const switchRoutes = (
     <Switch>
@@ -35,7 +34,9 @@ class Admin extends React.Component {
     selectDefaultGym = () => {
         if (this.props.gyms && this.props.gyms.length > 0) {
             this.props.actions.switchGym(this.props.gyms[0])
-            this.props.actions.loadCustomer(this.props.gyms[0].id, {hotmap: 1})
+            this.props.actions.loadCustomer(this.props.gyms[0].id, {
+                hotmap: 1
+            })
         }
     }
 
@@ -43,7 +44,9 @@ class Admin extends React.Component {
         this.props.actions.loadGym()
         //load customer list when init
         if (this.props.setting.selectedGym.id) {
-            this.props.actions.loadCustomer(this.props.setting.selectedGym.id, {hotmap: 1})
+            this.props.actions.loadCustomer(this.props.setting.selectedGym.id, {
+                hotmap: 1
+            })
         }
     }
 
@@ -106,7 +109,21 @@ class Admin extends React.Component {
                         }}
                     />
                     <div className="container">
-                        <Suspense fallback={<LoadingMessage />}>
+                        <Suspense
+                            fallback={
+                                <div
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                >
+                                    <HashLoader loading color={'#89ECC2'} />
+                                </div>
+                            }
+                        >
                             {switchRoutes}
                         </Suspense>
                     </div>
