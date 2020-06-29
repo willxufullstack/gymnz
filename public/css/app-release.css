@@ -403,5 +403,30 @@ button:focus {
   border-radius: 18px !important;
 }
 
+.MuiMenu-paper {
+  box-shadow: none !important;
+  overflow: hidden !important;
+  border-radius: 12px !important;
+  border: 1px solid #ececec !important;
+}
+
+.MuiMenu-paper .MuiListItem-button {
+  font-size: 14px;
+  color: #333;
+  font-weight: 700;
+}
+
+.MuiMenu-paper .MuiListItem-button:hover {
+  background: #f3f3f3;
+}
+
+.MuiList-padding {
+  padding: 0 !important;
+}
+
+.MuiSelect-select:focus {
+  background-color: transparent !important;
+}
+
 
 /*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiIvY3NzL2FwcC5jc3MiLCJzb3VyY2VSb290IjoiIn0=*/

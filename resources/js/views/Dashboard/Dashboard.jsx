@@ -244,6 +244,7 @@ class Dashboard extends React.Component {
                     this.props.actions.loadCustomer(this.props.selectedGym.id)
                 })
             },
+            open: this.props.gym.showNewOrder,
             subtitle: this.props.selectedGym.name,
             title: L.createOrder,
             dialogue: true,
@@ -274,10 +275,9 @@ class Dashboard extends React.Component {
                     columns: { name: 'name', sex: 'sex', phone: 'phone' }
                 },
                 {
-                    name: 'price',
-                    label: 'Price',
-                    type: 'number',
-                    label: L.price
+                    name: 'duration',
+                    label: L.duration,
+                    type: 'number'
                 },
                 {
                     name: 'amount',
@@ -286,10 +286,12 @@ class Dashboard extends React.Component {
                     label: L.amount
                 },
                 {
-                    name: 'duration',
-                    label: L.duration,
-                    type: 'number'
+                    name: 'price',
+                    label: 'Price',
+                    type: 'number',
+                    label: L.price
                 },
+
                 {
                     name: 'gym',
                     value: this.props.selectedGym.id,
@@ -566,6 +568,7 @@ class Dashboard extends React.Component {
             <div className={classes.headerContainer}>
                 <Titlebar label={'日程'} />
                 <IconButton
+                    disableRipple
                     size="small"
                     color="primary"
                     className="add-order"
@@ -620,7 +623,7 @@ class Dashboard extends React.Component {
     render() {
         return (
             <div>
-                {this.props.gym.showNewOrder && this.newOrderDialog()}
+                {this.newOrderDialog()}
                 {this.state.scheduleDetailModal && this.scheduleDetailsDialog()}
                 {!!this.state.showCustomerSelection && (
                     <CustomerSelectionDialogue

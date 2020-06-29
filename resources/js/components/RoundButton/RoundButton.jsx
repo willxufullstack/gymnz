@@ -22,7 +22,8 @@ const RoundButton = ({
     label,
     color,
     onClick,
-    shadow = false,
+    disabled,
+    shadow,
     extend = 0,
     fontSize = 14,
     style = {}
@@ -35,7 +36,8 @@ const RoundButton = ({
         display: 'flex',
         fontWeight: '700',
         fontSize: `${fontSize}px`,
-        lineHeight: `${fontSize * 1.5}px`
+        lineHeight: `${fontSize * 1.5}px`,
+        opacity: disabled ? 0.5 : 1
     }
 
     if (shadow) {
@@ -43,7 +45,11 @@ const RoundButton = ({
     }
 
     return (
-        <div className={classNames(classes.container, className)} style={{...style, ...defaultStyle}} onClick={onClick}>
+        <div
+            className={classNames(classes.container, className)}
+            style={{ ...style, ...defaultStyle }}
+            onClick={e => !disabled && onClick(e)}
+        >
             {label}
         </div>
     )

@@ -33,6 +33,7 @@ class Customers extends React.Component {
     editProfileDialog = () => {
         return (
             <CreateNewDialogue
+                col={1}
                 onCancel={() => {
                     this.setState({ editProfileDialogue: false })
                 }}
