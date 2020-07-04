@@ -13,7 +13,8 @@ const styles = {
         display: 'inline-block',
         fontSize: 24,
         fontWeight: '900',
-        color: '#333'
+        color: '#333',
+        flex: 1
     },
     vr: {
         width: 8,

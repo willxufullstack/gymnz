@@ -10,7 +10,7 @@ const styles = {
         cursor: 'pointer',
 
         '&:hover': {
-            boxShadow: '0px 4px 12px rgba(41, 170, 153, 0.2)'
+            boxShadow: '0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149)'
         }
     }
 }
@@ -28,6 +28,7 @@ const RoundButton = ({
     fontSize = 14,
     style = {}
 }) => {
+
     const defaultStyle = {
         color: variant === 'outline' ? color : '#fff',
         backgroundColor: variant === 'outline' ? 'transparent' : color,

@@ -140,10 +140,10 @@ class CustomerSelectionDialogue extends React.Component {
         )
     }
 
-    onSearchKeyChanged = e => {
+    onSearchKeyChanged = v => {
         this.setState({
             selectedCustomer: null,
-            input: e.currentTarget.value
+            input: v
         })
     }
 

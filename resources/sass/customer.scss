@@ -1,3 +1,8 @@
+.customers-page {
+  display: flex;
+  flex-direction: column;
+}
+
 .time-sheet {
   > div {
     margin: 0 !important;

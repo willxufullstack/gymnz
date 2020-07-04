@@ -2,11 +2,13 @@ import connect from 'react-redux/es/connect/connect'
 import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import React from 'react'
-import MaterialTable from 'material-table'
+import dayjs from 'dayjs'
 import '../../../sass/customer.scss'
 import i18N from '../../lang'
-import Button from '-components/CustomButtons/Button.jsx'
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
+import SearchableTable from '../../components/SearchableTable/SearchableTable'
+import RoundButton from '../../components/RoundButton/RoundButton'
+import { pinyin } from '-utils'
 
 const L = i18N('Customers')
 class Customers extends React.Component {
@@ -77,52 +79,87 @@ class Customers extends React.Component {
 
     render() {
         const columns = [
-            { title: L.name, field: 'name' },
-            { title: L.phone, field: 'email' },
             {
-                title: L.sex,
-                field: 'sex',
-                render: row => (row.sex ? L.male : L.female)
+                title: L.name,
+                flex: 2,
+                render: (row) => {
+                    return (
+                        <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                            <span
+                                style={{
+                                    width: 6,
+                                    height: 6,
+                                    marginRight: 8,
+                                    borderRadius: '50%',
+                                    backgroundColor: row.sex
+                                        ? '#E1F3EC'
+                                        : '#FFDFDF'
+                                }}
+                            />
+                            <span style={{flex: 1}}>{row.name}</span>
+                        </div>
+                    )
+                }
             },
             {
-                title: '操作',
-                render: row => (
-                    <Button
-                        size="sm"
-                        color="transparentPrimary"
-                        onClick={e => {
-                            e.stopPropagation()
-                            this.setState({ editProfileDialogue: row })
-                        }}
-                    >
-                        {'修改'}
-                    </Button>
+                title: '上次训练',
+                flex: 2,
+                render: row =>
+                    row.latest_schedule
+                        ? dayjs(row.latest_schedule.date).format('MM/DD')
+                        : '- -'
+            },
+            {
+                title: '教练',
+                flex: 2,
+                render: row =>
+                    row.latest_schedule
+                        ? row.latest_schedule.coach.user.name
+                        : '- -'
+            },
+            {
+                title: '',
+                flex: 1,
+                visibleOnHover: true,
+                render: (row) => (
+                    <div>
+                        <RoundButton
+                            fontSize={12}
+                            label={'修改'}
+                            variant="outline"
+                            color={'#29aa99'}
+                            onClick={e => {
+                                e.stopPropagation()
+                                this.setState({ editProfileDialogue: row })
+                            }}
+                        />
+                    </div>
                 )
             }
         ]
 
+        const onSearch = (keyword) => {
+            return this.props.gym.customers.filter(
+                c =>
+                    c.name.indexOf(keyword) >= 0 ||
+                    pinyin
+                        .getInitChars(c.name)
+                        .indexOf(keyword.toLowerCase()) >= 0
+            )
+        }
+
         return (
             <div className="customers-page">
                 {this.state.editProfileDialogue && <this.editProfileDialog />}
-                <MaterialTable
-                    title={L.customers}
-                    columns={columns}
-                    data={this.props.gym.customers}
-                    onRowClick={this.onRowClick}
-                    options={{
-                        pageSize: 10,
-                        pageSizeOptions: []
-                    }}
-                    localization={{
-                        body: {
-                            emptyDataSourceMessage: L.emptyDataSourceMessage
-                        },
-                        toolbar: {
-                            searchTooltip: L.searchTooltip,
-                            searchPlaceholder: L.searchPlaceholder
-                        }
-                    }}
-                />
+                {
+                    <SearchableTable
+                        onSearch={onSearch}
+                        title={L.customers}
+                        columns={columns}
+                        data={this.props.gym.customers}
+                        onRowClick={this.onRowClick}
+                    />
+                }
             </div>
         )
     }

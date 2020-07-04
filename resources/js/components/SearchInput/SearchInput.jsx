@@ -37,8 +37,6 @@ const styles = {
         margin: 'auto 6px',
         color: '#333',
         fontWeight: '700',
-        position:'relative',
-        bottom: -1,
         '&::placeholder': {
             color: '#d3d3d3',
             fontWeight: '500'
@@ -60,7 +58,7 @@ const SearchInput = ({ classes, placeholder, onChange, value, ...rest }) => {
                 onFocus={() => setActive(true)}
                 onBlur={() => setActive(false)}
                 className={classes.input}
-                onChange={onChange}
+                onChange={(e) => onChange(e.currentTarget.value)}
                 placeholder={placeholder}
                 value={value}
             />

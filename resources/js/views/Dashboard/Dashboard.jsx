@@ -5,7 +5,6 @@ import * as Actions from '../../actions'
 import PropTypes from 'prop-types'
 // @material-ui/core
 import withStyles from '@material-ui/core/styles/withStyles'
-import Paper from '@material-ui/core/Paper'
 // @material-ui/icons
 import Add from '@material-ui/icons/Add'
 // core components
