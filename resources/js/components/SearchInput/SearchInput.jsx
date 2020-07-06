@@ -37,6 +37,7 @@ const styles = {
         margin: 'auto 6px',
         color: '#333',
         fontWeight: '700',
+        backgroundColor: 'transparent',
         '&::placeholder': {
             color: '#d3d3d3',
             fontWeight: '500'

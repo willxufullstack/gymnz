@@ -10,7 +10,8 @@ const styles = {
         cursor: 'pointer',
 
         '&:hover': {
-            boxShadow: '0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149)'
+            boxShadow:
+                '0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149)'
         }
     }
 }
@@ -28,16 +29,15 @@ const RoundButton = ({
     fontSize = 14,
     style = {}
 }) => {
-
     const defaultStyle = {
-        color: variant === 'outline' ? color : '#fff',
-        backgroundColor: variant === 'outline' ? 'transparent' : color,
-        border: `1px solid ${color}`,
+        color: variant ? color : '#fff',
+        backgroundColor: variant ? 'transparent' : color,
+        border: `1px solid ${variant === 'text' ? 'transparent' : color}`,
         padding: `${fontSize * 0.1}px ${12 + extend}px`,
         display: 'flex',
         fontWeight: '700',
         fontSize: `${fontSize}px`,
-        lineHeight: `${fontSize * 1.5}px`,
+        lineHeight: `${fontSize * 1.55}px`,
         opacity: disabled ? 0.5 : 1
     }
 

@@ -5,9 +5,9 @@ import { wrapImgToGalleryItem } from '-utils'
 import QNUploader from '-components/QNUploader/QNUploader'
 import { withStyles, Divider, Typography } from '@material-ui/core'
 import dayjs from 'dayjs'
-import Button from '-components/CustomButtons/Button'
 import Confirmation from '-components/CustomDialogues/Confirmation'
 import i18N from '../../lang'
+import RoundButton from '../../components/RoundButton/RoundButton'
 
 const L = i18N('CustomerPhotoSection')
 
@@ -18,7 +18,8 @@ const styles = {
     },
     caption: {
         width: '100%',
-        display: 'flex'
+        display: 'flex',
+        alignItems: 'center'
     },
     removeBtn: {},
     date: {
@@ -80,18 +81,19 @@ class CustomerPhotoSection extends React.Component {
             <div className={this.props.classes.caption}>
                 <Typography
                     className={this.props.classes.date}
-                    variant='caption'
+                    variant="caption"
                 >
                     {dayjs(pic.created_at).format('MM/DD')}
                 </Typography>
-                <Button
-                    onClick={() => this.onTapDeletePhoto(pic)}
-                    size='sm'
-                    color='transparentGray'
-                    className={this.props.classes.removeBtn}
-                >
-                    {L.delete}
-                </Button>
+                <div>
+                    <RoundButton
+                        onClick={() => this.onTapDeletePhoto(pic)}
+                        fontSize={12}
+                        variant="text"
+                        color={'#999'}
+                        label={L.delete}
+                    />
+                </div>
             </div>
         )
         return this.props.gym.customerPage.photos.map(p =>
@@ -120,13 +122,12 @@ class CustomerPhotoSection extends React.Component {
                 )}
                 <div className={classes.actionRow}>
                     <QNUploader
-                        title={L.add}
-                        color='transparentPrimary'
+                        title={'+ 添加照片'}
                         {...this.props.setting.uploadToken}
                         onSuccess={this.uploadSuccess}
                         onFail={this.uploadFailed}
                     />
-                    <Divider />
+                    <Divider light style={{marginBottom: 8}}/>
                 </div>
                 <Gallery
                     images={this.getGallaryItems()}

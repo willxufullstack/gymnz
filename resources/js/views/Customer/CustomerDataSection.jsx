@@ -1,47 +1,27 @@
 import '../../../sass/customer.scss'
 import React from 'react'
-import Button from '-components/CustomButtons/Button.jsx'
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import dayjs from 'dayjs'
 import ChartistGraph from 'react-chartist'
-import Muted from '-components/Typography/Muted.jsx'
-import Add from '@material-ui/icons/Add'
-import Edit from '@material-ui/icons/Edit'
 import MaterialTable from 'material-table'
-import {
-    Card,
-    CardContent,
-    withStyles,
-    Typography,
-    Dialog
-} from '@material-ui/core'
+import { withStyles, Dialog, Divider } from '@material-ui/core'
 import i18N from '../../lang'
+import RoundButton from '../../components/RoundButton/RoundButton'
+import Panel from '../../components/Panel/Panel'
+import Titlebar from '../../components/TitleBar/Titlebar'
 
 const L = i18N('CustomerDataSection')
 const styles = {
     chartCard: {
-        paddingTop: 0,
-        width: '45%',
-        display: 'inline-block',
-        margin: '4px'
+        margin: 4,
+        padding: 12
     },
-    chartHeaderContainer: {
-        display: 'flex',
-        marginTop: -12
+    chartListContainer: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)'
     },
-    chartHeaderLeft: {
-        flex: 1,
-        display: 'inherit'
-    },
-    chartOption: {
-        lineHeight: '40px',
-        fontWeight: 600
-    },
-    chartUnit: {
-        fontSize: 12,
-        lineHeight: '40px',
-        marginLeft: 10,
-        fontWeight: 600
+    dialogueBody: {
+        padding: '0 20px'
     }
 }
 
@@ -102,13 +82,14 @@ class CustomerDataSection extends React.Component {
             labels: data.map(row => dayjs(row.date).format('MM/DD'))
         }
         return (
-            <ChartistGraph className='ct-chart' data={chartData} type='Line' />
+            <ChartistGraph className="ct-chart" data={chartData} type="Line" />
         )
     }
 
     getCreateDialogue = () => {
         let params = {
             title: L.data,
+            col: 1,
             dialogue: true,
             allowEmpty: true,
             onSave: data => {
@@ -135,6 +116,7 @@ class CustomerDataSection extends React.Component {
             <Dialog
                 fullWidth
                 open={true}
+                scroll="body"
                 onClose={() => this.setState({ editingOption: false })}
             >
                 <MaterialTable
@@ -188,68 +170,65 @@ class CustomerDataSection extends React.Component {
             <React.Fragment>
                 {this.state.addDialogueField && this.getCreateDialogue()}
                 {this.state.editingOption && this.getEditDialogue()}
-                <Button
-                    style={{ marginTop: 16 }}
-                    color='transparentPrimary'
-                    fullWidth={true}
-                    onClick={() =>
-                        this.setState({
-                            addDialogueField: this.getInputField()
-                        })
-                    }
-                >
-                    <Add />
-                    {L.addFull}
-                </Button>
-                {this.props.data &&
-                    this.props.data.map(data => (
-                        <Card
-                            key={data.option}
-                            classes={{ root: classes.chartCard }}
-                        >
-                            <CardContent>
-                                <div className={classes.chartHeaderContainer}>
-                                    <div className={classes.chartHeaderLeft}>
-                                        <Typography
-                                            variant='h6'
-                                            className={classes.chartOption}
-                                        >
-                                            {data.option}
-                                        </Typography>
-                                        <Muted className={classes.chartUnit}>
-                                            {data.unit}
-                                        </Muted>
+                <div style={{ display: 'flex', marginBottom: 8 }}>
+                    <RoundButton
+                        label={'+  ' + L.addFull}
+                        shadow
+                        color="#29aa99"
+                        fontSize={12}
+                        onClick={() =>
+                            this.setState({
+                                addDialogueField: this.getInputField()
+                            })
+                        }
+                    />
+                </div>
+                <Divider light style={{ marginBottom: 8 }} />
+                <div className={classes.chartListContainer}>
+                    {this.props.data &&
+                        this.props.data.map(data => (
+                            <Panel
+                                key={data.option}
+                                className={classes.chartCard}
+                            >
+                                <Titlebar
+                                    noVr
+                                    fontSize={18}
+                                    description={data.unit}
+                                    label={data.option}
+                                >
+                                    <div style={{ display: 'flex' }}>
+                                        <RoundButton
+                                            color="#999"
+                                            fontSize="12"
+                                            variant="text"
+                                            onClick={() =>
+                                                this.setState({
+                                                    editingOption: data.option
+                                                })
+                                            }
+                                            label={'✎ ' + L.edit}
+                                        />
+                                        <RoundButton
+                                            style={{ marginLeft: 12 }}
+                                            color="#29aa99"
+                                            fontSize="12"
+                                            variant="text"
+                                            onClick={() =>
+                                                this.setState({
+                                                    addDialogueField: this.getInputField(
+                                                        data.option
+                                                    )
+                                                })
+                                            }
+                                            label={'+ ' + L.add}
+                                        />
                                     </div>
-                                    <Button
-                                        color='transparentGray'
-                                        size='sm'
-                                        onClick={() =>
-                                            this.setState({
-                                                editingOption: data.option
-                                            })
-                                        }
-                                    >
-                                        <Edit /> {L.edit}{' '}
-                                    </Button>
-                                    <Button
-                                        color='transparentPrimary'
-                                        size='sm'
-                                        onClick={() =>
-                                            this.setState({
-                                                addDialogueField: this.getInputField(
-                                                    data.option
-                                                )
-                                            })
-                                        }
-                                    >
-                                        <Add />
-                                        {L.add}
-                                    </Button>
-                                </div>
+                                </Titlebar>
                                 {this.getLineChart(data.data)}
-                            </CardContent>
-                        </Card>
-                    ))}
+                            </Panel>
+                        ))}
+                </div>
             </React.Fragment>
         )
     }

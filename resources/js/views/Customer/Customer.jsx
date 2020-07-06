@@ -3,33 +3,23 @@ import React from 'react'
 import connect from 'react-redux/es/connect/connect'
 import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
-import Paper from '@material-ui/core/Paper'
-import Tabs from '-components/CustomTabs/CustomTabs.jsx'
-import Table from '-components/Table/Table.jsx'
-import Scheduling from './Scheduling'
 import CustomerDataSection from './CustomerDataSection'
 import CustomerPhotoSection from './CustomerPhotoSection'
 import Badge from '@material-ui/core/Badge'
 import * as utils from '-utils'
 import 'dayjs/locale/zh-cn'
-import Button from '-components/CustomButtons/Button.jsx'
 import Confirmation from '-components/CustomDialogues/Confirmation'
+import LightTabs from '-components/LightTabs/LightTabs'
+import SearchableTable from '-components/SearchableTable/SearchableTable'
 import CreateNewDialogue from '../../components/CustomDialogues/CreateNewDialogue'
 import { withStyles } from '@material-ui/core'
 import i18N from '../../lang'
+import RoundButton from '../../components/RoundButton/RoundButton'
 
 const L = i18N('Customer')
 
 const styles = {
-    tabTitle: {
-        padding: '4px 20px',
-        backgroundColor: '#8e24aa',
-        marginBottom: 0,
-        borderRadius: 20,
-        fontWeight: '900',
-        fontSize: 16,
-        boxShadow: '2px 2px 3px 0 rgba(156, 39, 176, 0.95)'
-    }
+
 }
 class Customer extends React.Component {
     constructor(props) {
@@ -124,6 +114,7 @@ class Customer extends React.Component {
         let params = {
             dialogue: true,
             title: '拆分订单',
+            col: 1,
             onSave: data => {
                 this.splitOrder(data, order)
             },
@@ -157,6 +148,7 @@ class Customer extends React.Component {
         let params = {
             dialogue: true,
             title: '修改',
+            col: 1,
             onSave: data => this.modifyOrder(data, order),
             onCancel: () => {
                 this.setState({ modifyDialogue: false })
@@ -166,12 +158,14 @@ class Customer extends React.Component {
                     name: 'source',
                     label: '来源',
                     value: order.source,
-                    options: [{ value: '团购', label: '团购' },
-                    { value: '介绍', label: '介绍' },
-                    { value: '续课', label: '续课' },
-                    { value: '赠送', label: '赠送' },
-                    { value: '其他', label: '其他' },
-                    { value: '未记录', label: '未记录' }]
+                    options: [
+                        { value: '团购', label: '团购' },
+                        { value: '介绍', label: '介绍' },
+                        { value: '续课', label: '续课' },
+                        { value: '赠送', label: '赠送' },
+                        { value: '其他', label: '其他' },
+                        { value: '未记录', label: '未记录' }
+                    ]
                 },
                 {
                     name: 'price',
@@ -207,7 +201,7 @@ class Customer extends React.Component {
                     type: 'string',
                     placeholder: order.expiry + '',
                     value: order.expiry
-                },
+                }
             ]
         }
 
@@ -219,18 +213,27 @@ class Customer extends React.Component {
         let params = {
             dialogue: true,
             title: '修改',
+            col: 1,
             minHeight: 300,
             onSave: data => {
-                this.props.actions.updateSchedule(this.state.moveScheduleDialogue.gym_id, this.state.moveScheduleDialogue.id, data)
-                .then(() => {
-                    this.props.actions.loadCustomerOrders(this.customerId, {
-                        gym: this.props.selectedGym.id
+                this.props.actions
+                    .updateSchedule(
+                        this.state.moveScheduleDialogue.gym_id,
+                        this.state.moveScheduleDialogue.id,
+                        data
+                    )
+                    .then(() => {
+                        this.props.actions.loadCustomerOrders(this.customerId, {
+                            gym: this.props.selectedGym.id
+                        })
+                        this.props.actions.LoadCustomerSchedule(
+                            this.props.selectedGym.id,
+                            {
+                                customer: this.state.customerId
+                            }
+                        )
+                        this.setState({ moveScheduleDialogue: false })
                     })
-                    this.props.actions.LoadCustomerSchedule(this.props.selectedGym.id, {
-                        customer: this.state.customerId
-                    })
-                     this.setState({ moveScheduleDialogue: false })
-                })
             },
             onCancel: () => {
                 this.setState({ moveScheduleDialogue: false })
@@ -243,7 +246,8 @@ class Customer extends React.Component {
                         return {
                             value: order.id,
                             label:
-                                '#' + order.id +
+                                '#' +
+                                order.id +
                                 ' ' +
                                 order.booked_amount +
                                 '/' +
@@ -270,6 +274,7 @@ class Customer extends React.Component {
         let params = {
             dialogue: true,
             title: L.refund,
+            col: 1,
             onSave: data => this.refundOrder(data, order),
             onCancel: () => {
                 this.setState({ refundDialogue: false })
@@ -303,93 +308,119 @@ class Customer extends React.Component {
         )
     }
 
-    getBookTab = () => {
-        return <Scheduling {...this.props} customerId={this.customerId} />
-    }
-
     getOrdersTab = () => {
         let orders = this.props.gym.customerPage.orders
         if (!orders) {
             return <p>No Orders</p>
         }
+        const getDotColor = r => {
+            if (utils.getOrderStatus(r) === '进行中') {
+                return '#89ECC2'
+            }
+            if (utils.getOrderStatus(r) === '已过期') {
+                return '#FF8C8C'
+            }
+            return '#999'
+        }
         let header = [
-            '订单号',
-            '来源',
-            L.unitPrice + '/' + L.price,
-            L.bookedTotal,
-            L.coach,
-            L.created,
-            L.expiry,
-            L.status,
-            L.action
-        ]
-        let tableData = orders.map(r => {
-            const btn = (
-                <React.Fragment>
-                    <Button
-                        onClick={() => this.tapRefund(r)}
-                        size="sm"
-                        color="transparentGray"
+            {
+                title: '订单号',
+                flex: 1,
+                render: r => (
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            flex: 1
+                        }}
                     >
-                        {L.refund}
-                    </Button>
-                    <Button
-                        onClick={() => this.tapModify(r)}
-                        size="sm"
-                        color="transparentGray"
-                    >
-                        修改
-                    </Button>
-                    <Button
-                        onClick={() => this.tapSplit(r)}
-                        size="sm"
-                        color="transparentGray"
-                    >
-                        拆分
-                    </Button>
-                    {r.booked_amount === 0 && (
-                        <Button
-                            onClick={() => this.tapRemove(r)}
-                            size="sm"
-                            color="transparentGray"
-                        >
-                            删除
-                        </Button>
-                    )}
-                </React.Fragment>
-            )
-            return [
-                '#' + r.id,
-                r.source ? r.source : '未记录',
-                (r.price / r.course_amount).toFixed(0) + '/' + r.price,
-                r.booked_amount + ' / ' + r.course_amount,
-                r.coach.user.name,
-                r.created_at.split(' ')[0],
-                utils.getOrderExpiry(r),
-                utils.getOrderStatus(r),
-                r.status === 1 && r.course_amount > r.booked_amount ? (
-                    btn
-                ) : (
-                    <Button
-                        onClick={() => this.tapModify(r)}
-                        size="sm"
-                        color="transparentGray"
-                    >
-                        修改
-                    </Button>
+                        <span
+                            style={{
+                                width: 6,
+                                height: 6,
+                                marginRight: 8,
+                                borderRadius: '50%',
+                                backgroundColor: getDotColor(r)
+                            }}
+                        />
+                        <span style={{ flex: 1 }}>{'#' + r.id}</span>
+                    </div>
                 )
-            ]
-        })
-
-        return (
-            <Table
-                classes={{ tableResponsive: 'no-margin-top' }}
-                tableHeaderColor="primary"
-                tableHead={header}
-                tableData={tableData}
-                strokeRow={i => orders[i].status === 2}
-            />
-        )
+            },
+            {
+                title: '来源',
+                flex: 1,
+                render: r => (r.source ? r.source : '未记录')
+            },
+            {
+                title: L.unitPrice + '/' + L.price,
+                flex: 2,
+                render: r =>
+                    (r.price / r.course_amount).toFixed(0) + ' / ' + r.price
+            },
+            {
+                title: L.bookedTotal,
+                flex: 1,
+                render: r => r.booked_amount + ' / ' + r.course_amount
+            },
+            { title: L.coach, flex: 1, render: r => r.coach.user.name },
+            {
+                title: L.created,
+                flex: 2,
+                render: r => r.created_at.split(' ')[0]
+            },
+            { title: L.expiry, flex: 2, render: r => utils.getOrderExpiry(r) },
+            { title: L.status, flex: 1, render: r => utils.getOrderStatus(r) },
+            {
+                title: L.action,
+                flex: 3,
+                visibleOnHover: true,
+                render: r =>
+                    r.status === 1 && r.course_amount > r.booked_amount ? (
+                        <React.Fragment>
+                            <RoundButton
+                                onClick={() => this.tapRefund(r)}
+                                fontSize={12}
+                                label={L.refund}
+                                color={'#999'}
+                                variant={'text'}
+                            />
+                            <RoundButton
+                                onClick={() => this.tapModify(r)}
+                                fontSize={12}
+                                label={'修改'}
+                                color={'#999'}
+                                variant={'text'}
+                            />
+                            <RoundButton
+                                onClick={() => this.tapSplit(r)}
+                                fontSize={12}
+                                label={'拆分'}
+                                color={'#999'}
+                                variant={'text'}
+                            />
+                            {r.booked_amount === 0 && (
+                                <RoundButton
+                                    fontSize={12}
+                                    onClick={() => this.tapRemove(r)}
+                                    label={'删除'}
+                                    color={'#999'}
+                                    variant={'text'}
+                                />
+                            )}
+                        </React.Fragment>
+                    ) : (
+                        <RoundButton
+                            onClick={() => this.tapModify(r)}
+                            fontSize={12}
+                            label={'修改'}
+                            color={'#999'}
+                            variant={'text'}
+                        />
+                    )
+            }
+        ]
+        return <SearchableTable columns={header} data={orders} />
     }
 
     componentWillMount() {
@@ -398,6 +429,9 @@ class Customer extends React.Component {
         this.props.actions.loadCustomerOrders(this.customerId, {
             gym: this.props.selectedGym.id
         })
+        this.props.actions.LoadCustomerSchedule(this.props.selectedGym.id, {
+            customer: this.customerId
+        })
     }
 
     getUnfinishedTab = () => {
@@ -405,40 +439,43 @@ class Customer extends React.Component {
         if (!booked) {
             return <p>{L.noUnfinished}</p>
         }
-        let header = [L.date, L.time, L.coach, L.action]
-        let cancelBtn = s => (
-            <Button
-                size="sm"
-                color="transparentGray"
+
+        const cancelBtn = s => (
+            <RoundButton
+                label={L.cancel}
+                color="#999"
+                fontSize={12}
+                variant="text"
                 onClick={() => this.showCancelConfirmation(s)}
-            >
-                {L.cancel}
-            </Button>
+            />
         )
-        let completeBtn = s => (
-            <Button
-                size="sm"
-                color="transparentPrimary"
+        const completeBtn = s => (
+            <RoundButton
+                label={L.complete}
+                color="#29aa99"
+                fontSize={12}
                 onClick={() => this.completeSchedule(s)}
-            >
-                {L.complete}
-            </Button>
+                style={{ marginRight: 12 }}
+            />
         )
-        let tableData = booked.map(r => [
-            r.date,
-            utils.getTimeStr(r.start),
-            r.coach.user.name,
-            <React.Fragment>
-                {completeBtn(r)} {cancelBtn(r)}
-            </React.Fragment>
-        ])
+        const columns = [
+            { title: L.date, field: 'date' },
+            { title: L.time, render: r => utils.getTimeStr(r.start) },
+            { title: L.coach, render: r => r.coach.user.name },
+            {
+                title: L.action,
+                render: r => (
+                    <React.Fragment>
+                        {completeBtn(r)} {cancelBtn(r)}
+                    </React.Fragment>
+                )
+            }
+        ]
 
         return (
-            <Table
-                classes={{ tableResponsive: 'no-margin-top' }}
-                tableHeaderColor="primary"
-                tableHead={header}
-                tableData={tableData}
+            <SearchableTable
+                columns={columns}
+                data={booked}
             />
         )
     }
@@ -449,42 +486,47 @@ class Customer extends React.Component {
             return <p>{L.noFinished}</p>
         }
 
-        let cancelBtn = s => (
-            <Button
-                size="sm"
-                color="transparentGray"
+        const cancelBtn = s => (
+            <RoundButton
+                label={L.cancel}
+                color="#999"
+                fontSize={12}
+                variant="text"
                 onClick={() => this.showCancelConfirmation(s)}
-            >
-                {L.cancel}
-            </Button>
+            />
         )
-        let moveBtn = s => (
-            <Button
-                size="sm"
-                color="transparentPrimary"
+        const moveBtn = s => (
+            <RoundButton
+                label={'修改'}
+                color="#29aa99"
+                fontSize={12}
+                variant="outline"
+                style={{ marginRight: 12 }}
                 onClick={() => this.showMoveDialogue(s)}
-            >
-                {'修改'}
-            </Button>
+            />
         )
 
-        let header = [L.date, L.time, L.coach, '订单号', L.action]
-        let tableData = finished.map(r => [
-            r.date,
-            utils.getTimeStr(r.start),
-            r.coach.user.name,
-            '#' + r.order_id,
-            <React.Fragment>
-                {cancelBtn(r)} {moveBtn(r)} {}
-            </React.Fragment>
-        ])
+        let columns = [
+            { title: L.date, field: 'date' },
+            { title: L.time, render: r => utils.getTimeStr(r.start) },
+            { title: L.coach, render: r => r.coach.user.name },
+            { title: '订单号', render: r => '#' + r.order_id },
+            {
+                title: L.action,
+                visibleOnHover: true,
+                render: r => (
+                    <React.Fragment>
+                        {moveBtn(r)}
+                        {cancelBtn(r)}
+                    </React.Fragment>
+                )
+            }
+        ]
 
         return (
-            <Table
-                classes={{ tableResponsive: 'no-margin-top' }}
-                tableHeaderColor="primary"
-                tableHead={header}
-                tableData={tableData}
+            <SearchableTable
+                columns={columns}
+                data={finished}
             />
         )
     }
@@ -509,46 +551,15 @@ class Customer extends React.Component {
             />
         )
     }
-
-    tapTab = tabIndex => {
-        // switch (tabIndex) {
-        //     case 0:
-        //         break
-        //     case 2:
-        //     case 3:
-        //     case 1:
-        //         this.props.actions.loadCustomerOrders(this.customerId, {
-        //             gym: this.props.selectedGym.id
-        //         })
-        //         break
-        //     default:
-        //         break
-        // }
-    }
-
     render() {
-        let { booked, total } = this.props.gym.customerPage.customerBalance
-        const { classes } = this.props
         let unfinishedTabHeader = (
             <Badge
                 className="tab-badge"
-                color="secondary"
-                badgeContent={
-                    this.props.gym.customerPage.schedules.booked.length
-                }
+                color="primary"
+                variant="dot"
+                invisible={!this.props.gym.customerPage.schedules.booked.length}
             >
                 {L.unfinished}
-            </Badge>
-        )
-        let finishedTabHeader = (
-            <Badge
-                className="tab-badge"
-                color="secondary"
-                badgeContent={
-                    this.props.gym.customerPage.schedules.finished.length
-                }
-            >
-                {L.finished}
             </Badge>
         )
         let confirmationParams = {
@@ -557,7 +568,7 @@ class Customer extends React.Component {
             onConfirm: this.cancelSchedule
         }
         return (
-            <React.Fragment>
+            <div>
                 {this.state.cancelSchedule && (
                     <Confirmation {...confirmationParams} />
                 )}
@@ -569,47 +580,40 @@ class Customer extends React.Component {
                     this.getModifyDialogue(this.state.modifyDialogue)}
                 {this.state.splitOrderDialogue &&
                     this.getSplitDialogue(this.state.splitOrderDialogue)}
-                {this.state.moveScheduleDialogue && <this.getMoveScheduleDialogue />}
-                <Paper square>
-                    <Tabs
-                        title={
-                            <div>
-                                <p className={classes.tabTitle}>
-                                    {booked + ' / ' + total}
-                                </p>
-                            </div>
+                {this.state.moveScheduleDialogue && (
+                    <this.getMoveScheduleDialogue />
+                )}
+                <LightTabs
+                    title={
+                        this.props.gym.customers.find(
+                            c => c.id === this.customerId
+                        ).name
+                    }
+                    onSwitch={this.tapTab}
+                    tabs={[
+                        {
+                            tabName: L.orders,
+                            tabContent: this.getOrdersTab()
+                        },
+                        {
+                            tabName: unfinishedTabHeader,
+                            tabContent: this.getUnfinishedTab()
+                        },
+                        {
+                            tabName: L.finished,
+                            tabContent: this.getFinishedTab()
+                        },
+                        {
+                            tabName: L.data,
+                            tabContent: this.getDataTab()
+                        },
+                        {
+                            tabName: L.photo,
+                            tabContent: this.getPhotoTab()
                         }
-                        headerColor="primary"
-                        onSwitch={this.tapTab}
-                        tabs={[
-                            {
-                                tabName: L.book,
-                                tabContent: this.getBookTab()
-                            },
-                            {
-                                tabName: L.orders,
-                                tabContent: this.getOrdersTab()
-                            },
-                            {
-                                tabName: unfinishedTabHeader,
-                                tabContent: this.getUnfinishedTab()
-                            },
-                            {
-                                tabName: finishedTabHeader,
-                                tabContent: this.getFinishedTab()
-                            },
-                            {
-                                tabName: L.data,
-                                tabContent: this.getDataTab()
-                            },
-                            {
-                                tabName: L.photo,
-                                tabContent: this.getPhotoTab()
-                            }
-                        ]}
-                    />
-                </Paper>
-            </React.Fragment>
+                    ]}
+                />
+            </div>
         )
     }
 }

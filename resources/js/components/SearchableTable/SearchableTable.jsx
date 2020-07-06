@@ -9,7 +9,8 @@ const styles = {
         flex: 1,
         overflow: 'scroll',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        marginTop: 6
     },
     tableBody: {
         flex: 1,
@@ -37,7 +38,11 @@ const styles = {
         minHeight: 42,
         borderBottom: '1px solid #ececec',
         fontWeight: '900',
-        marginBottom: 8
+        marginBottom: 8,
+
+        '&:hover': {
+            background: 'none'
+        },
     }
 }
 
@@ -101,13 +106,14 @@ const SearchableTable = ({ classes, title, columns, data, onRowClick, onSearch }
     }
     return (
         <React.Fragment>
-            <Titlebar label={title} style={{ flex: 'none' }}>
+            {title && <Titlebar label={title} style={{ flex: 'none' }}>
                 <SearchInput
                     onChange={setSearchKey}
                     value={searchKey}
                     placeholder={'姓名/首字母'}
+                    style={{backgroundColor: '#fff'}}
                 />
-            </Titlebar>
+            </Titlebar>}
             <div className={classes.container}>
                 <Th classes={classes} columns={columns} />
                 <div className={classes.tableBody}>

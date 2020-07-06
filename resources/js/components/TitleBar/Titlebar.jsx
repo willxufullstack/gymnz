@@ -16,6 +16,11 @@ const styles = {
         color: '#333',
         flex: 1
     },
+    description: {
+        fontSize: 14,
+        color: '#999',
+        fontWeight: '500'
+    },
     vr: {
         width: 8,
         height: 22,
@@ -23,15 +28,41 @@ const styles = {
         display: 'inline-block',
         borderRadius: 4,
         marginRight: 24,
-        boxShadow: '0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);'
+        boxShadow:
+            '0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);'
     }
 }
 
-const Titlebar = ({ classes, label, children, className, style }) => {
+const Titlebar = ({
+    noVr,
+    classes,
+    label,
+    description = '',
+    children,
+    className,
+    fontSize = 24,
+    style
+}) => {
     return (
         <div className={classNames(className, classes.container)} style={style}>
-            <span className={classes.vr} />
-            <span className={classes.title}>{label}</span>
+            {!noVr && (
+                <span
+                    className={classes.vr}
+                    style={{
+                        height: (fontSize * 22) / 24,
+                        marginRight: fontSize
+                    }}
+                />
+            )}
+            <span className={classes.title} style={{ fontSize }}>
+                {label}{' '}
+                <span
+                    className={classes.description}
+                    style={{ fontSize: fontSize - 4 }}
+                >
+                    {description}
+                </span>
+            </span>
             {children}
         </div>
     )

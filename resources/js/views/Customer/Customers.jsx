@@ -92,7 +92,7 @@ class Customers extends React.Component {
                                     marginRight: 8,
                                     borderRadius: '50%',
                                     backgroundColor: row.sex
-                                        ? '#E1F3EC'
+                                        ? '#DBF6EB'
                                         : '#FFDFDF'
                                 }}
                             />
@@ -100,6 +100,11 @@ class Customers extends React.Component {
                         </div>
                     )
                 }
+            },
+            {
+                title: '电话',
+                flex: 2,
+                field: 'email'
             },
             {
                 title: '上次训练',
