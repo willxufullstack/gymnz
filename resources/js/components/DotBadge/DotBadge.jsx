@@ -40,7 +40,7 @@ const styles = {
         '&.yellow': {
             backgroundColor: '#FFC56D',
             borderColor: '#FFF0D9'
-        },
+        }
     },
     label: {
         fontSize: 10,
@@ -54,17 +54,18 @@ const styles = {
         fontWeight: '500',
         lineHeight: '20px'
     }
-
 }
 
-const DotBadge = ({ classes, color = 'green', label, value }) => {
-    return <Panel className={classes.panel}>
-        <div className={classNames(classes.circle, color)}></div>
-        <div className={classes.textContainer}>
-            <span className={classes.label}>{label}</span>
-            <span className={classes.value}>{value}</span>
-        </div>
-    </Panel>
+const DotBadge = ({ classes, color, label, value, style }) => {
+    return (
+        <Panel className={classes.panel} style={style}>
+            {color && <div className={classNames(classes.circle, color)} />}
+            <div className={classes.textContainer}>
+                <span className={classes.label}>{label}</span>
+                <span className={classes.value}>{value}</span>
+            </div>
+        </Panel>
+    )
 }
 
 export default withStyles(styles)(DotBadge)

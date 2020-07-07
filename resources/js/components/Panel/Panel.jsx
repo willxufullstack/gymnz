@@ -10,16 +10,17 @@ const styles = {
     }
 }
 
-const Panel = ({ classes, children, flex, scroll, className }) => {
-    let style = {}
+const Panel = ({ classes, children, flex, scroll, className, style }) => {
+    let defaultStyle = {}
     if (flex) {
-        style = { ...style, flex: 1 }
+        defaultStyle = { ...defaultStyle, flex: 1 }
     }
     if( scroll) {
-        style = { ...style, overflow: 'scroll' }
+        defaultStyle = { ...defaultStyle, overflow: 'scroll' }
     }
+
     return (
-        <div className={classNames(classes.container, className)} style={style}>
+        <div className={classNames(classes.container, className)} style={{...defaultStyle, ...style}}>
             {children}
         </div>
     )

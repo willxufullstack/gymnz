@@ -46,12 +46,12 @@ const styles = {
     }
 }
 
-const CalendarStyleDatePicker = ({ classes, date, onClick, setDate}) => {
+const CalendarStyleDatePicker = ({ classes, date, onClick, month, setDate}) => {
     const [hover, setHover] = useState()
     const day = dayjs(date)
     const changeDate = (value) => (e) => {
         e.stopPropagation()
-        const changedDay = day.add(value, 'day')
+        const changedDay = day.add(value, month ? 'month' : 'day')
         setDate(changedDay)
     }
     return (
@@ -62,11 +62,11 @@ const CalendarStyleDatePicker = ({ classes, date, onClick, setDate}) => {
             onMouseLeave={() => setHover(false)}
         >
             <span className={classes.month}>
-                {utils.getMonthLabel(day.month())}
+                { month ? day.year() : utils.getMonthLabel(day.month())}
             </span>
             <span className={classes.day}>
                 {hover && <span className={classes.arrow} onClick={changeDate(-1)}>❰</span>}
-                {day.date()}
+                {month ? day.month() + 1 : day.date()}
                 {hover && <span className={classes.arrow} onClick={changeDate(1)}>❱</span>}
             </span>
         </div>

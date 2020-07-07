@@ -3,19 +3,51 @@ import connect from 'react-redux/es/connect/connect'
 import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 // react plugin for creating charts
-import ChartistGraph from 'react-chartist'
-import Tabs from '-components/CustomTabs/CustomTabs.jsx'
-import Table from '-components/Table/Table.jsx'
+import SearchableTable from '../../components/SearchableTable/SearchableTable'
 import * as utils from '-utils'
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import DayjsUtils from '@date-io/dayjs'
-import GridItem from '-components/Grid/GridItem.jsx'
-import GridContainer from '-components/Grid/GridContainer.jsx'
-import Primary from '-components/Typography/Primary.jsx'
-import Typography from '@material-ui/core/Typography'
 import i18N from '../../lang'
+import DotBadge from '../../components/DotBadge/DotBadge'
+import Titlebar from '../../components/TitleBar/Titlebar'
+import { withStyles } from '@material-ui/core'
+import Button from '@material-ui/core/Button'
+import ExpandMore from '@material-ui/icons/ExpandMore'
+import dayjs from 'dayjs'
+import Panel from '../../components/Panel/Panel'
 
 const L = i18N('MonthlyReport')
+const styles = {
+    filterItem: {
+        maxWidth: 150,
+        marginLeft: 24,
+        marginTop: 8
+    },
+    filterTitle: {
+        width: 60,
+        lineHeight: '12px',
+        textAlign: 'left',
+        fontSize: 12,
+        color: '#999'
+    },
+    filterDropdownIcon: {
+        marginLeft: 6
+    },
+    panel: {
+        flex: 1,
+        maxHeight: 400,
+        padding: 12,
+        margin: 12,
+        overflowY: 'scroll',
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    panelTable: {
+        flex: 1,
+        display: 'flex',
+        overflow: 'scroll'
+    }
+}
 class MonthlyReport extends React.Component {
     constructor(props) {
         super(props)
@@ -36,7 +68,7 @@ class MonthlyReport extends React.Component {
             this.loadSale, // refresh sale
             () => {
                 //refresh coach
-                let params = utils.getMonthStartEnd(this.state.date,)
+                let params = utils.getMonthStartEnd(this.state.date)
                 params.count = 'coach_id'
                 params.status = 2
                 this.props.actions.loadGymScheduleCount(
@@ -64,157 +96,252 @@ class MonthlyReport extends React.Component {
     }
 
     refresh = () => {
-        this.refreshFunMap[this.state.selectedTabIndex] &&
-            this.refreshFunMap[this.state.selectedTabIndex]()
+        this.refreshFunMap.forEach(refreshItem => refreshItem())
     }
 
     loadSale = () => {
-        const month = utils.getMonthStartEnd(this.state.date, 'YYYY-MM-DD HH:mm:ss')
+        const month = utils.getMonthStartEnd(
+            this.state.date,
+            'YYYY-MM-DD HH:mm:ss'
+        )
         this.props.actions.loadGymOrders(this.props.selectedGym.id, month)
     }
 
     getSummaryTab = () => {
-        let summary = this.props.gym.report.summary
-
-        let row = (label, value) => {
+        const orders = this.props.gym.report.orders.filter(o => o.price > 0)
+        const bonus = this.props.gym.report.orders.filter(o => o.price === 0)
+        const summary = this.props.gym.report.summary
+        const { classes } = this.props
+        const row = (color, label, value) => (
+            <DotBadge
+                color={color}
+                label={label}
+                value={value}
+                style={{ width: 120 }}
+            />
+        )
+        const dateSelector = () => {
             return (
-                <GridItem
-                    xs={12}
-                    sm={12}
-                    md={12}
-                    container
-                    alignItems='center'
-                    classes={{ grid: 'gym-summary-row' }}
-                >
-                    <GridItem xs={6} sm={6} md={6}>
-                        <Typography
-                            variant='button'
-                            display='block'
-                            gutterBottom
-                            className='gym-summary-label'
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span>月报</span>
+                    <div className={classes.filterItem}>
+                        <MuiPickersUtilsProvider
+                            utils={DayjsUtils}
+                            locale={'zh-cn'}
                         >
-                            <Primary>{label}</Primary>
-                        </Typography>
-                    </GridItem>
-                    <GridItem xs={6} sm={6} md={6}>
-                        <Typography
-                            variant='subtitle2'
-                            display='block'
-                            gutterBottom
-                            className='gym-summary-value'
-                        >
-                            {value}
-                        </Typography>
-                    </GridItem>
-                </GridItem>
+                            <DatePicker
+                                format="MM/YYYY"
+                                TextFieldComponent={({ onClick, value }) => (
+                                    <Button
+                                        aria-haspopup="true"
+                                        onClick={onClick}
+                                        style={{
+                                            fontSize: '15px',
+                                            color: '#666',
+                                            padding: 0,
+                                            justifyContent: 'left'
+                                        }}
+                                    >
+                                        {value}
+                                        <ExpandMore
+                                            fontSize="small"
+                                            className={
+                                                classes.filterDropdownIcon
+                                            }
+                                        />
+                                    </Button>
+                                )}
+                                className={classes.dateFilter}
+                                style={{
+                                    maxWidth: 60,
+                                    position: 'relative'
+                                }}
+                                openTo="month"
+                                views={['year', 'month']}
+                                value={this.state.date}
+                                onChange={this.handleDateChange}
+                                autoOk
+                            />
+                        </MuiPickersUtilsProvider>
+                    </div>
+                </div>
             )
         }
+
         return (
-            <GridContainer>
-                {row(L.activeCustomer, summary.activeCustomerCount)}
-                {row('新增客户', summary.newCustomerCount)}
-                {row(L.scheduleCount, summary.scheduleCount)}
-                {row(L.orderCount, summary.orderCount)}
-                {row(L.orderPrice, summary.orderPrice)}
-                {row('体验课', summary.trialCourseCount)}
-            </GridContainer>
+            <div style={{ marginTop: -8 }}>
+                <Titlebar label={dateSelector()}>
+                    {row(
+                        'green',
+                        `${L.activeCustomer} / ${L.scheduleCount}`,
+                        `${summary.activeCustomerCount ||
+                            0} / ${summary.scheduleCount || 0}`
+                    )}
+                    {row(
+                        'red',
+                        `${L.orderCount} / ${L.orderPrice}`,
+                        `${orders.length} / ${summary.orderPrice || 0}`
+                    )}
+                    {row(
+                        'yellow',
+                        '新客成交 / 体验课',
+                        `${summary.newCustomerCount ||
+                            0} / ${summary.trialCourseCount || 0}`
+                    )}
+                </Titlebar>
+                <div style={{ display: 'flex' }}>
+                    <Panel className={classes.panel}>
+                        <Titlebar
+                            fontSize={18}
+                            label="教练统计"
+                            description={`${summary.scheduleCount || 0}节`}
+                            noVr
+                            style={{ flex: 'none' }}
+                        />
+                        {this.getScheduleCountByCoach()}
+                    </Panel>
+                    <Panel className={classes.panel}>
+                        <Titlebar
+                            fontSize={18}
+                            label="客户统计"
+                            description={`${summary.activeCustomerCount ||
+                                0}人`}
+                            noVr
+                            style={{ flex: 'none' }}
+                        />
+                        {this.getScheduleCountByCustomerTab()}
+                    </Panel>
+                </div>
+                <div style={{ display: 'flex' }}>
+                    <Panel className={classes.panel}>
+                        <Titlebar
+                            fontSize={18}
+                            label="订单详情"
+                            description={`${
+                                orders.length
+                            }单 / ${summary.orderPrice || 0}元 / ${bonus.length}赠课`}
+                            noVr
+                            style={{ flex: 'none' }}
+                        />
+                        {this.getSaleTab()}
+                    </Panel>
+                </div>
+            </div>
         )
     }
 
     getSaleTab = () => {
-        let orders = this.props.gym.report.orders
-        if (!orders) {
-            return <p>No Orders</p>
-        }
-        let header = [L.price, L.bookedTotal, L.coach, L.customer, '来源', L.created]
-        let tableData = orders.map(r => [
-            r.price + '',
-            r.booked_amount + ' / ' + r.course_amount,
-            r.coach.user.name,
-            r.customer.name,
-            r.source ? r.source : '未记录',
-            r.created_at
-        ])
+        const orders = this.props.gym.report.orders
+        const columns = [
+            { title: L.price, field: 'price' },
+            {
+                title: L.bookedTotal,
+                render: r => r.booked_amount + ' / ' + r.course_amount
+            },
+            { title: L.coach, render: r => r.coach.user.name },
+            { title: L.customer, render: r => r.customer.name },
+            { title: '来源', render: r => (r.source ? r.source : '未记录') },
+            {
+                title: L.created,
+                render: r => dayjs(r.created_at).format('MM/DD')
+            }
+        ]
 
         return (
-            <Table
-                classes={{ tableResponsive: 'no-margin-top' }}
-                tableHeaderColor='primary'
-                tableHead={header}
-                tableData={tableData}
+            <SearchableTable
+                className={this.props.classes.panelTable}
+                columns={columns}
+                data={orders}
             />
         )
     }
 
-    getScheduleCountByCoachTab = () => {
-        let groups = this.props.gym.report.scheduleCountByCoach
-        if (!groups) {
-            return <p>{L.noData}</p>
-        }
-        let header = [L.coach, L.Count]
-        let tableData = []
-        let chartData = {
+    getScheduleCountByCoach = () => {
+        const groups = this.props.gym.report.scheduleCountByCoach
+        const orders = this.props.gym.report.orders
+        const columns = [
+            {
+                title: L.coach,
+                field: 'name'
+            },
+            {
+                title: '耗课数',
+                field: 'course_amount'
+            },
+            {
+                title: '订单数',
+                field: 'order_count'
+            },
+            {
+                title: '订单总价',
+                field: 'order_price'
+            }
+        ]
+        const tableData = []
+        const chartData = {
             labels: [],
             series: []
         }
         const grouped = {}
         groups.forEach(g => {
-            if(grouped[g.coach.user.name] === undefined) {
+            if (grouped[g.coach.user.name] === undefined) {
                 grouped[g.coach.user.name] = 0
             }
             grouped[g.coach.user.name] += g.course_amount
         })
         Object.keys(grouped).forEach(k => {
-            tableData.push([k + '', grouped[k] + ''])
+            tableData.push({
+                name: k,
+                course_amount: grouped[k],
+                order_count: orders.filter(
+                    order => order.price !== 0 && order.coach.user.name === k
+                ).length,
+                order_price: utils.sum(
+                    orders.filter(order => order.coach.user.name === k),
+                    'price'
+                )
+            })
             chartData.labels.push(k)
             chartData.series.push(grouped[k])
         })
 
-        let chartOptions = {
-            labelInterpolationFnc: function(value) {
-                return value
-            }
-        }
-
         return (
-            <GridContainer alignItems='center'>
-                <GridItem xs={12} sm={12} md={8}>
-                    <Table
-                        classes={{ tableResponsive: 'no-margin-top' }}
-                        tableHeaderColor='primary'
-                        tableHead={header}
-                        tableData={tableData}
-                    />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                    <ChartistGraph
-                        className='ct-chart'
-                        data={chartData}
-                        type='Pie'
-                        options={chartOptions}
-                    />
-                </GridItem>
-            </GridContainer>
+            <SearchableTable
+                className={this.props.classes.panelTable}
+                columns={columns}
+                data={tableData}
+            />
         )
     }
 
     getScheduleCountByCustomerTab = () => {
         let groups = this.props.gym.report.scheduleCountByCustomer
-        if (!groups) {
-            return <p>{L.noData}</p>
+
+        let columns = [
+            { title: L.name, field: 'name' },
+            { title: L.count, field: 'course_amount' },
+            { title: '教练', field: 'coach' },
+        ]
+
+        console.log(groups);
+        const getCustomerCoach = (customerId) => {
+            const customer = this.props.gym.customers.find(c => c.id === customerId)
+            if(customer && customer.latest_schedule){
+                return customer.latest_schedule.coach.user.name
+            }
+            return ''
         }
-        let header = [L.name, L.Count]
-        let tableData = groups.map(r => [
-            r.customer.name + '',
-            r.course_amount + ''
-        ])
+        let tableData = groups.map(r => ({
+            name: r.customer.name,
+            course_amount: r.course_amount,
+            coach: getCustomerCoach(r.customer.id)
+        }))
 
         return (
-            <Table
-                classes={{ tableResponsive: 'no-margin-top' }}
-                tableHeaderColor='primary'
-                tableHead={header}
-                tableData={tableData}
+            <SearchableTable
+                className={this.props.classes.panelTable}
+                columns={columns}
+                data={tableData}
             />
         )
     }
@@ -230,45 +357,7 @@ class MonthlyReport extends React.Component {
     }
 
     render() {
-        const dateSelector = (
-            <MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>
-                <DatePicker
-                    format='MM/YYYY'
-                    className='report-month-selector'
-                    openTo='month'
-                    views={['year', 'month']}
-                    value={this.state.date}
-                    onChange={this.handleDateChange}
-                    autoOk
-                />
-            </MuiPickersUtilsProvider>
-        )
-
-        return (
-            <Tabs
-                title={dateSelector}
-                headerColor='primary'
-                onSwitch={this.tapTab}
-                tabs={[
-                    {
-                        tabName: L.summary,
-                        tabContent: this.getSummaryTab()
-                    },
-                    {
-                        tabName: L.sale,
-                        tabContent: this.getSaleTab()
-                    },
-                    {
-                        tabName: L.coach,
-                        tabContent: this.getScheduleCountByCoachTab()
-                    },
-                    {
-                        tabName: L.customer,
-                        tabContent: this.getScheduleCountByCustomerTab()
-                    }
-                ]}
-            />
-        )
+        return this.getSummaryTab()
     }
 }
 
@@ -290,4 +379,4 @@ const LinkedMonthlyReport = connect(
     mapDispatchToProps
 )(MonthlyReport)
 
-export default LinkedMonthlyReport
+export default withStyles(styles)(LinkedMonthlyReport)

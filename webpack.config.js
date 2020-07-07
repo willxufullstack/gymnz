@@ -1,10 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
     plugins: [
-        new BundleAnalyzerPlugin()
+        //new BundleAnalyzerPlugin()
     ],
     output: {
         filename: '[name].js?t=' + new Date().getTime(),

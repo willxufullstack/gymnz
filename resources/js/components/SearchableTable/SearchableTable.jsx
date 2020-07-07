@@ -42,7 +42,13 @@ const styles = {
 
         '&:hover': {
             background: 'none'
-        },
+        }
+    },
+    emptyText: {
+        textAlign: 'center',
+        fontSize: 18,
+        fontWeight: 700,
+        color: '#ccc'
     }
 }
 
@@ -87,7 +93,7 @@ const Tr = ({ classes, columns, row, onClick }) => {
         return ''
     }
     return (
-        <div className={classNames(classes.row)}  onClick={(e) => onClick(e, row)}>
+        <div className={classNames(classes.row)} onClick={e => onClick(e, row)}>
             {columns.map((col, i) => (
                 <Td key={i} col={col} />
             ))}
@@ -95,40 +101,57 @@ const Tr = ({ classes, columns, row, onClick }) => {
     )
 }
 
-const SearchableTable = ({ classes, title, columns, data, onRowClick, onSearch }) => {
+const SearchableTable = ({
+    classes,
+    title,
+    columns,
+    className,
+    data,
+    onRowClick,
+    onSearch,
+    style
+}) => {
     const [searchKey, setSearchKey] = useState('')
 
     const filteredData = () => {
-        if(searchKey && searchKey.length) {
+        if (searchKey && searchKey.length) {
             return onSearch(searchKey)
         }
         return data
     }
     return (
-        <React.Fragment>
-            {title && <Titlebar label={title} style={{ flex: 'none' }}>
-                <SearchInput
-                    onChange={setSearchKey}
-                    value={searchKey}
-                    placeholder={'姓名/首字母'}
-                    style={{backgroundColor: '#fff'}}
-                />
-            </Titlebar>}
+        <div className={className} style={style}>
+            {title && (
+                <Titlebar label={title} style={{ flex: 'none' }}>
+                    {onSearch && (
+                        <SearchInput
+                            onChange={setSearchKey}
+                            value={searchKey}
+                            placeholder={'姓名/首字母'}
+                            style={{ backgroundColor: '#fff' }}
+                        />
+                    )}
+                </Titlebar>
+            )}
             <div className={classes.container}>
                 <Th classes={classes} columns={columns} />
-                <div className={classes.tableBody}>
-                    {filteredData().map((row, i) => (
-                        <Tr
-                            key={i}
-                            classes={classes}
-                            columns={columns}
-                            row={row}
-                            onClick={onRowClick}
-                        />
-                    ))}
-                </div>
+                {filteredData().length ? (
+                    <div className={classes.tableBody}>
+                        {filteredData().map((row, i) => (
+                            <Tr
+                                key={i}
+                                classes={classes}
+                                columns={columns}
+                                row={row}
+                                onClick={onRowClick}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <p className={classes.emptyText}>没有匹配的数据</p>
+                )}
             </div>
-        </React.Fragment>
+        </div>
     )
 }
 
