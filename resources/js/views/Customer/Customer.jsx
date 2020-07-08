@@ -589,7 +589,6 @@ class Customer extends React.Component {
                             c => c.id === this.customerId
                         ).name
                     }
-                    onSwitch={this.tapTab}
                     tabs={[
                         {
                             tabName: L.orders,

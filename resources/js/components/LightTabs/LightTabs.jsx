@@ -19,14 +19,18 @@ const styles = {
     }
 }
 
-const LightTabs = ({ classes, title, tabs, style, noVr }) => {
+const LightTabs = ({ classes, title, tabs, style, noVr, onSwitch }) => {
     const [activeTab, setActiveTab] = useState(0)
+    const onClickTab = i => () => {
+        setActiveTab(i)
+        onSwitch && onSwitch(i)
+    }
     return (
         <div className={classes.container} style={style}>
             <Titlebar noVr={noVr} label={title}>
                 <div className={classes.header}>
                     {tabs.map((tab, i) => (
-                        <div key={i} onClick={() => setActiveTab(i)}>
+                        <div key={i} onClick={onClickTab(i)}>
                             <LightTabTitle
                                 label={tab.tabName}
                                 active={i === activeTab}

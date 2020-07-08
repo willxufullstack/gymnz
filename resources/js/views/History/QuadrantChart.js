@@ -15,8 +15,8 @@ class QuadrantChart extends React.Component {
         const sizeRange = this.props.sizeRange ? this.props.sizeRange: [4, 14]
         const strokeWidthRange=this.props.strokeWidthRange ? this.props.strokeWidthRange: [sizeRange[0]/3, sizeRange[1]/3]
         const colorRange = this.props.colorRange ? this.props.colorRange : ['#8e24aa', '#f48024', '#aaa', '#4fd2c2', '#999', 'red']
-        return (<div style={{position: 'relative', top: -16}}>
-                <div style={{position: 'absolute', top: 16, margin: 'auto',textAlign: 'center', color:'#333', fontSize:'700', width: this.props.width + this.props.margin}}>{this.props.title}</div>
+        return (<div style={{position: 'relative', top: -6}}>
+                <div style={{position: 'absolute', top: 12, margin: 'auto',textAlign: 'center', color:'#333', fontSize:'700', fontSize: 12, width: this.props.width + this.props.margin}}>{this.props.title}</div>
                 <XYPlot colorRange={colorRange} margin={MARGIN} xDomain={this.props.xRange} yDomain={this.props.yRange} width={this.props.width + this.props.margin} height={this.props.height}>
                 <XAxis top={top} hideTicks/>
                 <XAxis title={this.props.xTitle} />
@@ -36,7 +36,7 @@ class QuadrantChart extends React.Component {
                 />
                 {this.props.hint}
             </XYPlot>
-            {legends.length> 0 && <div style={{display: 'flex'}}>
+            {Object.keys(legends).length> 0 && <div style={{display: 'flex'}}>
                 <DiscreteColorLegend
                         colors={Object.keys(legends)}
                         style={{display:'inline-block', position: 'relative', left: this.props.margin}}
@@ -45,7 +45,7 @@ class QuadrantChart extends React.Component {
                         items={Object.values(legends).map( (l,i) => ({strokeWidth: 13, title: l,  color: colorRange[i]}))}
                     />
                 <div style={{position: 'relative', paddingTop: 6, paddingLeft: this.props.margin, display:'inline-block'}}>
-                    <ContinuousSizeLegend width={this.props.width/3}  startSize={sizeRange[0]} endSize={18} circlesTotal={8} startTitle="12次" endTitle="42次" />
+                    <ContinuousSizeLegend width={this.props.width/3}  startSize={sizeRange[0]} endSize={24} circlesTotal={6} startTitle="12次" endTitle="42次" />
                 </div>
             </div>}
             </div>)
