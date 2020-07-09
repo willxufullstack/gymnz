@@ -1,11 +1,17 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as Actions from '../../actions'
 import i18N from '../../lang'
 import SalarySettingItem from './SalarySettingItem'
-import { Grid } from '@material-ui/core'
 import withStyles from '@material-ui/core/styles/withStyles'
 
 const L = i18N('SalarySetting')
 const styles = {
+    container: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)'
+    },
     item: {
         padding: '4px 8px'
     }
@@ -20,7 +26,7 @@ class SalarySetting extends React.Component {
         this.props.actions.loadGymSalarySetting(this.props.selectedGym.id)
     }
 
-    onSave = (data) => {
+    onSave = data => {
         this.props.actions.updateGymSalarySetting(
             this.props.selectedGym.id,
             data
@@ -31,20 +37,36 @@ class SalarySetting extends React.Component {
         const data = this.props.gym.salarySettings
         const { classes } = this.props
         return (
-            <Grid container spacing={2}>
+            <div className={classes.container}>
                 {data.map(row => (
-                    <Grid
-                        key={row.coach.user.email}
+                    <SalarySettingItem
                         className={classes.item}
-                        item
-                        xs={4}
-                    >
-                        <SalarySettingItem data={row} onSave={this.onSave} />
-                    </Grid>
+                        key={row.coach.user.email}
+                        data={row}
+                        onSave={this.onSave}
+                    />
                 ))}
-            </Grid>
+            </div>
         )
     }
 }
 
-export default withStyles(styles)(SalarySetting)
+const mapStoreToProps = store => {
+    return {
+        selectedGym: store.setting.selectedGym,
+        gym: store.gym
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(Actions, dispatch)
+    }
+}
+
+const LinkedSalarySetting = connect(
+    mapStoreToProps,
+    mapDispatchToProps
+)(SalarySetting)
+
+export default withStyles(styles)(LinkedSalarySetting)

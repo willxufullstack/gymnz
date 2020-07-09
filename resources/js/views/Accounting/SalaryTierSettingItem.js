@@ -1,22 +1,15 @@
 import React from 'react'
-import ColorHash from 'color-hash'
 import {
-    Card,
-    CardHeader,
-    Avatar,
-    CardContent,
     withStyles,
     Button,
     Divider,
     Switch
 } from '@material-ui/core'
-import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import CreateIcon from '@material-ui/icons/Create'
 import DoneAllIcon from '@material-ui/icons/DoneAll'
 import CloseIcon from '@material-ui/icons/Close'
 import AddIcon from '@material-ui/icons/Add'
 import { useState, useEffect } from 'react'
-import i18N from '../../lang'
 import classNames from 'classnames'
 import SalaryTierSettingRow from './SalaryTierSettingRow'
 
@@ -71,7 +64,9 @@ const styles = {
         borderRadius: '4px',
         fontWeight: 900,
         height: 20,
-        lineHeight: '16px'
+        lineHeight: '16px',
+        alignItems: 'center',
+        display: 'flex'
     },
     titleRow: {
         marginBottom: 16,
@@ -117,10 +112,12 @@ const styles = {
         }
     },
     checked: {
-        left: 14
+        left: 18,
+        top: 3
     },
     unchecked: {
-        left: 26
+        left: 30,
+        top: 3
     }
 }
 
@@ -177,12 +174,14 @@ const SalaryTierSettingItem = ({ classes, setting, label, onSaveSetting }) => {
 
     const ModeSwitch = withStyles({
         root: {
-            width: 46,
-            height: 20,
-            padding: 0,
+            width: 54,
+            height: 24,
+            padding: 4,
             display: 'flex'
         },
         switchBase: {
+            top: 'unset',
+            left: 'unset',
             padding: 4,
             color: '#fff',
             borderColor: '#FDC794',

@@ -185,11 +185,11 @@ const gym = (state = initState, action = NonAction) => {
         case ActionTypes.PAY_SALARY_SUCCESS:
             return Object.assign({}, state, {
                 loading: false,
-                successMsg: 'salary payment has been proceed'
+                successMsg: '支付成功'
             })
         case ActionTypes.PAY_SALARY_FAIL:
             return Object.assign({}, state, {
-                errorMsg: 'pay salary failed',
+                errorMsg: '支付失败',
                 loading: false
             })
 
@@ -201,11 +201,11 @@ const gym = (state = initState, action = NonAction) => {
                     r.id === action.payload.data.id ? action.payload.data : r
                 ),
                 loading: false,
-                successMsg: 'adjustment has been proceed'
+                successMsg: '已保存'
             })
         case ActionTypes.UPDATE_SALARY_RECEIPT_FAIL:
             return Object.assign({}, state, {
-                errorMsg: 'adjustment save failed',
+                errorMsg: '保存失败',
                 loading: false
             })
 
@@ -403,11 +403,11 @@ const gym = (state = initState, action = NonAction) => {
                 reimbursements: state.reimbursements.filter(
                     r => r.id !== action.payload.data.id
                 ),
-                successMsg: 'Reimbursement payment successed'
+                successMsg: '保存成功'
             })
         case ActionTypes.PAY_REIMBURSEMENT_FAIL:
             return Object.assign({}, state, {
-                errorMsg: 'Pay reimbursement failed, please try again',
+                errorMsg: '保存失败',
                 loading: false
             })
 

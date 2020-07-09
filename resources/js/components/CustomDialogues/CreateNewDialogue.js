@@ -145,7 +145,7 @@ class CreateNewDialogue extends React.Component {
                     }
             }
         }
-        return validateFunc(this.state[field.name])
+        return validateFunc(this.state[field.name]+'')
     }
 
     explainedFields = () => {
@@ -290,9 +290,6 @@ class CreateNewDialogue extends React.Component {
                     />
                 </DialogTitle>
                 <DialogContent style={{ minHeight: this.props.minHeight }}>
-                    {/* <DialogContentText>
-                        {this.props.subtitle || ''}
-                    </DialogContentText> */}
                     <form className={classes.form} autoComplete="off" style={{gridTemplateColumns: `repeat(${col ? col : 2 }, 1fr)`}}>
                         {this.explainedFields().map(field => {
                             // selection list
@@ -315,14 +312,6 @@ class CreateNewDialogue extends React.Component {
                     </form>
                 </DialogContent>
                 <DialogActions className={classes.actions}>
-                    {/* <RoundButton
-                        extend={8}
-                        color="#29aa99"
-                        variant={'outline'}
-                        onClick={this.cancel}
-                        fontSize={14}
-                        label={L.cancel}
-                    /> */}
                     <RoundButton
                         shadow
                         extend={12}

@@ -29,13 +29,14 @@ const styles = {
         borderRadius: 4,
         marginRight: 24,
         boxShadow:
-            '0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);'
+            '0 1px 2px 0 rgba(60,64,67,0.202), 0 1px 3px 1px rgba(60,64,67,0.079);'
     }
 }
 
 const Titlebar = ({
     noVr,
     classes,
+    color,
     label,
     description = '',
     children,
@@ -50,7 +51,8 @@ const Titlebar = ({
                     className={classes.vr}
                     style={{
                         height: (fontSize * 22) / 24,
-                        marginRight: fontSize
+                        marginRight: fontSize,
+                        backgroundColor: color ? color : '#29aa99'
                     }}
                 />
             )}

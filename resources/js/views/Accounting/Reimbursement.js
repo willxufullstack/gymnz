@@ -1,16 +1,15 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as Actions from '../../actions'
 import { withStyles } from '@material-ui/core'
-import Button from '-components/CustomButtons/Button.jsx'
-import Add from '@material-ui/icons/Add'
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import Confirmation from '-components/CustomDialogues/Confirmation'
-import Pay from '@material-ui/icons/PlayCircleOutline'
 import * as consts from '-const'
 import * as utils from '-utils'
-import MaterialTable from 'material-table'
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
-import DayjsUtils from '@date-io/dayjs'
 import i18N from '../../lang'
+import RoundButton from '../../components/RoundButton/RoundButton'
+import SearchableTable from '../../components/SearchableTable/SearchableTable'
 
 const L = i18N('Reimbursement')
 const styles = {
@@ -25,6 +24,12 @@ const styles = {
     },
     search: {
         borderBottomColor: '#9c27b0'
+    },
+    paid: {
+        fontSize: 12,
+        fontWeight: '900',
+        color: '#29aa99',
+        marginLeft: 6
     }
 }
 
@@ -82,15 +87,6 @@ class Reimbursement extends React.Component {
         return <CreateNewDialogue {...fields} />
     }
 
-    handleDateChange = date => {
-        this.setState({ date }, () => {
-            this.props.actions.loadGymReimbursement(
-                this.props.selectedGym.id,
-                utils.getMonthStartEnd(this.state.date)
-            )
-        })
-    }
-
     tapPay = reimbursement => {
         this.setState({ showPayConfirmation: reimbursement })
     }
@@ -119,6 +115,7 @@ class Reimbursement extends React.Component {
     }
 
     getTable = () => {
+        const { classes } = this.props
         const columns = [
             { title: L.amount, field: 'amount' },
             { title: L.category, field: 'category' },
@@ -126,60 +123,38 @@ class Reimbursement extends React.Component {
             { title: L.coach, field: 'coach.user.name' },
             { title: L.Time, field: 'created_at' },
             {
-                title: '',
-                render: rowData => (
-                    <Button
-                        onClick={() => this.tapPay(rowData)}
-                        color='transparentPrimary'
-                    >
-                        <Pay />
-                        {L.pay}
-                    </Button>
-                )
+                title: '操作',
+                render: rowData =>
+                    rowData.status === 1 ? (
+                        <RoundButton
+                            onClick={() => this.tapPay(rowData)}
+                            color="#FF8C8C"
+                            fontSize="12"
+                            variant="outline"
+                            label={L.pay}
+                        />
+                    ) : (
+                        <span className={classes.paid}>已支付</span>
+                    )
             }
         ]
         const data = this.props.gym.reimbursements
-        const dateSelector = (
-            <MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>
-                <DatePicker
-                    className={this.props.classes.datePicker}
-                    format='MM/YYYY'
-                    openTo='month'
-                    views={['year', 'month']}
-                    value={this.state.date}
-                    onChange={this.handleDateChange}
-                />
-            </MuiPickersUtilsProvider>
-        )
-        const btns = (
-            <React.Fragment>
-                {dateSelector}
-                <Button
-                    color='transparentPrimary'
-                    size='sm'
-                    onClick={() =>
-                        this.setState({ showNewReimbursement: true })
-                    }
-                >
-                    <Add />
-                    {L.reimbursement}
-                </Button>
-            </React.Fragment>
-        )
         return (
             <div>
-                <MaterialTable title={btns} columns={columns} data={data} />
-            </div>
-        )
-    }
+                <div style={{ display: 'flex' }}>
+                    <RoundButton
+                        color="#29aa99"
+                        shadow
+                        onClick={() =>
+                            this.setState({ showNewReimbursement: true })
+                        }
+                        extend={6}
+                        label={'+ 报销'}
+                    />
+                </div>
 
-    componentWillMount() {
-        if(this.props.gym.coaches) {
-            this.props.actions.loadCoach(this.props.selectedGym.id)
-        }
-        this.props.actions.loadGymReimbursement(
-            this.props.selectedGym.id,
-            utils.getMonthStartEnd(this.state.date)
+                <SearchableTable columns={columns} data={data} />
+            </div>
         )
     }
 
@@ -195,4 +170,22 @@ class Reimbursement extends React.Component {
     }
 }
 
-export default withStyles(styles)(Reimbursement)
+const mapStoreToProps = store => {
+    return {
+        selectedGym: store.setting.selectedGym,
+        gym: store.gym
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(Actions, dispatch)
+    }
+}
+
+const LinkedReimbursement = connect(
+    mapStoreToProps,
+    mapDispatchToProps
+)(Reimbursement)
+
+export default withStyles(styles)(LinkedReimbursement)

@@ -1,29 +1,22 @@
 import React from 'react'
-import Button from '-components/CustomButtons/Button.jsx'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as Actions from '../../actions'
 import Confirmation from '-components/CustomDialogues/Confirmation'
-import MaterialTable from 'material-table'
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
-import DayjsUtils from '@date-io/dayjs'
 import { withStyles } from '@material-ui/core'
 import dayjs from 'dayjs'
-import Done from '@material-ui/icons/CheckCircle'
-import Pay from '@material-ui/icons/PlayCircleOutline'
-import Success from '-components/Typography/Success.jsx'
 import i18N from '../../lang'
+import SearchableTable from '../../components/SearchableTable/SearchableTable'
+import RoundButton from '../../components/RoundButton/RoundButton'
+import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 
 const L = i18N('SalarySummary')
 const styles = {
-    datePicker: {
-        width: 62,
-        position: 'relative',
-        top: 5,
-        marginRight: 200
-    },
-    actionBtn: {
-        float: 'right'
-    },
-    search: {
-        borderBottomColor: '#9c27b0'
+    paid: {
+        fontSize: 12,
+        fontWeight: '900',
+        color: '#29aa99',
+        marginLeft: 24
     }
 }
 
@@ -31,18 +24,10 @@ class SalarySummary extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            date: new Date(),
             showNewReimbursement: false,
-            showPayConfirmation: false
+            showPayConfirmation: false,
+            showAdjustDialogue: false
         }
-    }
-
-    handleDateChange = date => {
-        this.setState({ date }, () => {
-            this.props.actions.loadGymSalary(this.props.selectedGym.id, {
-                month: dayjs(this.state.date).format('YYYY-MM')
-            })
-        })
     }
 
     tapPay = salary => {
@@ -78,46 +63,56 @@ class SalarySummary extends React.Component {
         )
     }
 
+    getAdjustDialogue = () => {
+        const params = {
+            onSave: newData => {
+                this.props.actions.updateSalaryReceipt(
+                    this.props.selectedGym.id,
+                    newData
+                )
+                this.setState({ showAdjustDialogue: false })
+            },
+            onCancel: () => {
+                this.setState({ showAdjustDialogue: false })
+            },
+            title: '调整',
+            dialogue: true,
+            col: 1,
+            inputFields: [
+                {
+                    name: 'id',
+                    label: 'id',
+                    value: this.state.showAdjustDialogue.id,
+                    hide: true
+                },
+                {
+                    name: 'adjustment',
+                    label: '调整金额',
+                    type: 'number'
+                },
+                {
+                    name: 'adjustment_reason',
+                    label: '调整原因'
+                }
+            ]
+        }
+        return <CreateNewDialogue {...params} />
+    }
+
     getTable = () => {
+        const { classes } = this.props
         const columns = [
             {
-                title: 'KPI',
-                field: 'kpi',
-                editable: 'never',
-                cellStyle: {
-                    width: 80,
-                    maxWidth: 80
-                },
-                headerStyle: {
-                    width: 80,
-                    maxWidth: 80
-                }
+                title: L.name,
+                render: rowData => rowData.coach.user.name
             },
             {
-                title: L.name,
-                field: 'coach.user.name',
-                editable: 'never',
-                cellStyle: {
-                    width: 120,
-                    maxWidth: 120
-                },
-                headerStyle: {
-                    width: 120,
-                    maxWidth: 120
-                }
+                title: 'KPI',
+                field: 'kpi'
             },
             {
                 title: L.baseTax,
                 field: 'tax',
-                editable: 'never',
-                cellStyle: {
-                    width: 160,
-                    maxWidth: 160
-                },
-                headerStyle: {
-                    width: 160,
-                    maxWidth: 160
-                },
                 render: rowData => `${rowData.base} - ${rowData.tax}`
             },
             {
@@ -127,6 +122,7 @@ class SalarySummary extends React.Component {
             },
             {
                 title: '课程(含体验/赠课)',
+                flex: 2,
                 field: 'course_count',
                 editable: 'never'
             },
@@ -137,98 +133,57 @@ class SalarySummary extends React.Component {
             },
             {
                 title: '赠课',
-                field: 'free_course_count',
-                editable: 'never'
+                field: 'free_course_count'
             },
             { title: L.adjustment, field: 'adjustment' },
             { title: L.comments, field: 'adjustment_reason' },
             {
                 title: '合计',
-                field: 'total',
-                editable: 'never',
-                cellStyle: {
-                    width: 100,
-                    maxWidth: 100
-                },
-                headerStyle: {
-                    width: 80,
-                    maxWidth: 80
-                }
+                field: 'total'
             },
             {
-                title: '',
-                editable: 'never',
+                title: '操作',
+                flex: 2,
                 render: rowData =>
                     rowData.status === 2 ? (
-                        <Success>
-                            <Done />
-                        </Success>
+                        <span className={classes.paid}>已支付</span>
                     ) : (
-                        <Button
-                            onClick={() => this.tapPay(rowData)}
-                            color="transparentPrimary"
-                        >
-                            <Pay />
-                            {L.pay}
-                        </Button>
+                        <React.Fragment>
+                            <RoundButton
+                                onClick={() =>
+                                    this.setState({
+                                        showAdjustDialogue: rowData
+                                    })
+                                }
+                                color="#999"
+                                variant="text"
+                                fontSize={12}
+                                label={'调整'}
+                            />
+                            <RoundButton
+                                onClick={() => this.tapPay(rowData)}
+                                color="#FF8C8C"
+                                variant="outline"
+                                fontSize={12}
+                                style={{ marginLeft: 4 }}
+                                label={L.pay}
+                            />
+                        </React.Fragment>
                     )
             }
         ]
-        const data = this.props.gym.salaryReceipts
-        const dateSelector = (
-            <MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>
-                <DatePicker
-                    className={this.props.classes.datePicker}
-                    format="MM/YYYY"
-                    openTo="month"
-                    views={['year', 'month']}
-                    value={this.state.date}
-                    onChange={this.handleDateChange}
-                />
-            </MuiPickersUtilsProvider>
-        )
-        const btns = <React.Fragment>{dateSelector}</React.Fragment>
         return (
-            <div>
-                <MaterialTable
-                    title={btns}
-                    columns={columns}
-                    data={data}
-                    options={{
-                        search: false,
-                        paging: false
-                    }}
-                    editable={
-                        data.filter(r => r.status === 1).length //disable edit all rows have been archived
-                            ? {
-                                  isEditable: rowData => rowData.status === 1,
-                                  onRowUpdate: (newData, oldData) =>
-                                      new Promise((resolve, reject) => {
-                                          // WARNING: https://github.com/mbrn/material-table/issues/615
-                                          this.props.actions
-                                              .updateSalaryReceipt(
-                                                  this.props.selectedGym.id,
-                                                  newData
-                                              )
-                                              .then(resolve)
-                                      })
-                              }
-                            : null
-                    }
-                />
-            </div>
+            <SearchableTable
+                columns={columns}
+                data={this.props.gym.salaryReceipts}
+            />
         )
-    }
-
-    componentWillMount() {
-        this.props.actions.loadGymSalary(this.props.selectedGym.id, {
-            month: dayjs(this.state.date).format('YYYY-MM')
-        })
     }
 
     render() {
         return (
             <React.Fragment>
+                {this.state.showAdjustDialogue && this.getAdjustDialogue()}
                 {this.state.showPayConfirmation && this.getPayConfirmation()}
                 {this.getTable()}
             </React.Fragment>
@@ -236,4 +191,22 @@ class SalarySummary extends React.Component {
     }
 }
 
-export default withStyles(styles)(SalarySummary)
+const mapStoreToProps = store => {
+    return {
+        selectedGym: store.setting.selectedGym,
+        gym: store.gym
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(Actions, dispatch)
+    }
+}
+
+const LinkedSalarySummary = connect(
+    mapStoreToProps,
+    mapDispatchToProps
+)(SalarySummary)
+
+export default withStyles(styles)(LinkedSalarySummary)

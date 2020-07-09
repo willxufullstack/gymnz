@@ -66,7 +66,7 @@ const SalaryTierSettingRow = ({
 
     const EditDialog = () => {
         const params = {
-            onSave: (data) => {
+            onSave: data => {
                 setShowEditParam(false)
                 onEdit(data)
             },
@@ -91,7 +91,7 @@ const SalaryTierSettingRow = ({
                 {
                     name: 'amountUnit',
                     hide: true,
-                    value: row.amountUnit,
+                    value: row.amountUnit
                 },
                 {
                     name: 'valueUnit',
@@ -100,7 +100,7 @@ const SalaryTierSettingRow = ({
                 }
             ]
         }
-        return <CreateNewDialogue open={showEditParam} {...params}/>
+        return <CreateNewDialogue open={showEditParam} {...params} />
     }
 
     return (
@@ -112,26 +112,32 @@ const SalaryTierSettingRow = ({
             onMouseEnter={() => isEditing && setHover(true)}
             onMouseLeave={() => isEditing && setHover(false)}
         >
-            <EditDialog/>
+            <EditDialog />
             <span className={classes.greater}>{'> '}</span>
             <span className={classes.amount}>{row.amount}</span>
             <span className={classes.unit}>{row.amountUnit}</span>
             <span className={classes.value}>{row.value}</span>
             <span className={classes.valueUnit}>{row.valueUnit}</span>
-            <span className={classNames(classes.edit, !hover && 'invisible')}>
-                <EditIcon onClick={edit} className={classes.actionIcon} />
-            </span>
-            <span
-                className={classNames(
-                    classes.delete,
-                    (!onDelete || !hover) && 'invisible'
-                )}
-            >
-                <DeleteOutlineIcon
-                    className={classes.actionIcon}
-                    onClick={onDelete}
-                />
-            </span>
+            {isEditing && (
+                <span
+                    className={classNames(classes.edit, !hover && 'invisible')}
+                >
+                    <EditIcon onClick={edit} className={classes.actionIcon} />
+                </span>
+            )}
+            {isEditing && (
+                <span
+                    className={classNames(
+                        classes.delete,
+                        (!onDelete || !hover) && 'invisible'
+                    )}
+                >
+                    <DeleteOutlineIcon
+                        className={classes.actionIcon}
+                        onClick={onDelete}
+                    />
+                </span>
+            )}
         </p>
     )
 }

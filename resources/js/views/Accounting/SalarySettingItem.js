@@ -12,6 +12,8 @@ import CreateIcon from '@material-ui/icons/Create'
 import { useState, useEffect } from 'react'
 import i18N from '../../lang'
 import SalaryTierSettingItem from './SalaryTierSettingItem'
+import Panel from '../../components/Panel/Panel'
+import Titlebar from '../../components/TitleBar/Titlebar'
 
 const L = i18N('SalarySetting')
 
@@ -22,11 +24,12 @@ const styles = {
     simpleRow: {
         display: 'flex',
         fontSize: 14,
+        lineHeight: '28px',
         padding: '6px 8px',
         color: '#333',
+        borderRadius: 4,
         '&:hover': {
-            background: '#F3F3F3',
-            borderRadius: 4
+            background: '#F3F3F3'
         }
     },
     option: {
@@ -55,18 +58,14 @@ const styles = {
         boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.15)'
     },
     editIconContainerPlaceholder: {
-        width: 20,
-        height: 20
+        width: 26,
+        height: 26
     }
 }
 
 class SalarySettingItem extends React.Component {
     constructor(props) {
         super(props)
-    }
-
-    getNewIncomeDialogue = () => {
-        return <CreateNewDialogue {...params} />
     }
 
     SimpleRow = ({ data, classes, onSave }) => {
@@ -84,6 +83,7 @@ class SalarySettingItem extends React.Component {
             },
             onCancel: hide,
             title: data.label,
+            col: 1,
             dialogue: true,
             inputFields: [
                 {
@@ -146,12 +146,21 @@ class SalarySettingItem extends React.Component {
             }
         }
 
-        const save = (updated) => {
-            const newSetting = { ...this.props.data, sale_configuration : JSON.stringify(updated) }
+        const save = updated => {
+            const newSetting = {
+                ...this.props.data,
+                sale_configuration: JSON.stringify(updated)
+            }
             this.props.onSave(newSetting)
         }
 
-        return <SalaryTierSettingItem setting={setting} label={'销提'} onSaveSetting={save} />
+        return (
+            <SalaryTierSettingItem
+                setting={setting}
+                label={'销提'}
+                onSaveSetting={save}
+            />
+        )
     }
 
     courseFixedRow = () => {
@@ -170,12 +179,21 @@ class SalarySettingItem extends React.Component {
             }
         }
 
-        const save = (updated) => {
-            const newSetting = { ...this.props.data, course_fixed_configuration : JSON.stringify(updated) }
+        const save = updated => {
+            const newSetting = {
+                ...this.props.data,
+                course_fixed_configuration: JSON.stringify(updated)
+            }
             this.props.onSave(newSetting)
         }
 
-        return <SalaryTierSettingItem setting={setting} label={'课提'} onSaveSetting={save} />
+        return (
+            <SalaryTierSettingItem
+                setting={setting}
+                label={'课提'}
+                onSaveSetting={save}
+            />
+        )
     }
 
     render() {
@@ -190,18 +208,9 @@ class SalarySettingItem extends React.Component {
             tax: L.tax
         }
         return (
-            <Card variant="outlined">
+            <Panel style={{ margin: 12 }}>
                 <CardHeader
-                    avatar={
-                        <Avatar
-                            style={{ backgroundColor: color }}
-                            aria-label="recipe"
-                        >
-                            {data.coach.user.name.substr(0, 1)}
-                        </Avatar>
-                    }
-                    title={data.coach.user.name}
-                    subheader={data.coach.user.email}
+                    title={<Titlebar color={'#89ECC2'} fontSize={20} label={data.coach.user.name} />}
                 />
                 <CardContent className={classes.cardContent}>
                     {Object.keys(this.simpleOptions).map(opt => {
@@ -221,7 +230,7 @@ class SalarySettingItem extends React.Component {
                     <this.courseFixedRow />
                     <this.saleRow />
                 </CardContent>
-            </Card>
+            </Panel>
         )
     }
 }

@@ -6,10 +6,13 @@ import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import * as consts from '-const'
 import * as utils from '-utils'
 import MaterialTable from 'material-table'
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
-import DayjsUtils from '@date-io/dayjs'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as Actions from '../../actions'
 
 import i18N from '../../lang'
+import SearchableTable from '../../components/SearchableTable/SearchableTable'
+import RoundButton from '../../components/RoundButton/RoundButton'
 
 const L = i18N('Accounting')
 const styles = {
@@ -44,16 +47,6 @@ class Accounting extends React.Component {
     tapCreateIncome = () => {
         this.setState({ showNewIncome: true })
     }
-
-    handleDateChange = date => {
-        this.setState({ date }, () => {
-            this.props.actions.loadGymAccounting(
-                this.props.selectedGym.id,
-                utils.getMonthStartEnd(this.state.date)
-            )
-        })
-    }
-
     saveExpenditure = data => {
         data.amount *= -1
         this.props.actions.createAccountingRow(this.props.selectedGym.id, data)
@@ -134,52 +127,34 @@ class Accounting extends React.Component {
             { title: L.amount, field: 'amount' },
             { title: L.category, field: 'category' },
             { title: L.detail, field: 'detail' },
-            { title: L.operator, field: 'op.name' },
+            { title: L.operator, render: row => row.op.name },
             { title: L.time, field: 'created_at' }
         ]
         const data = this.props.gym.accounting
-        const dateSelector = (
-            <MuiPickersUtilsProvider utils={DayjsUtils} locale={'zh-cn'}>
-                <DatePicker
-                    className={this.props.classes.datePicker}
-                    format='MM/YYYY'
-                    openTo='month'
-                    views={['year', 'month']}
-                    value={this.state.date}
-                    onChange={this.handleDateChange}
-                />
-            </MuiPickersUtilsProvider>
-        )
         const btns = (
-            <React.Fragment>
-                {dateSelector}
-                <Button
-                    size='sm'
-                    color='transparentGray'
-                    onClick={this.tapCreateIncome}
-                >
-                    <Add size='sm' /> {L.income}
-                </Button>
-                <Button
-                    size='sm'
-                    color='transparentPrimary'
+            <div style={{display: 'flex'}}>
+                <RoundButton
+                    color="#29aa99"
+                    shadow
                     onClick={this.tapCreateExpenditure}
-                >
-                    <Add /> {L.expenditure}
-                </Button>
-            </React.Fragment>
+                    label={'+ ' + L.expenditure}
+                    style={{marginRight: 24}}
+                    extend={6}
+                />
+                <RoundButton
+                    color="#999"
+                    shadow
+                    onClick={this.tapCreateIncome}
+                    label={'+ ' + L.income}
+                    extend={6}
+                />
+            </div>
         )
         return (
             <div>
-                <MaterialTable title={btns} columns={columns} data={data} />
+                {btns}
+                <SearchableTable columns={columns} data={data} />
             </div>
-        )
-    }
-
-    componentWillMount() {
-        this.props.actions.loadGymAccounting(
-            this.props.selectedGym.id,
-            utils.getMonthStartEnd(this.state.date)
         )
     }
 
@@ -195,4 +170,22 @@ class Accounting extends React.Component {
     }
 }
 
-export default withStyles(styles)(Accounting)
+const mapStoreToProps = store => {
+    return {
+        selectedGym: store.setting.selectedGym,
+        gym: store.gym
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(Actions, dispatch)
+    }
+}
+
+const LinkedAccounting = connect(
+    mapStoreToProps,
+    mapDispatchToProps
+)(Accounting)
+
+export default withStyles(styles)(LinkedAccounting)

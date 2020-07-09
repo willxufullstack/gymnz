@@ -225,14 +225,14 @@ class SalaryReceipt extends Model
         $this->trial_course_count = $trialCourseCount;
         $this->free_course_count = $freeCourseCount;
         $this->sale = $orderPrice;
-        $this->total = $this->base
+        $this->total = (int)($this->base
             + $this->calcCourseSalaryByConfiguration($normalCourseCount)
             + $freeCourseCount * $this->course_free
             + $trialCourseCount * $this->course_trial
             + $this->adjustment
             + $moneyByCoursePercentage
             + $this->calcSaleSalaryByConfiguration($orderPrice)
-            - $this->tax;
+            - $this->tax);
     }
 
     public function transform()

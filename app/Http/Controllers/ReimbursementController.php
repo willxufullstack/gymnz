@@ -23,7 +23,6 @@ class ReimbursementController extends Controller
             ->where('gym_id', $gymId)
             ->where('created_at', '>=', $request->input('start'))
             ->where('created_at', '<=', $request->input('end'))
-            ->where('status', '>=', 1)
             ->orderBy('created_at', 'DESC');
 
         if ($request->has('coach')) {

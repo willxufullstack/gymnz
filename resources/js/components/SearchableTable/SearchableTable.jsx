@@ -93,7 +93,10 @@ const Tr = ({ classes, columns, row, onClick }) => {
         return ''
     }
     return (
-        <div className={classNames(classes.row)} onClick={e => onClick(e, row)}>
+        <div
+            className={classNames(classes.row)}
+            onClick={e => onClick && onClick(e, row)}
+        >
             {columns.map((col, i) => (
                 <Td key={i} col={col} />
             ))}

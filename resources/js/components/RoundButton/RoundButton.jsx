@@ -1,6 +1,7 @@
 import { withStyles } from '@material-ui/core'
 import React from 'react'
 import classNames from 'classnames'
+import * as utils from '-utils'
 
 const styles = {
     container: {
@@ -41,8 +42,9 @@ const RoundButton = ({
         opacity: disabled ? 0.5 : 1
     }
 
-    if (shadow) {
-        defaultStyle['boxShadow'] = '0px 4px 12px rgba(41, 170, 153, 0.5)'
+    if (shadow || !variant) {
+        const shadowColor = utils.convertHexToRGBA(color, 50)
+        defaultStyle['boxShadow'] = `0px 4px 12px ${shadowColor}`
     }
 
     return (
