@@ -120,7 +120,7 @@ class Reimbursement extends React.Component {
             { title: L.amount, field: 'amount' },
             { title: L.category, field: 'category' },
             { title: L.detail, field: 'detail' },
-            { title: L.coach, field: 'coach.user.name' },
+            { title: L.coach, render: (row) => row.coach.user.name },
             { title: L.Time, field: 'created_at' },
             {
                 title: '操作',

@@ -185,6 +185,9 @@ const gym = (state = initState, action = NonAction) => {
         case ActionTypes.PAY_SALARY_SUCCESS:
             return Object.assign({}, state, {
                 loading: false,
+                salaryReceipts: state.salaryReceipts.map(
+                    r => r.id === action.payload.data.id  ? action.payload.data : r
+                ),
                 successMsg: '支付成功'
             })
         case ActionTypes.PAY_SALARY_FAIL:
@@ -400,8 +403,8 @@ const gym = (state = initState, action = NonAction) => {
         case ActionTypes.PAY_REIMBURSEMENT_SUCCESS:
             return Object.assign({}, state, {
                 loading: false,
-                reimbursements: state.reimbursements.filter(
-                    r => r.id !== action.payload.data.id
+                reimbursements: state.reimbursements.map(
+                    r => r.id === action.payload.data.id  ? action.payload.data : r
                 ),
                 successMsg: '保存成功'
             })

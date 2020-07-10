@@ -42,12 +42,7 @@ class SalarySummary extends React.Component {
                 this.state.showPayConfirmation.id
             )
             .then(() => {
-                this.setState({ showPayConfirmation: false }, () => {
-                    this.props.actions.loadGymSalary(
-                        this.props.selectedGym.id,
-                        { month: dayjs(this.state.date).format('YYYY-MM') }
-                    )
-                })
+                this.setState({ showPayConfirmation: false })
             })
     }
 

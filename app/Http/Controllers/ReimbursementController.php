@@ -52,7 +52,11 @@ class ReimbursementController extends Controller
         $data = $request->only('category', 'detail', 'amount', 'coach_id');
         $data['created_by'] = Auth::User()->id;
         $data['gym_id'] = $gymId;
-        return Reimbursement::create($data);
+        $created = Reimbursement::create($data);
+        $reimbursement = Reimbursement::with(['op', 'coach.user'])
+            ->where('id', $created->id)
+            ->first();
+        return response()->json($reimbursement, 201);
     }
 
     /**
@@ -121,7 +125,7 @@ class ReimbursementController extends Controller
 
     public function pay(Request $request, $gymId, $reimburseId)
     {
-        $reimbursement = Reimbursement::with('op')
+        $reimbursement = Reimbursement::with(['op', 'coach.user'])
             ->where([
                 'gym_id' => $gymId,
                 'id' => $reimburseId,
