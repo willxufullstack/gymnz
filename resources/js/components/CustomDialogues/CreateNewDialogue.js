@@ -290,7 +290,7 @@ class CreateNewDialogue extends React.Component {
                     />
                 </DialogTitle>
                 <DialogContent style={{ minHeight: this.props.minHeight }}>
-                    <form className={classes.form} autoComplete="off" style={{gridTemplateColumns: `repeat(${col ? col : 2 }, 1fr)`}}>
+                    <form className={classes.form} autoComplete="off" style={{gridTemplateColumns: `repeat(${this.explainedFields().length <= 4 ? 1 : 2 }, 1fr)`}}>
                         {this.explainedFields().map(field => {
                             // selection list
                             if (field.options) {

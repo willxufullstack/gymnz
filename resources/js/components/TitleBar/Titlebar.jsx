@@ -10,16 +10,18 @@ const styles = {
         flex: 1
     },
     title: {
-        display: 'inline-block',
+        display: 'flex',
         fontSize: 24,
         fontWeight: '900',
         color: '#333',
+        alignItems: 'center',
         flex: 1
     },
     description: {
         fontSize: 14,
         color: '#999',
-        fontWeight: '500'
+        fontWeight: '500',
+        marginLeft: 12
     },
     vr: {
         width: 8,

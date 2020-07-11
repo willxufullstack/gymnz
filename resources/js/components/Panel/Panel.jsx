@@ -4,6 +4,7 @@ import classNames from 'classnames'
 
 const styles = {
     container: {
+        overflow: 'hidden',
         border: '1px solid #f3f3f3',
         background: '#fff',
         borderRadius: 12

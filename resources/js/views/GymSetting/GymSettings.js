@@ -1,38 +1,58 @@
-import React from 'react'
-import GridItem from '-components/Grid/GridItem'
-import GridContainer from '-components/Grid/GridContainer'
+import React, { useState } from 'react'
 import InputRange from 'react-input-range'
 import 'react-input-range/lib/css/index.css'
 import '../../../sass/settings.scss'
 import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import connect from 'react-redux/es/connect/connect'
-import Label from '@material-ui/icons/Dehaze'
-import Edit from '@material-ui/icons/Edit'
-import Tabs from '-components/CustomTabs/CustomTabs.jsx'
 import Coach from './Coach'
 import Organization from './Organization'
 import Button from '-components/CustomButtons/Button.jsx'
 import {
     Typography,
-    IconButton,
     RadioGroup,
     Radio,
     FormControlLabel,
     FormControl
 } from '@material-ui/core'
-import Primary from '-components/Typography/Primary'
 import Confirmation from '-components/CustomDialogues/Confirmation'
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import CustomInput from '-components/CustomInput/CustomInput.jsx'
-import { withStyles } from '@material-ui/core'
+import { Switch, withStyles } from '@material-ui/core'
 import i18N from '../../lang'
-import Switch from 'react-switch'
 import LinkedCsvDataImport from '-views/GymSetting/CsvDataImport'
 import QNUploader from '-components/QNUploader/QNUploader'
+import LightTabs from '../../components/LightTabs/LightTabs'
+import Panel from '../../components/Panel/Panel'
+import Titlebar from '../../components/TitleBar/Titlebar'
+import RoundButton from '../../components/RoundButton/RoundButton'
 
 const L = i18N('GymSettings')
 const styles = {
+    optionContainer: {
+        padding: `6px 16px 12px`,
+        minHeight: 166,
+
+        '&:hover': {
+            boxShadow: '0px 2px 24px rgba(0, 0, 0, 0.1)'
+        }
+    },
+    optionTextValue: {
+        fontSize: 14,
+        display: 'flex',
+        alignItems: 'center',
+        fontWeight: '900',
+        paddingTop: 12,
+        color: '#29aa99'
+    },
+    optionTextIntroduction: {
+        fontSize: 12,
+        color: '#666',
+        display: 'flex',
+        alignItems: 'center',
+        fontWeight: '500',
+        paddingTop: 12
+    },
     shopPicker: {
         margin: 'auto'
     },
@@ -48,6 +68,9 @@ const styles = {
     },
     bounsLabel: {
         flex: 1
+    },
+    inputRange: {
+        margin: 20
     }
 }
 class GymSettings extends React.Component {
@@ -114,45 +137,25 @@ class GymSettings extends React.Component {
         }
     }
 
-    swithItem(propName, description) {
+    swithItem(propName, description, introduction) {
+        const { classes } = this.props
         return (
-            <GridItem
-                xs={12}
-                sm={12}
-                md={6}
-                classes={{ grid: 'setting-option-block' }}
-            >
-                <div className={this.props.classes.bonusSettingRow}>
-                    <Typography
-                        variant="subtitle1"
-                        paragraph
-                        className={this.props.classes.bounsLabel}
-                    >
-                        <Label fontSize="small" />
-                        {description}
-                    </Typography>
+            <Panel className={classes.optionContainer}>
+                <Titlebar color="#89ECC2" label={description} fontSize={16}>
                     <Switch
-                        onChange={ v => {
-                            this.setState(
-                                { [propName]: v },
-                                () => this.saveSetting(propName)
+                        onChange={v => {
+                            this.setState({ [propName]: v }, () =>
+                                this.saveSetting(propName)
                             )
                         }}
-                        className={this.props.classes.bonusSwitch}
                         checked={!!this.state[propName]}
-                        onColor="#ab47bc"
-                        onHandleColor="#ab47bc"
-                        handleDiameter={30}
-                        uncheckedIcon={false}
-                        checkedIcon={false}
-                        boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                        activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                        height={20}
-                        width={48}
-                        className="react-switch"
+                        color="primary"
                     />
+                </Titlebar>
+                <div className={classes.optionTextIntroduction}>
+                    {introduction}
                 </div>
-            </GridItem>
+            </Panel>
         )
     }
 
@@ -350,6 +353,7 @@ class GymSettings extends React.Component {
 
     getSettingTab = () => {
         const { feature } = this.props.selectedGym
+        const { classes } = this.props
 
         if (this.state.showDianpingShopPicker) {
             return this.shopPicker(this.props.gym.dianpingShopList)
@@ -368,125 +372,134 @@ class GymSettings extends React.Component {
         }
 
         return (
-            <GridContainer>
+            <div
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gridGap: 24,
+                    paddingTop: 20,
+                    paddingBottom: 20
+                }}
+            >
                 {this.state.showDisableDianpingConfirmation &&
                     this.getDisableDianpingConfirmation()}
                 {this.state.editGymNameDialogue &&
                     this.getEditGymNameDialogue()}
-                <GridItem
-                    xs={12}
-                    sm={12}
-                    md={6}
-                    classes={{ grid: 'setting-option-block' }}
-                >
-                    <Typography variant="subtitle1" paragraph>
-                        <Label fontSize="small" />
-                        {L.name}
-                    </Typography>
-                    <Primary className="setting-gym-name">
-                        {this.props.selectedGym.name}
-                        <IconButton
-                            onClick={() =>
-                                this.setState({ editGymNameDialogue: true })
-                            }
-                        >
-                            <Edit fontSize="large" />
-                        </IconButton>
-                    </Primary>
-                </GridItem>
-                <GridItem
-                    xs={12}
-                    sm={12}
-                    md={6}
-                    classes={{ grid: 'setting-option-block' }}
-                >
-                    <Typography variant="subtitle1" paragraph>
-                        <Label fontSize="small" />
-                        {'设置Logo（为保证清晰度请保证宽度>400px)'}
-                    </Typography>
-                    <Primary className="setting-gym-name">
-                        {this.state.logo && <img src={this.state.logo} />}
+                <Panel className={classes.optionContainer}>
+                    <Titlebar
+                        fontSize={16}
+                        color={'#89ECC2'}
+                        label={'设置Logo'}
+                        style={{ marginTop: 8 }}
+                    >
                         <QNUploader
                             title={'选择图片'}
-                            color="transparentPrimary"
+                            variant="outline"
+                            fontSize={12}
                             {...this.props.rootSetting.uploadToken}
                             onSuccess={this.saveLogo}
                             onFail={e => console.log(e)}
                         />
-                    </Primary>
-                </GridItem>
-                <GridItem
-                    xs={12}
-                    sm={12}
-                    md={6}
-                    classes={{ grid: 'setting-option-block' }}
-                >
-                    <div className={this.props.classes.bonusSettingRow}>
-                        <Typography
-                            variant="subtitle1"
-                            paragraph
-                            className={this.props.classes.bounsLabel}
-                        >
-                            <Label fontSize="small" />
-                            大众点评集成
-                        </Typography>
-                        <Switch
-                            onChange={enableDianping => {
-                                if (enableDianping) {
-                                    this.setState({
-                                        showIntegrateDianpingFrame: true
-                                    })
-                                } else {
-                                    this.setState({
-                                        showDisableDianpingConfirmation: true
-                                    })
-                                }
-                            }}
-                            className={this.props.classes.bonusSwitch}
-                            checked={
-                                !!this.props.selectedGym.dianping_shop_name
-                            }
-                            onColor="#ab47bc"
-                            onHandleColor="#ab47bc"
-                            handleDiameter={30}
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                            height={20}
-                            width={48}
-                            className="react-switch"
-                        />
+                    </Titlebar>
+                    <div style={{ alignItems: 'center', display: 'flex' }}>
+                        {this.state.logo && (
+                            <img height={90} src={this.state.logo} />
+                        )}
                     </div>
-                    <Primary className="setting-gym-name">
+                    <div className={classes.optionTextIntroduction}>
+                        {'为保证清晰度请保证宽度>400px'}
+                    </div>
+                </Panel>
+                <Panel className={classes.optionContainer}>
+                    <Titlebar
+                        fontSize={16}
+                        color={'#89ECC2'}
+                        label={L.name}
+                        style={{ marginTop: 8 }}
+                    >
+                        <RoundButton
+                            color="#29aa99"
+                            variant="outline"
+                            fontSize={12}
+                            onClick={() =>
+                                this.setState({ editGymNameDialogue: true })
+                            }
+                            label={'修改'}
+                        />
+                    </Titlebar>
+                    <div className={classes.optionTextValue}>
+                        {this.props.selectedGym.name}
+                    </div>
+                </Panel>
+                <Panel className={classes.optionContainer}>
+                    <div className={this.props.classes.bonusSettingRow}>
+                        <Titlebar
+                            fontSize={16}
+                            color={'#89ECC2'}
+                            label={'大众点评集成'}
+                        >
+                            <Switch
+                                onChange={enableDianping => {
+                                    if (enableDianping) {
+                                        this.setState({
+                                            showIntegrateDianpingFrame: true
+                                        })
+                                    } else {
+                                        this.setState({
+                                            showDisableDianpingConfirmation: true
+                                        })
+                                    }
+                                }}
+                                className={this.props.classes.bonusSwitch}
+                                checked={
+                                    !!this.props.selectedGym.dianping_shop_name
+                                }
+                                color="primary"
+                            />
+                        </Titlebar>
+                    </div>
+                    <div className={classes.optionTextValue}>
                         {this.props.selectedGym.dianping_shop_name
                             ? '店铺: ' +
                               this.props.selectedGym.dianping_shop_name
-                            : ''}
-                    </Primary>
-                </GridItem>
-                {this.swithItem('disableAppCompleteSchedule','禁用APP课程完成')}
-                {this.swithItem('enableAppPlanTemplate', '启用APP训练模版')}
-                {this.swithItem('enableConfirmInPlanPage','训练计划中确认课程完成')}
-                {this.swithItem('enableCancelCompletedSchedule','允许APP中取消已完成课程')}
-                <GridItem
-                    xs={12}
-                    sm={12}
-                    md={6}
-                    classes={{ grid: 'setting-option-block' }}
-                >
-                    <div className={this.props.classes.bonusSettingRow}>
-                        <Typography
-                            variant="subtitle1"
-                            paragraph
-                            className={this.props.classes.bounsLabel}
-                        >
-                            <Label fontSize="small" />
-                            {this.state.bodyMeasureDays
+                            : '未绑定'}
+                    </div>
+                    <div className={classes.optionTextIntroduction}>
+                        {
+                            '开启并完成授权后，可以在首页查看您的大众点评店铺的点击，销量，评论等信息。'
+                        }
+                    </div>
+                </Panel>
+                {this.swithItem(
+                    'disableAppCompleteSchedule',
+                    '禁用APP课程完成',
+                    '开启后，教练无法在APP完成课程，只能由客户在小程序端以及管理员在Web端完成课程。可以避免教练漏发训练计划。'
+                )}
+                {this.swithItem(
+                    'enableAppPlanTemplate',
+                    'APP训练模版',
+                    '开启后，教练可以在编写训练计划时使用模版功能。'
+                )}
+                {this.swithItem(
+                    'enableConfirmInPlanPage',
+                    '训练计划中确认课程完成',
+                    '开启后，客户可以小程序训练计划页面中完成课程。默认完成课程操作在训练总结页面，不使用训练总结可以开启该选项。'
+                )}
+                {this.swithItem(
+                    'enableCancelCompletedSchedule',
+                    '允许APP中取消已完成课程',
+                    '开启后，教练无法在APP中取消一节已经完成的课程。可以防止误操作。'
+                )}
+                <Panel className={classes.optionContainer}>
+                    <Titlebar
+                        fontSize={16}
+                        color={'#89ECC2'}
+                        label={
+                            (this.state.bodyMeasureDays
                                 ? this.state.bodyMeasureDays
-                                : 'N'}{' '}
-                            天数据测量提醒
-                        </Typography>
+                                : 'N') + '天数据测量提醒'
+                        }
+                    >
                         <Switch
                             onChange={checked => {
                                 const bodyMeasureDays = checked ? 40 : 0
@@ -495,200 +508,205 @@ class GymSettings extends React.Component {
                                     this.saveBodyMeasureDays
                                 )
                             }}
-                            className={this.props.classes.bonusSwitch}
                             checked={!!this.state.bodyMeasureDays}
-                            onColor="#ab47bc"
-                            onHandleColor="#ab47bc"
-                            handleDiameter={30}
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                            height={20}
-                            width={48}
-                            className="react-switch"
+                            color="primary"
                         />
+                    </Titlebar>
+                    <div className={classes.inputRange}>
+                        {!!this.state.bodyMeasureDays && (
+                            <InputRange
+                                step={10}
+                                maxValue={90}
+                                minValue={30}
+                                onChange={v => {
+                                    this.setState({ bodyMeasureDays: v })
+                                }}
+                                onChangeComplete={this.saveBodyMeasureDays}
+                                value={this.state.bodyMeasureDays}
+                            />
+                        )}
+                        <div className={classes.optionTextIntroduction}>
+                            {'每隔指定天数自动提醒教练为客户测量记录数据。'}
+                        </div>
                     </div>
-                    {!!this.state.bodyMeasureDays && (
-                        <InputRange
-                            step={10}
-                            maxValue={90}
-                            minValue={30}
-                            onChange={v => {
-                                this.setState({ bodyMeasureDays: v })
-                            }}
-                            onChangeComplete={this.saveBodyMeasureDays}
-                            value={this.state.bodyMeasureDays}
-                        />
-                    )}
-                </GridItem>
-                <GridItem
-                    xs={12}
-                    sm={12}
-                    md={6}
-                    classes={{ grid: 'setting-option-block' }}
-                >
-                    <Typography variant="subtitle1" paragraph>
-                        <Label fontSize="small" />
-                        {L.availableTime}
-                    </Typography>
-                    <InputRange
-                        formatLabel={value => this.getTimeLabel(value)}
-                        draggableTrack
-                        step={1}
-                        maxValue={96}
-                        minValue={28}
-                        onChange={value =>
-                            this.setState({ workingHours: value })
-                        }
-                        onChangeComplete={this.saveWorkingHours}
-                        value={this.state.workingHours}
+                </Panel>
+                <Panel className={classes.optionContainer}>
+                    <Titlebar
+                        fontSize={16}
+                        color={'#89ECC2'}
+                        label={L.availableTime}
                     />
-                </GridItem>
-                <GridItem
-                    xs={12}
-                    sm={12}
-                    md={6}
-                    classes={{ grid: 'setting-option-block' }}
-                >
-                    <div className={this.props.classes.bonusSettingRow}>
-                        <Typography
-                            variant="subtitle1"
-                            paragraph
-                            className={this.props.classes.bounsLabel}
-                        >
-                            <Label fontSize="small" />满{' '}
-                            {this.state.bonus ? this.state.bonus : 'N'} 赠1
-                        </Typography>
+                    <div
+                        className={classes.inputRange}
+                        style={{ marginTop: 36 }}
+                    >
+                        <InputRange
+                            formatLabel={value => this.getTimeLabel(value)}
+                            draggableTrack
+                            step={1}
+                            maxValue={96}
+                            minValue={28}
+                            onChange={value =>
+                                this.setState({ workingHours: value })
+                            }
+                            onChangeComplete={this.saveWorkingHours}
+                            value={this.state.workingHours}
+                        />
+                        <div className={classes.optionTextIntroduction}>
+                            {'可预约课程的时段。'}
+                        </div>
+                    </div>
+                </Panel>
+                <Panel className={classes.optionContainer}>
+                    <Titlebar
+                        fontSize={16}
+                        color={'#89ECC2'}
+                        label={
+                            '满' +
+                            (this.state.bonus ? this.state.bonus : 'N') +
+                            '赠1'
+                        }
+                    >
                         <Switch
                             onChange={checked => {
                                 const bonus = checked ? 4 : 0
                                 this.setState({ bonus }, this.saveBonus)
                             }}
-                            className={this.props.classes.bonusSwitch}
                             checked={!!this.state.bonus}
-                            onColor="#ab47bc"
-                            onHandleColor="#ab47bc"
-                            handleDiameter={30}
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                            height={20}
-                            width={48}
-                            className="react-switch"
+                            color="primary"
                         />
+                    </Titlebar>
+                    <div className={classes.inputRange}>
+                        {!!this.state.bonus && (
+                            <InputRange
+                                step={1}
+                                maxValue={15}
+                                minValue={4}
+                                onChange={v => {
+                                    this.setState({ bonus: v })
+                                }}
+                                onChangeComplete={this.saveBonus}
+                                value={this.state.bonus}
+                            />
+                        )}
+                        <div className={classes.optionTextIntroduction}>
+                            {
+                                '促销。每个自然月如客户完成指定数量课程自动生成一节赠送课程。'
+                            }
+                        </div>
                     </div>
-                    {!!this.state.bonus && (
-                        <InputRange
-                            step={1}
-                            maxValue={15}
-                            minValue={4}
-                            onChange={v => {
-                                this.setState({ bonus: v })
-                            }}
-                            onChangeComplete={this.saveBonus}
-                            value={this.state.bonus}
-                        />
-                    )}
-                </GridItem>
-            </GridContainer>
+                </Panel>
+            </div>
         )
     }
 
-    passwordResetForm = () => {
-        const onInput = field => e => {
-            let passwordRest = { ...this.state.passwordRest }
-            passwordRest[field] = e.currentTarget.value
-            this.setState({ passwordRest })
+    PasswordResetForm = () => {
+        const [showDialog, setShowDialog] = useState(false)
+
+        const params = {
+            title: '修改密码',
+            onCancel: () => setShowDialog(false),
+            onSave: data => {
+                const isValid =
+                    !!data.currentPwd &&
+                    !!data.repeatPwd &&
+                    !!data.newPwd &&
+                    data.newPwd === data.repeatPwd
+                if (!data.isValid) {
+                    this.props.actions.showError('输入不合法，请重试。')
+                    return
+                }
+
+                this.props.actions.changePwd(data.currentPwd, data.newPwd)
+            },
+            dialogue: true,
+            open: showDialog,
+            inputFields: [
+                {
+                    name: 'currentPwd',
+                    label: L.currentPwd,
+                    type: 'password'
+                },
+                {
+                    name: 'newPwd',
+                    label: L.newPwd + '(>8位)',
+                    type: 'password'
+                },
+                {
+                    name: 'repeatPwd',
+                    label: L.repeatPwd,
+                    type: 'password'
+                }
+            ]
         }
-        const isValid =
-            !!this.state.passwordRest.currentPwd &&
-            !!this.state.passwordRest.repeatPwd &&
-            !!this.state.passwordRest.newPwd &&
-            this.state.passwordRest.newPwd === this.state.passwordRest.repeatPwd
+
         return (
-            <div className={this.props.classes.resetPwdContainer}>
-                <CustomInput
-                    labelText={L.currentPwd}
-                    id={L.currentPwd}
-                    formControlProps={{
-                        fullWidth: true
-                    }}
-                    inputProps={{
-                        type: 'password',
-                        value: this.state.passwordRest.currentPwd,
-                        onChange: onInput('currentPwd')
-                    }}
-                />
-                <CustomInput
-                    labelText={L.newPwd}
-                    id={L.newPwd}
-                    formControlProps={{
-                        fullWidth: true
-                    }}
-                    inputProps={{
-                        type: 'password',
-                        value: this.state.passwordRest.newPwd,
-                        onChange: onInput('newPwd')
-                    }}
-                />
-                <CustomInput
-                    labelText={L.repeatPwd}
-                    id={L.repeatPwd}
-                    formControlProps={{
-                        fullWidth: true
-                    }}
-                    error={
-                        this.state.passwordRest.repeatPwd !==
-                        this.state.passwordRest.newPwd
-                    }
-                    inputProps={{
-                        type: 'password',
-                        value: this.state.passwordRest.repeatPwd,
-                        onChange: onInput('repeatPwd')
-                    }}
-                />
-                <Button
-                    disabled={!isValid}
-                    style={{ marginTop: 16 }}
-                    color="primary"
-                    fullWidth={true}
-                    onClick={() => {
-                        this.props.actions.changePwd(
-                            this.state.passwordRest.currentPwd,
-                            this.state.passwordRest.newPwd
-                        )
-                    }}
-                >
-                    {L.save}
-                </Button>
-            </div>
+            <Panel
+                style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    padding: 24
+                }}
+            >
+                <div style={{ display: 'flex', margin: 12 }}>
+                    <span
+                        style={{
+                            fontSize: 14,
+                            fontWeight: '700',
+                            color: '#333',
+                            marginRight: 24
+                        }}
+                    >
+                        用户名
+                    </span>
+                    <span>{username}</span>
+                </div>
+                <div style={{ display: 'flex' }}>
+                    <span
+                        style={{
+                            fontSize: 14,
+                            fontWeight: '700',
+                            color: '#333',
+                            marginRight: 24
+                        }}
+                    >
+                        密码
+                    </span>
+                    <RoundButton
+                        label="修改"
+                        color="#29aa99"
+                        onClick={() => setShowDialog(true)}
+                    />
+                </div>
+                <CreateNewDialogue {...params} />
+            </Panel>
         )
     }
 
     render() {
         return (
-            <Tabs
-                title={''}
+            <LightTabs
+                title={'设置'}
                 headerColor="primary"
                 onSwitch={this.tapTab}
                 tabs={[
                     {
                         tabName: L.coach,
-                        tabContent: <Coach {...this.props} />
+                        tabContent: <Coach />
                     },
                     {
                         tabName: L.gym,
                         tabContent: this.getSettingTab()
                     },
                     {
-                        tabName: L.organization,
-                        tabContent: <Organization {...this.props} />
+                        tabName: '分店',
+                        tabContent: <Organization />
                     },
                     {
-                        tabName: L.resetPwd,
-                        tabContent: this.passwordResetForm()
+                        tabName: '账户',
+                        tabContent: <this.PasswordResetForm />
                     },
                     {
                         tabName: L.csvDataImport,

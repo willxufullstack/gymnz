@@ -92,7 +92,7 @@ class Customers extends React.Component {
                                     marginRight: 8,
                                     borderRadius: '50%',
                                     backgroundColor: row.sex
-                                        ? '#DBF6EB'
+                                        ? '#C6D3FF'
                                         : '#FFDFDF'
                                 }}
                             />

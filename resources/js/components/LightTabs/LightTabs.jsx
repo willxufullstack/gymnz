@@ -15,7 +15,8 @@ const styles = {
     },
     body: {
         marginTop: 8,
-        padding: '0 20px'
+        padding: '0 20px',
+        overflow: 'scroll'
     }
 }
 

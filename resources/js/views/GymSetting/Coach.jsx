@@ -1,23 +1,74 @@
 import React from 'react'
+import { bindActionCreators } from 'redux'
+import * as Actions from '../../actions'
+import connect from 'react-redux/es/connect/connect'
 // @material-ui/icons
 import Button from '-components/CustomButtons/Button.jsx'
 import Add from '@material-ui/icons/Add'
 // core components
-import GridItem from '-components/Grid/GridItem.jsx'
-import GridContainer from '-components/Grid/GridContainer.jsx'
-import Card from '-components/Card/Card.jsx'
-import CardHeader from '-components/Card/CardHeader.jsx'
-import CardIcon from '-components/Card/CardIcon.jsx'
-import CardFooter from '-components/Card/CardFooter.jsx'
 import '../../../sass/coach.scss'
-import CardBody from '-components/Card/CardBody'
 import classNames from 'classnames'
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import Confirmation from '-components/CustomDialogues/Confirmation'
 import i18N from '../../lang'
-import {Switch} from '@material-ui/core'
+import { Switch, withStyles } from '@material-ui/core'
+import Panel from '../../components/Panel/Panel'
+import RoundButton from '../../components/RoundButton/RoundButton'
+import Titlebar from '../../components/TitleBar/Titlebar'
 
 const L = i18N('Coach')
+const styles = {
+    coachContainer: {
+        '&:hover': {
+            boxShadow: '0px 2px 24px rgba(0, 0, 0, 0.1)'
+        },
+
+        '&:hover .bottom': {
+            visibility: 'visible',
+            opacity: 1
+        }
+    },
+    header: {
+        padding: '8px 12px',
+        fontSize: 16,
+        fontWeight: '900',
+        display: 'flex',
+        alignItems: 'center'
+    },
+    row: {
+        padding: '2px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#666'
+    },
+    rowLabel: {
+        flex: 1,
+        fontSize: 14,
+        fontWeight: '700'
+    },
+    bottom: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 6,
+        opacity: 0,
+        visibility: 'hidden',
+        transition: 'opacity 0.15s linear, visibility 0.15s linear'
+    },
+    newCoach: {
+        margin: 'auto',
+        fontSize: 72,
+        color: '#aaa',
+        cursor: 'pointer',
+        transition: 'all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1)',
+
+        '&:hover': {
+            color: '#29aa99'
+        }
+    }
+}
 class Coach extends React.Component {
     constructor(props) {
         super(props)
@@ -138,6 +189,7 @@ class Coach extends React.Component {
             }
         ]
 
+        const { classes } = this.props
         return (
             <React.Fragment>
                 {this.state.showDeleteConfirmation && (
@@ -147,92 +199,136 @@ class Coach extends React.Component {
                     <Confirmation {...resetPasswordConfirmation} />
                 )}
                 <div
-                    className={classNames({ loading: this.props.gym.loading })}
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gridGap: 24,
+                        paddingTop: 20,
+                        paddingBottom: 20
+                    }}
                 >
-                    {
-                        <GridContainer>
-                            {this.props.gym.coaches.map(item => {
-                                return (
-                                    <GridItem
-                                        key={item.id}
-                                        xs={12}
-                                        sm={4}
-                                        md={3}
-                                        lg={3}
-                                    >
-                                        <Card>
-                                            <CardBody>
-                                                <h3>{item.user.name}</h3>
-                                                <h4>{item.user.email}</h4>
-                                                <p>隐藏<span style={{float:'right', position: 'relative', top: -8}}><Switch
-                                                    checked={!!item.hidden}
-                                                    onChange={(e) => this.onChangeHidden(item, e)}
-                                                    name="checkedA"
-                                                    color="primary"
-                                                    inputProps={{
-                                                        'aria-label':
-                                                            'secondary checkbox'
-                                                    }}
-                                                /></span></p>
-                                            </CardBody>
-                                            <CardFooter
-                                                stats
-                                                style={{ marginTop: 0 }}
-                                            >
-                                                <Button
-                                                    size="sm"
-                                                    color="transparentGray"
-                                                    onClick={this.showDeleteCoachConfirmation(
-                                                        item
-                                                    )}
-                                                >
-                                                    {L.delete}
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    color="transparentPrimary"
-                                                    onClick={this.showResetPasswordConfirmation(
-                                                        item
-                                                    )}
-                                                >
-                                                    {L.resetPwd}
-                                                </Button>
-                                            </CardFooter>
-                                        </Card>
-                                    </GridItem>
-                                )
-                            })}
-                            {/*here add new coach*/}
-                            <Button
-                                color="transparentGray"
-                                justIcon
-                                round
-                                className="new-coach-btn"
-                                onClick={this.showNewCoach}
+                    {this.props.gym.coaches.map(item => {
+                        return (
+                            <Panel
+                                key={item.id}
+                                className={classes.coachContainer}
                             >
-                                <Add />
-                            </Button>
-                        </GridContainer>
-                    }
-                    {/* create coach dialogue */}
-                    {this.props.gym.showNewCoach && (
-                        <CreateNewDialogue
-                            onCancel={this.props.actions.cancelNewCoach}
-                            onSave={data => {
-                                this.props.actions.createCoach(
-                                    this.props.selectedGym.id,
-                                    data
-                                )
-                            }}
-                            dialogue={true}
-                            inputFields={coachFields}
-                            title={L.createCoach}
-                        />
-                    )}
+                                <div
+                                    className={classNames(
+                                        classes.header,
+                                        item.hidden && 'disabled'
+                                    )}
+                                >
+                                    <Titlebar
+                                        fontSize={20}
+                                        color={
+                                            item.user.sex
+                                                ? '#C6D3FF'
+                                                : '#FFDFDF'
+                                        }
+                                        label={item.user.name}
+                                    />
+                                </div>
+                                <div className={classes.row}>
+                                    <span className={classes.rowLabel}>
+                                        电话
+                                    </span>
+                                    <span>{item.user.email}</span>
+                                </div>
+                                <div className={classes.row}>
+                                    <span className={classes.rowLabel}>
+                                        在日程中隐藏
+                                    </span>
+                                    <Switch
+                                        checked={!!item.hidden}
+                                        onChange={e =>
+                                            this.onChangeHidden(item, e)
+                                        }
+                                        color="primary"
+                                        inputProps={{
+                                            'aria-label': 'secondary checkbox'
+                                        }}
+                                    />
+                                </div>
+                                <div
+                                    className={classNames(
+                                        classes.bottom,
+                                        'bottom'
+                                    )}
+                                >
+                                    <RoundButton
+                                        color="#999"
+                                        variant="outline"
+                                        onClick={this.showDeleteCoachConfirmation(
+                                            item
+                                        )}
+                                        fontSize={12}
+                                        label={L.delete}
+                                        style={{ margin: '12px 18px' }}
+                                    />
+
+                                    <RoundButton
+                                        color="#29aa99"
+                                        onClick={this.showResetPasswordConfirmation(
+                                            item
+                                        )}
+                                        fontSize={12}
+                                        style={{ margin: '12px 18px' }}
+                                        label={L.resetPwd}
+                                    />
+                                </div>
+                            </Panel>
+                        )
+                    })}
+                    {/*here add new coach*/}
+
+                    <Add
+                        onClick={this.showNewCoach}
+                        className={classes.newCoach}
+                    />
                 </div>
+
+                {/* create coach dialogue */}
+                {this.props.gym.showNewCoach && (
+                    <CreateNewDialogue
+                        onCancel={this.props.actions.cancelNewCoach}
+                        onSave={data => {
+                            this.props.actions.createCoach(
+                                this.props.selectedGym.id,
+                                data
+                            )
+                        }}
+                        dialogue={true}
+                        inputFields={coachFields}
+                        title={L.createCoach}
+                    />
+                )}
             </React.Fragment>
         )
     }
 }
 
-export default Coach
+const mapStoreToProps = store => {
+    return {
+        gym: store.gym,
+        rootSetting: store.setting,
+        setting: store.setting.selectedGym.setting,
+        organization: store.organization,
+        selectedGymId: store.setting.selectedGym.id, // TODO this can be removed
+        selectedGym: store.setting.selectedGym
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(Actions, dispatch)
+    }
+}
+
+const LinkedCoach = connect(
+    mapStoreToProps,
+    mapDispatchToProps
+)(Coach)
+
+
+export default withStyles(styles)(LinkedCoach)

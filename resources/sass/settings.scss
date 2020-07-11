@@ -1,13 +1,19 @@
 @import "variables";
 
-.input-range__track--active,
+.input-range__track--active {
+  background: #29aa99;
+  opacity: 0.5;
+  border-color: #29aa99;
+}
 .input-range__slider {
-  background: #ab47bc;
-  border-color: #ab47bc;
+  background: #29aa99;
+  border-color: #29aa99;
+  box-shadow: 0px 2px 4px #29AA99;
 }
 .input-range__label {
-  color: #ab47bc;
-  font-weight: 900;
+  color: #333;
+  font-weight: 700;
+  top: -2.4rem;
 }
 
 .input-range__label--min,
@@ -28,9 +34,6 @@
     position: relative;
     display: flex;
     line-height: 36px;
-    img {
-      height: 36px;
-    }
   }
 
   .input-range {

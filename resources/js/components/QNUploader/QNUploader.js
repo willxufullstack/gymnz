@@ -62,9 +62,9 @@ class QNUploader extends React.Component {
                 />
                 <RoundButton
                     color={'#29aa99'}
-                    shadow
+                    variant={this.props.variant}
+                    fontSize={this.props.fontSize ? this.props.fontSize : 12}
                     label={this.props.title || 'Add'}
-                    fontSize={12}
                     onClick={() => {
                         this.refs.fileUploader.click()
                     }}
