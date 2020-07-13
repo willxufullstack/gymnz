@@ -33,13 +33,13 @@ class UserCreatedAction
         // create default org
         $orgData = [
             'name' => '默认分组',
-            'description' => '设置你的分组描述',
+            'description' => '- -',
             'create_by' => $user->id,
         ];
         $org = Organization::create($orgData);
 
         $gymData = [
-            'name' => '我的Gym',
+            'name' => $user->name . '的工作室',
             'description' => '设置你的健身房描述',
             'org_id' => $org->id,
             'created_by' => $user->id,

@@ -28,6 +28,7 @@ Route::group([
     Route::post('token', 'AuthController@token');
     Route::post('bind', 'AuthController@bind');
     Route::post('login', 'AuthController@login');
+    Route::post('register', 'AuthController@register');
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::post('reset', 'AuthController@reset');

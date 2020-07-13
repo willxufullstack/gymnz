@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -20,7 +21,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'openid', 'bind', 'token', 'chart', 'NZHelperOpenId']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'openid', 'bind', 'token', 'chart', 'NZHelperOpenId']]);
     }
 
     /**
@@ -35,6 +36,25 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if ($token = $this->guard()->attempt($credentials)) {
+            return $this->respondWithToken($token);
+        }
+
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    public function register(Request $request)
+    {
+
+        $data = $request->only('name', 'email', 'password');
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+
+        event(new Registered($user));
+
+        if ($token = $this->guard()->tokenById($user->id)) {
             return $this->respondWithToken($token);
         }
 
