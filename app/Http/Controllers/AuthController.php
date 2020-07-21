@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use App\Libraries\Ucpaas\Ucpaas;
 
 class AuthController extends Controller
 {
@@ -21,7 +22,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'openid', 'bind', 'token', 'chart', 'NZHelperOpenId']]);
+        $this->middleware('auth:api', ['except' => ['vcode', 'login', 'register', 'openid', 'bind', 'token', 'chart', 'NZHelperOpenId']]);
     }
 
     /**
@@ -34,6 +35,15 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
+        $vcode = $request->input('vcode', '');
+
+        if ($vcode) {
+            $user = User::where('email', $credentials['email'])->first();
+            if ($user->verifyVCode($vcode)) {
+                $token = $this->guard()->tokenById($user->id);
+                return $this->respondWithToken($token);
+            }
+        }
 
         if ($token = $this->guard()->attempt($credentials)) {
             return $this->respondWithToken($token);
@@ -208,7 +218,6 @@ class AuthController extends Controller
         $openid = $request->input('openid');
         $avatar = $request->input('avatar');
 
-
         if (empty($phone) || empty($openid)) {
             return response()->json(array('message' => 'missing parameters'), 500);
         }
@@ -224,5 +233,30 @@ class AuthController extends Controller
         // return token
         $token = $this->guard()->tokenById($user->id);
         return $this->respondWithToken($token);
+    }
+
+    public function vcode(Request $request)
+    {
+        $mobile  = $request->input('mobile');
+
+        $user = User::where('email', $mobile)->first();
+        if (empty($user)) {
+            return response()->json(array('message' => '找不到对应的用户'), 404);
+        }
+
+        $appId = config('services.ucpaas.appId');
+        $token = config('services.ucpaas.token');
+        $sid = config('services.ucpaas.sid');
+        $templateId = config('services.ucpaas.templateId');
+
+        $options['accountsid'] = $sid;
+        $options['token'] = $token;
+        $ucpass = new Ucpaas($options);
+
+        $vcode = $user->refreshVCode();
+        $param = $vcode.',5';
+
+        return $ucpass->SendSms($appId, $templateId, $param, $mobile, $user->id);
+        // return response()->json(['vcode' => $vcode]);
     }
 }

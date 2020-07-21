@@ -4,9 +4,7 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -258,5 +256,21 @@ class User extends Authenticatable implements JWTSubject
         // in 6 month
         $pivDate->setDay(1)->addMonth()->subMonths(6);
         return $this->created_at->gte($pivDate);
+    }
+
+    public function verifyVCode(string $vcode)
+    {
+        $key = 'vcode_'.$this->id;
+        $expected = Redis::get($key);
+        return $expected === $vcode;
+    }
+
+    public function refreshVCode(): string
+    {
+        $key = 'vcode_'.$this->id;
+        $vcode = rand(1000, 9999);
+        Redis::set($key, $vcode, 'EX', 5 * 60);  // expire in 5 mins
+
+        return (string)$vcode;
     }
 }

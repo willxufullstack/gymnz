@@ -59,5 +59,12 @@ return [
     'dianping' => [
         'key' => env('DIANPING_APP_KEY', 'null'),
         'secret' => env('DIANPING_APP_SECRET', 'null'),
+    ],
+
+    'ucpaas' => [
+        'sid' => env('UCPAASSID', 'null'),
+        'token' => env('UCPAASTOKEN', 'null'),
+        'appId' => env('UCPAASAPPID', 'null'),
+        'templateId' => env('UCPAASTEMPLATE', 'null'),
     ]
 ];

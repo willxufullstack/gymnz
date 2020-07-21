@@ -33,6 +33,7 @@ Route::group([
     Route::post('refresh', 'AuthController@refresh');
     Route::post('reset', 'AuthController@reset');
     Route::get('me', 'AuthController@me');
+    Route::post('vcode', 'AuthController@vcode');
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
