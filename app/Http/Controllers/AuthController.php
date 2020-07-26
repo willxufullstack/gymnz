@@ -54,8 +54,12 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-
         $data = $request->only('name', 'email', 'password');
+
+        if (User::where('email', $data['email'])->count() > 0) {
+            return response()->json(['error' => '用户已存在'], 400);
+        }
+
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -68,7 +72,7 @@ class AuthController extends Controller
             return $this->respondWithToken($token);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        return response()->json(['error' => 'Unauthorized'], 403);
     }
 
     public function reset(Request $request)
@@ -254,7 +258,7 @@ class AuthController extends Controller
         $ucpass = new Ucpaas($options);
 
         $vcode = $user->refreshVCode();
-        $param = $vcode.',5';
+        $param = $vcode . ',5';
 
         return $ucpass->SendSms($appId, $templateId, $param, $mobile, $user->id);
         // return response()->json(['vcode' => $vcode]);
