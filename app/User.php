@@ -6,11 +6,14 @@ use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Redis;
+use Spatie\Permission\Traits\HasPermissions;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+    use HasRoles;
 
     const LATEST_SCHEDULE_PREFIX = 'lastest_schedule__';
     const LATEST_MEASURE_PREFIX = 'lastest_measure__';

@@ -23,7 +23,21 @@ class GymController extends Controller
     public function index()
     {
         $userId = Auth::user()->id;
-        $ret = Gym::where("created_by", "=", $userId)->get();
+
+        // cond 1. => is admin
+        $ret = Gym::where("created_by", $userId)->get();
+
+        // cond 2. => is coach
+        if (!$ret->count()) {
+            $coach = Coach::with('user')
+                ->where("user_id", "=", $userId)
+                ->where('status', 1)
+                ->first();
+            if($coach && $coach->is_gym_manager) {
+                $ret = Gym::where('id', $coach->gym_id)->get();
+            }
+        }
+
         if ($ret) {
             return response()->json($ret, 200);
         }

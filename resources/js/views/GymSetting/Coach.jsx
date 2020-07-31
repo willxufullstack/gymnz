@@ -139,9 +139,10 @@ class Coach extends React.Component {
         )
     }
 
-    onChangeHidden(coach, event) {
+
+    onChangeHidden(coach, field, event) {
         const newCoach = {
-            hidden: event.target.checked
+            [field]: event.target.checked
         }
         this.props.actions
             .updateCoach(this.props.selectedGym.id, coach.id, newCoach)
@@ -242,7 +243,22 @@ class Coach extends React.Component {
                                     <Switch
                                         checked={!!item.hidden}
                                         onChange={e =>
-                                            this.onChangeHidden(item, e)
+                                            this.onChangeHidden(item, 'hidden', e)
+                                        }
+                                        color="primary"
+                                        inputProps={{
+                                            'aria-label': 'secondary checkbox'
+                                        }}
+                                    />
+                                </div>
+                                <div className={classes.row}>
+                                    <span className={classes.rowLabel}>
+                                        店铺管理员
+                                    </span>
+                                    <Switch
+                                        checked={!!item.is_gym_manager}
+                                        onChange={e =>
+                                            this.onChangeHidden(item, 'is_gym_manager', e)
                                         }
                                         color="primary"
                                         inputProps={{

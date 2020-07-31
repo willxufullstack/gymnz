@@ -73,6 +73,9 @@ class CoachController extends Controller
         $user->sex = $coachData['sex'];
         $user->save();
 
+        // assign `coach` role
+        $user->assignRole('coach');
+
         // 3.map coach=>user
         $coach->user()->associate($user);
 
@@ -125,6 +128,9 @@ class CoachController extends Controller
         if ($request->has('hidden')) {
             $coachItem->hidden = (bool) $request->input('hidden');
         }
+        if( $request->has('is_gym_manager')) {
+            $coachItem->is_gym_manager = (bool) $request->input('is_gym_manager');
+        }
         $success = $coachItem->save();
         if ($success) {
             return response()->json($coachItem, 200);
@@ -157,11 +163,14 @@ class CoachController extends Controller
 
     public function getCoachInfoForAdmin(User $user): Coach
     {
-        $gym = Gym::where("created_by", "=", $user->id)->latest('created_at')->first();
-        if ($gym) {
+        $gyms = Gym::where("created_by", "=", $user->id)->get();
+        foreach ($gyms as $gym) {
             $coach = Coach::where('gym_id', $gym->id)
                 ->where('status', 1)
                 ->first();
+            if(empty($coach)) {
+                continue;
+            }
             $coach->user = $user;
             $coach->coach_id = 0;
             return $coach;

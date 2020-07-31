@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use JWTAuth;
+use Auth;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
