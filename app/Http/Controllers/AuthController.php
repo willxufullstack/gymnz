@@ -12,9 +12,13 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Libraries\Ucpaas\Ucpaas;
+use AlibabaCloud\Client\AlibabaCloud;
+use AlibabaCloud\Client\Exception\ClientException;
+use AlibabaCloud\Client\Exception\ServerException;
 
 class AuthController extends Controller
 {
+    const SMS_TEMPLATE_VCODE = 'SMS_198677372';
     /**
      * Create a new AuthController instance.
      *
@@ -239,7 +243,7 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
-    public function vcode(Request $request)
+    public function vcodeUcpaas(Request $request)
     {
         $mobile  = $request->input('mobile');
 
@@ -262,5 +266,49 @@ class AuthController extends Controller
 
         return $ucpass->SendSms($appId, $templateId, $param, $mobile, $user->id);
         // return response()->json(['vcode' => $vcode]);
+    }
+
+    public function vcode(Request $request)
+    {
+        $mobile  = $request->input('mobile');
+
+        $user = User::where('email', $mobile)->first();
+        if (empty($user)) {
+            return response()->json(array('message' => '找不到对应的用户'), 404);
+        }
+
+        $vcode = $user->refreshVCode();
+
+
+        $accessKeyId = config('services.ali.key');
+        $accessSecret = config('services.ali.secret');
+        AlibabaCloud::accessKeyClient($accessKeyId, $accessSecret)
+            ->regionId('cn-hangzhou')
+            ->asDefaultClient();
+
+        try {
+            $result = AlibabaCloud::rpc()
+                ->product('Dysmsapi')
+                // ->scheme('https') // https | http
+                ->version('2017-05-25')
+                ->action('SendSms')
+                ->method('POST')
+                ->host('dysmsapi.aliyuncs.com')
+                ->options([
+                    'query' => [
+                        'RegionId' => "cn-hangzhou",
+                        'PhoneNumbers' => $mobile,
+                        'SignName' => "氧气教练Pro",
+                        'TemplateCode' => self::SMS_TEMPLATE_VCODE,
+                        'TemplateParam' => json_encode(['code' => $vcode]),
+                    ],
+                ])
+                ->request();
+            return response()->json($result->toArray());
+        } catch (ClientException $e) {
+            return response()->json(array('message' => $e->getErrorMessage()), 500);
+        } catch (ServerException $e) {
+            return response()->json(array('message' => $e->getErrorMessage()), 500);
+        }
     }
 }

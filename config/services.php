@@ -66,5 +66,10 @@ return [
         'token' => env('UCPAASTOKEN', 'null'),
         'appId' => env('UCPAASAPPID', 'null'),
         'templateId' => env('UCPAASTEMPLATE', 'null'),
+    ],
+
+    'ali' => [
+        'key' => env('ALI_KEY', 'null'),
+        'secret' => env('ALI_SECRET', 'null'),
     ]
 ];
