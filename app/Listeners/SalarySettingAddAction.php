@@ -29,6 +29,10 @@ class SalarySettingAddAction
     {
         $coach = $event->coach;
 
+        if(SalarySetting::where(['gym_id' => $coach->gym_id, 'coach_id' => $coach->id])->first()){
+            return;
+        }
+
         SalarySetting::create([
             'gym_id' => $coach->gym_id,
             'coach_id' => $coach->id,

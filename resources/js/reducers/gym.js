@@ -145,14 +145,26 @@ const gym = (state = initState, action = NonAction) => {
         case ActionTypes.RESET_COACH_PWD_SUCCESS:
             return Object.assign({}, state, {
                 loading: false,
-                successMsg: 'Coach password has been reset to 00000000'
+                successMsg: '密码已重置为 00000000'
             })
         case ActionTypes.RESET_COACH_PWD_FAIL:
             return Object.assign({}, state, {
-                errorMsg: 'Reset coach password failed, please try again',
+                errorMsg: '重置密码失败',
                 loading: false
             })
 
+        case ActionTypes.RESEND_INVITE_COACH:
+            return Object.assign({}, state, { loading: true })
+        case ActionTypes.RESEND_INVITE_COACH_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                successMsg: '邀请已重新发送'
+            })
+        case ActionTypes.RESEND_INVITE_COACH_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '发送邀请失败',
+                loading: false
+            })
         case ActionTypes.CREATE_COACH:
             return Object.assign({}, state, { loading: true })
         case ActionTypes.CREATE_COACH_SUCCESS:
@@ -185,8 +197,8 @@ const gym = (state = initState, action = NonAction) => {
         case ActionTypes.PAY_SALARY_SUCCESS:
             return Object.assign({}, state, {
                 loading: false,
-                salaryReceipts: state.salaryReceipts.map(
-                    r => r.id === action.payload.data.id  ? action.payload.data : r
+                salaryReceipts: state.salaryReceipts.map(r =>
+                    r.id === action.payload.data.id ? action.payload.data : r
                 ),
                 successMsg: '支付成功'
             })
@@ -403,8 +415,8 @@ const gym = (state = initState, action = NonAction) => {
         case ActionTypes.PAY_REIMBURSEMENT_SUCCESS:
             return Object.assign({}, state, {
                 loading: false,
-                reimbursements: state.reimbursements.map(
-                    r => r.id === action.payload.data.id  ? action.payload.data : r
+                reimbursements: state.reimbursements.map(r =>
+                    r.id === action.payload.data.id ? action.payload.data : r
                 ),
                 successMsg: '保存成功'
             })

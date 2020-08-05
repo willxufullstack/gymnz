@@ -75,6 +75,7 @@ class Coach extends React.Component {
         this.state = {
             resetPasswordConfirmation: false,
             showDeleteConfirmation: false,
+            resendInviteConfirmation: false,
             deletingCoach: null
         }
     }
@@ -91,6 +92,14 @@ class Coach extends React.Component {
 
     showResetPasswordConfirmation = coach => () => {
         this.setState({ resetPasswordConfirmation: coach })
+    }
+
+    showResendInviteConfirmation = coach => () => {
+        this.setState({ resendInviteConfirmation: coach })
+    }
+
+    hideResendInviteConfirmation = () => {
+        this.setState({ resendInviteConfirmation: false })
     }
 
     hideResetPasswordConfirmation = () => {
@@ -124,6 +133,15 @@ class Coach extends React.Component {
             })
     }
 
+    resendInvite = () => {
+        this.props.actions
+            .resendInvite(
+                this.props.selectedGym.id,
+                this.state.resendInviteConfirmation.id
+            )
+            .then(this.hideResendInviteConfirmation)
+    }
+
     shouldComponentUpdate(nextProps, nextState) {
         if (
             nextProps.selectedGym.id &&
@@ -138,7 +156,6 @@ class Coach extends React.Component {
                 nextState.showDeleteCoachConfirmation
         )
     }
-
 
     onChangeHidden(coach, field, event) {
         const newCoach = {
@@ -165,6 +182,13 @@ class Coach extends React.Component {
             onConfirm: this.resetCoachPwd
         }
 
+        const resendInviteConfirmation = {
+            message:
+                this.state.resendInviteConfirmation && '确定要重发邀请吗？',
+            onCancel: this.hideResendInviteConfirmation,
+            onConfirm: this.resendInvite
+        }
+
         const coachFields = [
             {
                 name: 'name',
@@ -182,12 +206,12 @@ class Coach extends React.Component {
                 name: 'phone',
                 type: 'phone',
                 label: L.phone
-            },
-            {
-                name: 'password',
-                type: 'password',
-                label: L.password
             }
+            // {
+            //     name: 'password',
+            //     type: 'password',
+            //     label: L.password
+            // }
         ]
 
         const { classes } = this.props
@@ -198,6 +222,9 @@ class Coach extends React.Component {
                 )}
                 {this.state.resetPasswordConfirmation && (
                     <Confirmation {...resetPasswordConfirmation} />
+                )}
+                {this.state.resendInviteConfirmation && (
+                    <Confirmation {...resendInviteConfirmation} />
                 )}
                 <div
                     style={{
@@ -227,7 +254,10 @@ class Coach extends React.Component {
                                                 ? '#C6D3FF'
                                                 : '#FFDFDF'
                                         }
-                                        label={item.user.name}
+                                        label={
+                                            item.user.name +
+                                            (item.invite_at ? '（未激活)' : '')
+                                        }
                                     />
                                 </div>
                                 <div className={classes.row}>
@@ -243,7 +273,11 @@ class Coach extends React.Component {
                                     <Switch
                                         checked={!!item.hidden}
                                         onChange={e =>
-                                            this.onChangeHidden(item, 'hidden', e)
+                                            this.onChangeHidden(
+                                                item,
+                                                'hidden',
+                                                e
+                                            )
                                         }
                                         color="primary"
                                         inputProps={{
@@ -258,7 +292,11 @@ class Coach extends React.Component {
                                     <Switch
                                         checked={!!item.is_gym_manager}
                                         onChange={e =>
-                                            this.onChangeHidden(item, 'is_gym_manager', e)
+                                            this.onChangeHidden(
+                                                item,
+                                                'is_gym_manager',
+                                                e
+                                            )
                                         }
                                         color="primary"
                                         inputProps={{
@@ -283,15 +321,29 @@ class Coach extends React.Component {
                                         style={{ margin: '12px 18px' }}
                                     />
 
-                                    <RoundButton
-                                        color="#29aa99"
-                                        onClick={this.showResetPasswordConfirmation(
-                                            item
-                                        )}
-                                        fontSize={12}
-                                        style={{ margin: '12px 18px' }}
-                                        label={L.resetPwd}
-                                    />
+                                    {!item.invite_at && (
+                                        <RoundButton
+                                            color="#29aa99"
+                                            onClick={this.showResetPasswordConfirmation(
+                                                item
+                                            )}
+                                            fontSize={12}
+                                            style={{ margin: '12px 18px' }}
+                                            label={L.resetPwd}
+                                        />
+                                    )}
+
+                                    {item.invite_at && (
+                                        <RoundButton
+                                            color="#29aa99"
+                                            onClick={this.showResendInviteConfirmation(
+                                                item
+                                            )}
+                                            fontSize={12}
+                                            style={{ margin: '12px 18px' }}
+                                            label={'重发邀请'}
+                                        />
+                                    )}
                                 </div>
                             </Panel>
                         )
@@ -345,6 +397,5 @@ const LinkedCoach = connect(
     mapStoreToProps,
     mapDispatchToProps
 )(Coach)
-
 
 export default withStyles(styles)(LinkedCoach)

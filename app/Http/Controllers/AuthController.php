@@ -44,6 +44,14 @@ class AuthController extends Controller
         if ($vcode) {
             $user = User::where('email', $credentials['email'])->first();
             if ($user->verifyVCode($vcode)) {
+                // $vcode could come from coach invitation, then set `invite_at` to NULL to finish the coach invitation
+                if ($coach = Coach::where('user_id', $user->id)->first()){
+                    if ($coach->invite_at) {
+                        $coach->invite_at = null;
+                        $coach->save();
+                    }
+                }
+
                 $token = $this->guard()->tokenById($user->id);
                 return $this->respondWithToken($token);
             }

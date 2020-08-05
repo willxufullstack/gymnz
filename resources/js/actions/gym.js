@@ -99,6 +99,17 @@ export function resetCoachPwd($gymId, $coachId) {
     }
 }
 
+export function resendInvite($gymId, $coachId) {
+    return {
+        type: ActionTypes.RESEND_INVITE_COACH,
+        payload: {
+            request: {
+                url: '/gym/' + $gymId + '/coach/' + $coachId + '/invite',
+            }
+        }
+    }
+}
+
 
 /********LOAD CUSTOMER*********/
 export function loadCustomer(gymId, extra = null) {

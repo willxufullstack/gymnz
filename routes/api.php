@@ -106,6 +106,7 @@ Route::group([
     Route::resource('gym', 'GymController');
     Route::resource('gym.coach', 'CoachController');
     Route::get('gym/{gym}/coach/{coach}/reset', 'CoachController@reset');
+    Route::get('gym/{gym}/coach/{coach}/invite', 'CoachController@invite');
 
     Route::resource('gym.order', 'OrderController');
     Route::get('gym/{gym}/chart/monthcoursebycustomertype', 'GymController@monthCourseByCustomerType');

@@ -265,14 +265,18 @@ class User extends Authenticatable implements JWTSubject
     {
         $key = 'vcode_'.$this->id;
         $expected = Redis::get($key);
-        return $expected === $vcode;
+        if($expected === $vcode){
+            Redis::del($key);
+            return true;
+        }
+        return false;
     }
 
-    public function refreshVCode(): string
+    public function refreshVCode($expire = 300): string
     {
         $key = 'vcode_'.$this->id;
         $vcode = rand(1000, 9999);
-        Redis::set($key, $vcode, 'EX', 5 * 60);  // expire in 5 mins
+        Redis::set($key, $vcode, 'EX', $expire);  // expire in 5 mins
 
         return (string)$vcode;
     }

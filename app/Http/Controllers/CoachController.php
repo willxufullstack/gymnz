@@ -9,6 +9,10 @@ use App\SalarySetting;
 use Auth;
 use Hash;
 use Illuminate\Http\Request;
+use AlibabaCloud\Client\AlibabaCloud;
+use AlibabaCloud\Client\Exception\ClientException;
+use AlibabaCloud\Client\Exception\ServerException;
+use DateTime;
 
 /**
  * Class CoachController
@@ -16,6 +20,10 @@ use Illuminate\Http\Request;
  */
 class CoachController extends Controller
 {
+
+    // const SMS_TEMPLATE_INVITE = 'SMS_198667484';
+    const SMS_TEMPLATE_INVITE = 'SMS_198677372'; // tmp
+    const REDIS_INVITE_PREFIX = 'coach_invite_';
     /**
      * @param $gym_id gym id
      * @return \Illuminate\Http\JsonResponse
@@ -45,6 +53,48 @@ class CoachController extends Controller
         //
     }
 
+    private function sendCoachInvite($vcode, $coach, $operator)
+    {
+        $accessKeyId = config('services.ali.key');
+        $accessSecret = config('services.ali.secret');
+        AlibabaCloud::accessKeyClient($accessKeyId, $accessSecret)
+            ->regionId('cn-hangzhou')
+            ->asDefaultClient();
+
+        // Hi, ${name}已将您添加为${gym}的教练, 现在打开氧气教练App并使用邀请码${code}登录吧～
+        try {
+            $result = AlibabaCloud::rpc()
+                ->product('Dysmsapi')
+                // ->scheme('https') // https | http
+                ->version('2017-05-25')
+                ->action('SendSms')
+                ->method('POST')
+                ->host('dysmsapi.aliyuncs.com')
+                ->options([
+                    'query' => [
+                        'RegionId' => "cn-hangzhou",
+                        'PhoneNumbers' => $coach->user->email,
+                        'SignName' => "氧气教练Pro",
+                        'TemplateCode' => self::SMS_TEMPLATE_INVITE,
+                        'TemplateParam' => json_encode([
+                            // 'name' => $operator->name,
+                            // 'gym' => $coach->gym->name,
+                            'code' => $vcode,
+                        ]),
+                    ],
+                ])
+                ->request();
+            // dd($result);
+            return $result;
+        } catch (ClientException $e) {
+            // dd($e->getErrorMessage());
+            return false;
+        } catch (ServerException $e) {
+            // dd($e->getErrorMessage());
+            return false;
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -53,25 +103,26 @@ class CoachController extends Controller
      */
     public function store(Request $request, $gym_id)
     {
-        $userId = Auth::User()->id;
+        $operater = Auth::User();
+        $userId = $operater->id;
 
-        $coachData = $request->only('name', 'phone', 'password', 'sex');
+        $coachData = $request->only('name', 'phone', 'sex');
 
         // convert phone to email
         $customerEmail = $coachData['phone'];
 
-        // 1.create coach row
-        $coach = new Coach([
-            'created_by' => $userId,
-        ]);
-
-        // 2.create coach user
-        $user = new User();
-        $user->password = Hash::make($coachData['password']);
+        // 1.create coach user
+        $user = User::firstOrCreate(['email' => $customerEmail]);
+        $user->password = Hash::make(rand(100000, 999999));
         $user->email = $customerEmail;
         $user->name = $coachData['name'];
         $user->sex = $coachData['sex'];
         $user->save();
+
+        // 2.create coach row
+        $coach = Coach::firstOrCreate(['user_id' => $user->id, 'gym_id' => $gym_id]);
+        $coach->created_by = $userId;
+        $coach->invite_at = new DateTime();
 
         // assign `coach` role
         $user->assignRole('coach');
@@ -85,12 +136,30 @@ class CoachController extends Controller
 
         $success = $coach->save();
 
+        // send invitation
+        $vcode = $user->refreshVCode(365 * 24 * 60 * 60);
+        $this->sendCoachInvite($vcode, $coach, $operater);
+
         if ($success) {
             event(new \App\Events\CoachAddEvent($coach));
             return response()->json($coach, 200);
         } else {
             return response()->json(array('message' => 'fail'), 500);
         }
+    }
+
+    public function invite($gymId, $coachId)
+    {
+        $operater = Auth::User();
+        $coachItem = Coach::where(['id' => $coachId, 'gym_id' => $gymId, 'status' => 1])->first();
+        if (empty($coachItem)) {
+            return response()->json(array('message' => 'can not find coach_id ' . $coachId), 500);
+        }
+        $user = $coachItem->user;
+        // send invitation
+        $vcode = $user->refreshVCode(365 * 24 * 60 * 60);
+        $this->sendCoachInvite($vcode, $coachItem, $operater);
+        return response()->json(array('message' => 'invite has been sent'), 200);
     }
 
     /**
@@ -128,7 +197,7 @@ class CoachController extends Controller
         if ($request->has('hidden')) {
             $coachItem->hidden = (bool) $request->input('hidden');
         }
-        if( $request->has('is_gym_manager')) {
+        if ($request->has('is_gym_manager')) {
             $coachItem->is_gym_manager = (bool) $request->input('is_gym_manager');
         }
         $success = $coachItem->save();
@@ -168,7 +237,7 @@ class CoachController extends Controller
             $coach = Coach::where('gym_id', $gym->id)
                 ->where('status', 1)
                 ->first();
-            if(empty($coach)) {
+            if (empty($coach)) {
                 continue;
             }
             $coach->user = $user;
