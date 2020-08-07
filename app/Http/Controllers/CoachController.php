@@ -159,7 +159,7 @@ class CoachController extends Controller
         // send invitation
         $vcode = $user->refreshVCode(365 * 24 * 60 * 60);
         $this->sendCoachInvite($vcode, $coachItem, $operater);
-        return response()->json(array('message' => 'invite has been sent'), 200);
+        return response()->json(array('message' => 'invite has been sent' . $vcode), 200);
     }
 
     /**
