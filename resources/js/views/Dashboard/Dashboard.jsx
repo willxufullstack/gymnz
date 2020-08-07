@@ -8,7 +8,6 @@ import withStyles from '@material-ui/core/styles/withStyles'
 // @material-ui/icons
 import Add from '@material-ui/icons/Add'
 // core components
-import GridItem from '-components/Grid/GridItem.jsx'
 import CustomerSelectionDialogue from '-components/CustomDialogues/CustomerSelectionDialogue'
 import * as utils from '-utils'
 import dayjs from 'dayjs'

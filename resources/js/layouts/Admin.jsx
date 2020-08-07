@@ -10,9 +10,9 @@ import routes from '../routes.js'
 import { bindActionCreators } from 'redux'
 import * as Actions from '../actions'
 import connect from 'react-redux/es/connect/connect'
-import Snackbar from '-components/Snackbar/Snackbar'
 import './Admin.scss'
 import HashLoader from 'react-spinners/HashLoader'
+import {Snackbar} from '@material-ui/core'
 
 const switchRoutes = (
     <Switch>
@@ -67,7 +67,7 @@ class Admin extends React.Component {
                     <Snackbar
                         place="br"
                         color="danger"
-                        autoHideDuration={2000}
+                        autoHideDuration={3000}
                         disableWindowBlurListener
                         message={
                             this.props.gym.errorMsg ||
@@ -90,7 +90,7 @@ class Admin extends React.Component {
                         place="br"
                         color="success"
                         // icon={AddAlert}
-                        autoHideDuration={2000}
+                        autoHideDuration={3000}
                         disableWindowBlurListener
                         message={
                             this.props.gym.successMsg ||

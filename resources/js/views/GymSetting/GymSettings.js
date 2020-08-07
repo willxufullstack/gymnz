@@ -7,7 +7,6 @@ import * as Actions from '../../actions'
 import connect from 'react-redux/es/connect/connect'
 import Coach from './Coach'
 import Organization from './Organization'
-import Button from '-components/CustomButtons/Button.jsx'
 import {
     Typography,
     RadioGroup,
@@ -17,7 +16,6 @@ import {
 } from '@material-ui/core'
 import Confirmation from '-components/CustomDialogues/Confirmation'
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
-import CustomInput from '-components/CustomInput/CustomInput.jsx'
 import { Switch, withStyles } from '@material-ui/core'
 import i18N from '../../lang'
 import LinkedCsvDataImport from '-views/GymSetting/CsvDataImport'
@@ -143,9 +141,10 @@ class GymSettings extends React.Component {
             <Panel className={classes.optionContainer}>
                 <Titlebar color="#89ECC2" label={description} fontSize={16}>
                     <Switch
-                        onChange={v => {
-                            this.setState({ [propName]: v }, () =>
-                                this.saveSetting(propName)
+                        onChange={event => {
+                            this.setState(
+                                { [propName]: event.target.checked },
+                                () => this.saveSetting(propName)
                             )
                         }}
                         checked={!!this.state[propName]}
@@ -339,14 +338,13 @@ class GymSettings extends React.Component {
                         />
                     ))}
                 </RadioGroup>
-                <Button
-                    color="primary"
+                <RoundButton
+                    color="#29aa99"
+                    label={'保存'}
                     onClick={() =>
                         this.saveDianpingShop(selectedShop, selectedShopName)
                     }
-                >
-                    保存
-                </Button>
+                />
             </FormControl>
         )
     }
@@ -488,7 +486,7 @@ class GymSettings extends React.Component {
                 {this.swithItem(
                     'enableCancelCompletedSchedule',
                     '允许APP中取消已完成课程',
-                    '开启后，教练无法在APP中取消一节已经完成的课程。可以防止误操作。'
+                    '开启后，教练可以在APP中取消一节已经完成的课程。保持该选项关闭可以防止误操作。'
                 )}
                 <Panel className={classes.optionContainer}>
                     <Titlebar

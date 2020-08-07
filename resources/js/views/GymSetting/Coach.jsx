@@ -3,7 +3,6 @@ import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import connect from 'react-redux/es/connect/connect'
 // @material-ui/icons
-import Button from '-components/CustomButtons/Button.jsx'
 import Add from '@material-ui/icons/Add'
 // core components
 import '../../../sass/coach.scss'
