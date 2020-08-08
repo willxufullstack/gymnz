@@ -103,6 +103,8 @@ class GymSettings extends React.Component {
                 ? props.setting.enableConfirmInPlanPage
                 : false,
             logo: props.setting ? props.setting.logo : '',
+            planCover: props.setting && props.setting.planCover ? props.setting.planCover : 'http://static.o2-fit.com/image/plan_cover_0808.png',
+            confirmCover: props.setting && props.setting.confirmCover ? props.setting.confirmCover : 'http://static.o2-fit.com/image/summary_cover_0807.png',
             workingHours: {
                 max:
                     props.setting &&
@@ -206,6 +208,12 @@ class GymSettings extends React.Component {
 
     saveLogo = url => {
         this.setState({ logo: url }, () => this.saveSetting('logo'))
+        this.props.actions.refreshUploadToken()
+    }
+
+    saveImageSetting = option => (url) => {
+        this.setState({[option]: url}, () => this.saveSetting(option))
+        this.props.actions.refreshUploadToken()
     }
 
     saveSetting = option => {
@@ -592,6 +600,58 @@ class GymSettings extends React.Component {
                                 '促销。每个自然月如客户完成指定数量课程自动生成一节赠送课程。'
                             }
                         </div>
+                    </div>
+                </Panel>
+                <Panel className={classes.optionContainer}>
+                    <Titlebar
+                        fontSize={16}
+                        color={'#89ECC2'}
+                        label={'小程序训练计划封面'}
+                        style={{ marginTop: 8 }}
+                    >
+                        <QNUploader
+                            title={'选择图片'}
+                            variant="outline"
+                            fontSize={12}
+                            noCompress
+                            {...this.props.rootSetting.uploadToken}
+                            onSuccess={this.saveImageSetting('planCover')}
+                            onFail={e => console.log(e)}
+                        />
+                    </Titlebar>
+                    <div style={{ alignItems: 'center', display: 'flex' }}>
+                        {this.state.planCover && (
+                            <img height={90} src={this.state.planCover} />
+                        )}
+                    </div>
+                    <div className={classes.optionTextIntroduction}>
+                        {'图片长宽比5:4（建议>=500*400), 不超过120Kb'}
+                    </div>
+                </Panel>
+                <Panel className={classes.optionContainer}>
+                    <Titlebar
+                        fontSize={16}
+                        color={'#89ECC2'}
+                        label={'小程序训练总结封面'}
+                        style={{ marginTop: 8 }}
+                    >
+                        <QNUploader
+                            title={'选择图片'}
+                            variant="outline"
+                            fontSize={12}
+                            noCompress
+                            {...this.props.rootSetting.uploadToken}
+                            onSuccess={this.saveImageSetting('confirmCover')}
+                            onFail={e => console.log(e)}
+                        />
+                    </Titlebar>
+                    <div style={{ alignItems: 'center', display: 'flex' }}>
+                        {this.state.confirmCover && (
+                            <img height={90} src={this.state.confirmCover} />
+                        )}
+                    </div>
+                    <div className={classes.optionTextIntroduction}>
+                        {'图片长宽比5:4（建议>=500*400), 不超过120Kb'}
                     </div>
                 </Panel>
             </div>

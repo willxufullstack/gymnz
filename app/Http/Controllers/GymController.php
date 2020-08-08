@@ -131,15 +131,16 @@ class GymController extends Controller
         //
     }
 
-    public function getShareCover()
+    public function getShareCover(Request $request, $id)
     {
+        $gym = Gym::find($id);
         return [
             // 'plan' => 'http://static.o2-fit.com/image/plan_share_500x400.png',
             // 'register' => 'http://static.o2-fit.com/image/register2.jpg',
             // 'confirm' => 'http://static.o2-fit.com/confirm_share.png'
-            'plan' => 'http://static.o2-fit.com/image/plan_cover_0808.png',
+            'plan' => $gym->setting['planCover'] ?? 'http://static.o2-fit.com/image/plan_cover_0808.png',
             'register' => 'http://static.o2-fit.com/image/register2.jpg',
-            'confirm' => 'http://static.o2-fit.com/image/summary_cover_0807.png'
+            'confirm' => $gym->setting['confirmCover'] ?? 'http://static.o2-fit.com/image/summary_cover_0807.png'
         ];
     }
 

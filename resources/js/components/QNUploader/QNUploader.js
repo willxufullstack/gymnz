@@ -4,6 +4,7 @@ import { ImgPrefix } from '-const'
 import * as qiniu from 'qiniu-js'
 import { withStyles } from '@material-ui/core'
 import RoundButton from '../RoundButton/RoundButton'
+import HashLoader from 'react-spinners/HashLoader'
 
 const styles = {
     input: {
@@ -14,6 +15,9 @@ const styles = {
 class QNUploader extends React.Component {
     constructor(props) {
         super(props)
+        this.state = {
+            loading: false
+        }
     }
 
     refreshToken = () => {}
@@ -29,7 +33,9 @@ class QNUploader extends React.Component {
             imgori.src = reader.result
 
             imgori.onload = () => {
-                var compressed = compressImg(imgori, 60)
+                this.setState({ loading: true })
+                const ratio = this.props.noCompress ? 100 : 60
+                var compressed = compressImg(imgori, ratio)
                 var observable = qiniu.upload(
                     compressed,
                     this.props.fileName,
@@ -40,9 +46,11 @@ class QNUploader extends React.Component {
                         console.log('next', e)
                     },
                     e => {
+                        this.setState({ loading: false })
                         this.props.onFail(e)
                     },
                     () => {
+                        this.setState({ loading: false })
                         this.props.onSuccess(ImgPrefix + this.props.fileName)
                     }
                 )
@@ -53,22 +61,28 @@ class QNUploader extends React.Component {
     render() {
         const { classes } = this.props
         return (
-            <div style={{ display: 'flex', marginBottom: 8 }}>
+        <div style={{ display: 'flex' }}>
                 <input
                     className={classes.input}
                     type="file"
                     ref="fileUploader"
                     onChange={this.onChange}
                 />
-                <RoundButton
-                    color={'#29aa99'}
-                    variant={this.props.variant}
-                    fontSize={this.props.fontSize ? this.props.fontSize : 12}
-                    label={this.props.title || 'Add'}
-                    onClick={() => {
-                        this.refs.fileUploader.click()
-                    }}
-                />
+                {this.state.loading ? (
+                    <HashLoader loading color={'#89ECC2'} />
+                ) : (
+                    <RoundButton
+                        color={'#29aa99'}
+                        variant={this.props.variant}
+                        fontSize={
+                            this.props.fontSize ? this.props.fontSize : 12
+                        }
+                        label={this.props.title || 'Add'}
+                        onClick={() => {
+                            this.refs.fileUploader.click()
+                        }}
+                    />
+                )}
             </div>
         )
     }

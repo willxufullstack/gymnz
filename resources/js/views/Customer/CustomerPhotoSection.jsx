@@ -45,7 +45,6 @@ class CustomerPhotoSection extends React.Component {
     }
 
     uploadSuccess = url => {
-        console.log(url)
         // refresh token after success
         this.props.actions.refreshUploadToken()
         // save image
