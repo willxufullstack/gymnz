@@ -137,9 +137,9 @@ class GymController extends Controller
             // 'plan' => 'http://static.o2-fit.com/image/plan_share_500x400.png',
             // 'register' => 'http://static.o2-fit.com/image/register2.jpg',
             // 'confirm' => 'http://static.o2-fit.com/confirm_share.png'
-            'plan' => 'http://static.o2-fit.com/image/plan_cover_0807.png',
+            'plan' => 'http://static.o2-fit.com/image/plan_cover_0808.png',
             'register' => 'http://static.o2-fit.com/image/register2.jpg',
-            'confirm' => 'http://static.o2-fit.com/summary_cover_0807.png'
+            'confirm' => 'http://static.o2-fit.com/image/summary_cover_0807.png'
         ];
     }
 

@@ -45,7 +45,7 @@ class AuthController extends Controller
             $user = User::where('email', $credentials['email'])->first();
             if ($user->verifyVCode($vcode)) {
                 // $vcode could come from coach invitation, then set `invite_at` to NULL to finish the coach invitation
-                if ($coach = Coach::where('user_id', $user->id)->first()){
+                if ($coach = Coach::where('user_id', $user->id)->first()) {
                     if ($coach->invite_at) {
                         $coach->invite_at = null;
                         $coach->save();
@@ -95,16 +95,20 @@ class AuthController extends Controller
             'password' => $request->input('currentPassword')
         ];
 
-        if ($token = $this->guard()->attempt($credentials)) {
-            $password = $request->input('newPassword');
-            $user->password = Hash::make($password);
-            $user->setRememberToken(Str::random(60));
-            $user->save();
-            return $this->respondWithToken($token);
-            // $this->guard()->login($user);
+        $vcode = $request->input('vcode', '');
+
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user->verifyVCode($vcode) && !$this->guard()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        $password = $request->input('newPassword');
+        $user->password = Hash::make($password);
+        $user->setRememberToken(Str::random(60));
+        $user->save();
+        $token = $this->guard()->tokenById($user->id);
+        return $this->respondWithToken($token);
     }
 
     /**
@@ -285,8 +289,7 @@ class AuthController extends Controller
             return response()->json(array('message' => '找不到对应的用户'), 404);
         }
 
-        $vcode = $user->refreshVCode();
-
+        return response()->json(array('message' => $vcode));
 
         $accessKeyId = config('services.ali.key');
         $accessSecret = config('services.ali.secret');

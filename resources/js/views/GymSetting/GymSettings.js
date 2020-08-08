@@ -627,7 +627,7 @@ class GymSettings extends React.Component {
                 },
                 {
                     name: 'newPwd',
-                    label: L.newPwd + '(>8位)',
+                    label: L.newPwd + '(>=8位)',
                     type: 'password'
                 },
                 {
