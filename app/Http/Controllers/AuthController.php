@@ -289,7 +289,7 @@ class AuthController extends Controller
             return response()->json(array('message' => '找不到对应的用户'), 404);
         }
 
-        return response()->json(array('message' => $vcode));
+        $vcode = $user->refreshVCode();
 
         $accessKeyId = config('services.ali.key');
         $accessSecret = config('services.ali.secret');
