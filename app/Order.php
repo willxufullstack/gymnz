@@ -9,6 +9,10 @@ class Order extends Model
 {
     protected $tableName = "orders";
 
+    protected $casts = [
+        'images' => 'array',
+    ];
+
     public function gym()
     {
         return $this->belongsTo('App\Gym');

@@ -18,9 +18,7 @@ import RoundButton from '../../components/RoundButton/RoundButton'
 
 const L = i18N('Customer')
 
-const styles = {
-
-}
+const styles = {}
 class Customer extends React.Component {
     constructor(props) {
         super(props)
@@ -348,6 +346,24 @@ class Customer extends React.Component {
                 )
             },
             {
+                title: '合同',
+                flex: 1,
+                render: r =>
+                    r.images.map(img => (
+                        <a href={img} target="_blank">
+                            <img
+                                width={20}
+                                height={20}
+                                style={{
+                                    display: 'inline-block',
+                                    marginRight: 4
+                                }}
+                                src={utils.imgThumbnail(img, 20, 20)}
+                            />
+                        </a>
+                    ))
+            },
+            {
                 title: '来源',
                 flex: 1,
                 render: r => (r.source ? r.source : '未记录')
@@ -472,12 +488,7 @@ class Customer extends React.Component {
             }
         ]
 
-        return (
-            <SearchableTable
-                columns={columns}
-                data={booked}
-            />
-        )
+        return <SearchableTable columns={columns} data={booked} />
     }
 
     getFinishedTab = () => {
@@ -523,12 +534,7 @@ class Customer extends React.Component {
             }
         ]
 
-        return (
-            <SearchableTable
-                columns={columns}
-                data={finished}
-            />
-        )
+        return <SearchableTable columns={columns} data={finished} />
     }
 
     getDataTab = () => {
