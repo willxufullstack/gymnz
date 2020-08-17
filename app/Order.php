@@ -9,10 +9,6 @@ class Order extends Model
 {
     protected $tableName = "orders";
 
-    protected $casts = [
-        'images' => 'array',
-    ];
-
     public function gym()
     {
         return $this->belongsTo('App\Gym');
@@ -26,6 +22,14 @@ class Order extends Model
     public function coach()
     {
         return $this->belongsTo('App\Coach');
+    }
+
+    public function getImagesAttribute($images)
+    {
+        if(!$images || $images === 'null') {
+            $images = '[]';
+        }
+        return json_decode($images);
     }
 
     public function getIsFirstOrderAttribute()
