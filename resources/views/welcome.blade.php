@@ -107,6 +107,8 @@
 
         .content {
             text-align: center;
+            position: relative;
+            top: -24px;
         }
 
         .title {
@@ -125,6 +127,27 @@
 
         .m-b-md {
             margin-bottom: 30px;
+        }
+
+        .copyright {
+            position: fixed;
+            color: #999;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .copyright span {
+            color: #ccc;
+            display: block
+        }
+
+        .copyright span a{
+            color: #ccc;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -164,6 +187,10 @@
                 <!-- <a href="https://laravel.com/docs">Docs</a>
             <a href="https://laracasts.com">Laracasts</a> -->
             </div>
+        </div>
+        <div class="copyright">
+            <span>© 北京十分有科技有限公司 </span>
+            <span><a href="mailto:royn.wang.renyuan@gmail.com">royn.wang.renyuan@gmail.com</a>&nbsp;&nbsp;&nbsp;010-85822871</span>
         </div>
     </div>
 </body>
