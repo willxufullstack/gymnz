@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Gym;
 use JWTAuth;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
-class HomeController extends Controller
+class GodController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -25,6 +27,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $user = Auth::user();
+        if($user->email === '00000000') {
+            $gyms = Gym::all();
+            return view('god', compact('gyms'));
+        }
+        return redirect('home');
     }
 }

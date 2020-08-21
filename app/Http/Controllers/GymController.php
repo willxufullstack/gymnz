@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Account;
 use App\Gym;
 use App\Order;
 use App\Coach;
@@ -27,13 +28,21 @@ class GymController extends Controller
         // cond 1. => is admin
         $ret = Gym::where("created_by", $userId)->get();
 
+        foreach($ret as $gym) {
+             // try init account_id
+            if (!$gym->account_id) {
+                $user = User::find($gym->created_by);
+                $gym = $this->bindAccountByPhone($user, $gym->id);
+            }
+        }
+
         // cond 2. => is coach
         if (!$ret->count()) {
             $coach = Coach::with('user')
                 ->where("user_id", "=", $userId)
                 ->where('status', 1)
                 ->first();
-            if($coach && $coach->is_gym_manager) {
+            if ($coach && $coach->is_gym_manager) {
                 $ret = Gym::where('id', $coach->gym_id)->get();
             }
         }
@@ -80,7 +89,15 @@ class GymController extends Controller
      */
     public function show($id)
     {
-        return Gym::find($id);
+        $gym = Gym::find($id);
+
+        // try init account_id
+        if (!$gym->account_id) {
+            $user = User::find($gym->created_by);
+            $gym = $this->bindAccountByPhone($user, $id);
+        }
+
+        return $gym;
     }
 
     /**
@@ -482,5 +499,35 @@ class GymController extends Controller
         }
 
         return $ret;
+    }
+
+    public function bindAccount(Request $request, $gymId)
+    {
+        $phone = $request->input('phone', null);
+
+        $user = User::where('email', $phone)->first();
+
+        if($gym = $this->bindAccountByPhone($user, $gymId)) {
+            return response()->json($gym);
+        }
+
+        return response()->json(array('message' => 'invalid input'), 500);
+    }
+
+    private function bindAccountByPhone(User $user, int $gymId) {
+        $gym = Gym::find($gymId);
+
+        if(empty($user) || empty($gym)) {
+            return null;
+        }
+
+        $account = Account::firstOrCreate(['user_id' => $user->id]);
+        $account->save();
+
+        $gym->account_id = $account->id;
+        $gym->save();
+
+        return $gym;
+
     }
 }
