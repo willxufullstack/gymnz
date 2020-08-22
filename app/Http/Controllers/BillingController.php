@@ -51,7 +51,7 @@ class BillingController extends Controller
         $billing->paid = (int) $request->input('paid');
         $billing->detail = 'deposit';
         $billing->expired_at = null;
-        // dd($billing);
+
         $billing->save();
 
         return redirect("/god");
