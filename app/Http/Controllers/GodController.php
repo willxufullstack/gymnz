@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Billing;
 use App\Gym;
 use JWTAuth;
 use Auth;
@@ -30,7 +31,8 @@ class GodController extends Controller
         $user = Auth::user();
         if($user->email === '00000000') {
             $gyms = Gym::all();
-            return view('god', compact('gyms'));
+            $billings = Billing::getAllBilling();
+            return view('god', compact('gyms', 'billings'));
         }
         return redirect('home');
     }

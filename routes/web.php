@@ -19,5 +19,6 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/god', 'GodController@index')->name('god');
+Route::resource('/billing', 'BillingController');
 Route::get('{path}', 'HomeController@index')->where('path', '.+');
 

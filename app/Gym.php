@@ -38,9 +38,6 @@ class Gym extends Model
         return $this->hasMany('App\Coach');
     }
 
-    /**
-     * Get the phone record associated with the user.
-     */
     public function account()
     {
         return $this->belongsTo('App\Account');
