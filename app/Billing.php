@@ -24,7 +24,7 @@ class Billing extends Model
         $rows = self::all();
         $idToBalance = [];
         foreach ($rows as $row) {
-            if ($row->expired_at && $row->expired_at->lt(Carbon::today())) {
+            if ($row->expired_at && Carbon::createFromFormat('Y-m-d', $row->expired_at)->lessThanOrEqualTo(Carbon::today())) {
                 continue;
             }
             if (!isset($idToBalance[$row->account_id])) {
