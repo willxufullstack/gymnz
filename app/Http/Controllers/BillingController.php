@@ -49,7 +49,7 @@ class BillingController extends Controller
         $billing->account_id = $request->input('account_id');
         $billing->point = (int) $request->input('point');
         $billing->paid = (int) $request->input('paid');
-        $billing->detail = 'charge';
+        $billing->detail = 'deposit';
         $billing->expired_at = null;
         // dd($billing);
         $billing->save();

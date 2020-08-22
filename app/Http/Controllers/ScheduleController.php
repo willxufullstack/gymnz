@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Billing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Gym;
@@ -307,6 +308,8 @@ class ScheduleController extends Controller
         // clear cache 'latest_schedule'
         User::setLatestScheduleCache($schedule->customer_id);
         User::clearLatestMeasureDate($schedule->customer_id);
+
+        Billing::consume($schedule);
         return response()->json($schedule, 201);
     }
 
@@ -409,6 +412,7 @@ class ScheduleController extends Controller
             }
 
             User::setLatestScheduleCache($schedule->customer_id);
+            Billing::cancel($schedule);
             return response()->json($schedule, 200);
         }
         return response()->json(array('message' => 'fail'), 500);

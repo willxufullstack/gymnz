@@ -36,4 +36,38 @@ class Billing extends Model
 
         return $idToBalance;
     }
+
+    public static function consume(Schedule $schedule) {
+        $accountId = $schedule->gym->account_id;
+        if (!$accountId) {
+            return;
+        }
+
+        $billing = new Billing();
+        $billing->operated_by = $schedule->coach->user->id;
+        $billing->account_id = $accountId;
+        $billing->point = -1;
+        $billing->paid = 0;
+        $billing->detail = 'consume #'.$schedule->id;
+        $billing->expired_at = null;
+        // dd($billing);
+        $billing->save();
+    }
+
+    public static function cancel(Schedule $schedule) {
+        $accountId = $schedule->gym->account_id;
+        if (!$accountId) {
+            return;
+        }
+
+        $billing = new Billing();
+        $billing->operated_by = $schedule->coach->user->id;
+        $billing->account_id = $accountId;
+        $billing->point = 1;
+        $billing->paid = 0;
+        $billing->detail = 'cancel #'.$schedule->id;
+        $billing->expired_at = null;
+        // dd($billing);
+        $billing->save();
+    }
 }
