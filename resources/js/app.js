@@ -19,6 +19,10 @@ import axios from 'axios'
 import axiosMiddleware from 'redux-axios-middleware'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 
+var fundebug = require('fundebug-javascript')
+fundebug.apikey =
+    '42ef3a72fca1c45b57f23f75313be80ac6a6959b9438b9b977a38d339601c915'
+
 const client = axios.create({
     //all axios can be used, shown in axios documentation
     baseURL: '/api',
@@ -38,20 +42,47 @@ const theme = createMuiTheme({
 const hist = createBrowserHistory()
 const store = createStore(rootReducer, applyMiddleware(axiosMiddleware(client)))
 
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = { hasError: false }
+    }
+
+    componentDidCatch(error, info) {
+        this.setState({ hasError: true })
+        // 将component中的报错发送到Fundebug
+        fundebug.notifyError(error, {
+            metaData: {
+                info: info
+            }
+        })
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return null
+            // Note: 也可以在出错的component处展示出错信息，返回自定义的结果。
+        }
+        return this.props.children
+    }
+}
+
 ReactDOM.render(
-    <MuiThemeProvider theme={theme}>
-        <Provider store={store}>
-            <Router history={hist}>
-                <Switch>
-                    <Route
-                        path="/admin"
-                        component={props => <LinkedAdmin {...props} />}
-                    />
-                    {/* <Route path="/rtl" component={RTL}/> */}
-                    <Redirect from="/" to="/admin/overview" />
-                </Switch>
-            </Router>
-        </Provider>
-    </MuiThemeProvider>,
+    <ErrorBoundary>
+        <MuiThemeProvider theme={theme}>
+            <Provider store={store}>
+                <Router history={hist}>
+                    <Switch>
+                        <Route
+                            path="/admin"
+                            component={props => <LinkedAdmin {...props} />}
+                        />
+                        {/* <Route path="/rtl" component={RTL}/> */}
+                        <Redirect from="/" to="/admin/overview" />
+                    </Switch>
+                </Router>
+            </Provider>
+        </MuiThemeProvider>
+    </ErrorBoundary>,
     document.getElementById('app')
 )
