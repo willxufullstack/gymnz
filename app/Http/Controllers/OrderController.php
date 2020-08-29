@@ -214,7 +214,7 @@ class OrderController extends Controller
         $childOrder->created_by = $by;
         $childOrder->customer_id = $customer->id;
         $childOrder->coach_id = $oriOrder->coach_id;
-        $childOrder->images = $oriOrder->images;
+        $childOrder->images = is_array($oriOrder->images) ? json_encode($oriOrder->images): $oriOrder->images;
         $childOrder->created_at = $oriOrder->created_at;
         $childOrder->duration = $oriOrder->duration;
         $childOrder->expiry = $oriOrder->expiry;
