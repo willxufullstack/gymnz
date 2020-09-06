@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Redis;
-use Spatie\Permission\Traits\HasPermissions;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -263,9 +262,9 @@ class User extends Authenticatable implements JWTSubject
 
     public function verifyVCode(string $vcode)
     {
-        $key = 'vcode_'.$this->id;
+        $key = 'vcode_' . $this->id;
         $expected = Redis::get($key);
-        if($expected === $vcode){
+        if ($expected === $vcode) {
             Redis::del($key);
             return true;
         }
@@ -274,7 +273,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function refreshVCode($expire = 300): string
     {
-        $key = 'vcode_'.$this->id;
+        $key = 'vcode_' . $this->id;
         $vcode = rand(1000, 9999);
         Redis::set($key, $vcode, 'EX', $expire);  // expire in 5 mins
 

@@ -220,9 +220,11 @@ class GymController extends Controller
         // add schedule data to ret
         $filtered = [];
         $saved = [];
+
+        $latestSchedules = $gym->getGymLatestSchedules();
         foreach ($ret as &$item) {
             if (!array_key_exists($item['id'], $saved)) {
-                $item['latest_schedule'] = User::getLatestScheduleById($item['id'], 2);
+                $item['latest_schedule'] = $latestSchedules[$item['id']] ?? null;
                 $saved[$item['id']] = 1;
                 $filtered[] = $item;
             }

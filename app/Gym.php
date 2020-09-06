@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 use App\Console\Commands\DianpingCrawler;
+use Illuminate\Support\Facades\DB;
 use App\Jobs\DianpingJob;
 use DateInterval;
 use DatePeriod;
@@ -14,6 +15,7 @@ class Gym extends Model
 {
     protected $tableName = "gyms";
     const DEFAULT_TIMEZONE = 'Asia/Shanghai';
+    const GYM_LATEST_SCHEDULE_PREFIX = 'lastest_schedule_gym__';
 
     protected $casts = [
         'setting' => 'array'
@@ -242,5 +244,64 @@ class Gym extends Model
         } else {
             echo $sessionData['msg'];
         }
+    }
+
+    public function setGymLatestSchedules($userId) {
+        $key = self::GYM_LATEST_SCHEDULE_PREFIX . $this->id;
+        $allSchedulesStr = Redis::get($key);
+        // init if empty
+        if(empty($allSchedulesStr)) {
+            $this->getGymLatestSchedules();
+            return;
+        }
+
+        $schedule = Schedule::where('gym_id', $this->id)
+            ->where('customer_id', $userId)
+            ->where('status', 2)
+            ->with('coach.user')
+            ->orderBy('date', 'DESC')
+            ->first();
+        if(empty($schedule)) {
+            return;
+        }
+        // update the user
+        $allSchedules = json_decode($allSchedulesStr, true);
+
+        $allSchedules[$schedule->customer_id] =  $schedule->makeHidden('detail')->makeHidden('conclusion');
+
+
+        Redis::set($key, json_encode($allSchedules));
+    }
+
+    public function getGymLatestSchedules()
+    {
+        $key = self::GYM_LATEST_SCHEDULE_PREFIX . $this->id;
+        $allSchedulesStr = Redis::get($key);
+        if (empty($allSchedulesStr)) {
+            // load latest schedule
+            $scheduleIds = Schedule::where('status', 2)
+                ->where('gym_id', $this->id)
+                ->groupBy('customer_id')
+                ->get([DB::raw('MAX(id) as id')]);
+
+            $allIds = [];
+            foreach ($scheduleIds as $scheduleId) {
+                $allIds[] = $scheduleId['id'];
+            }
+
+            $schedules = Schedule::with(['coach.user'])
+            ->whereIn('id', $allIds)
+            ->get();
+
+            // userId => schedules
+            $map = [];
+            foreach ($schedules as &$schedule) {
+                $map[$schedule->customer_id] = $schedule->makeHidden('detail')->makeHidden('conclusion');
+            }
+            $allSchedulesStr = json_encode($map, true);
+            Redis::set($key, $allSchedulesStr);
+        }
+
+        return json_decode($allSchedulesStr, true);
     }
 }

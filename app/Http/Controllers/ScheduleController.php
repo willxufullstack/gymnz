@@ -283,9 +283,10 @@ class ScheduleController extends Controller
         $schedule->status = 1;
         $schedule->conclusion = '';
 
+        $gym = Gym::find($scheduleData['gym']);
         $schedule->customer()->associate(User::find($scheduleData['customer']));
         $schedule->coach()->associate(Coach::with('user')->find($scheduleData['coach']));
-        $schedule->gym()->associate(Gym::find($scheduleData['gym']));
+        $schedule->gym()->associate($gym);
 
         if ($schedule->hasTimeConflicts()) {
             return response()->json(['message' => 'conflict with other schedules'], 400);
@@ -411,7 +412,7 @@ class ScheduleController extends Controller
                 $order->save();
             }
 
-            User::setLatestScheduleCache($schedule->customer_id);
+            $schedule->gym->setGymLatestSchedules($schedule->customer_id);
             Billing::cancel($schedule);
             return response()->json($schedule, 200);
         }
@@ -477,6 +478,9 @@ class ScheduleController extends Controller
 
         $schedule->status = 2;
         $success = $schedule->save();
+
+        $gym = Gym::find($schedule->gym_id);
+        $gym->setGymLatestSchedules($schedule->customer_id);
 
         // try to trigger followup if needed
         $schedule->triggerNewFollowp();
