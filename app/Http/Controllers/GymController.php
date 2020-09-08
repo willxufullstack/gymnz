@@ -381,7 +381,7 @@ class GymController extends Controller
         $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'));
         $duration = $request->input('duration', 6);
 
-        for ($i = 0; $i <= $duration; $i++) {
+        for ($i = 0; $i < $duration; $i++) {
             $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => 0, 'recent' => 0, 'new' => 0];
             $currentMonth->subMonth();
         }
@@ -424,7 +424,7 @@ class GymController extends Controller
         $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'));
         $duration = $request->input('duration', 6);
 
-        for ($i = 0; $i <= $duration; $i++) {
+        for ($i = 0; $i < $duration; $i++) {
             $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => 0, 'recent' => 0, 'new' => 0];
             $currentMonth->subMonth();
         }
@@ -465,7 +465,7 @@ class GymController extends Controller
         $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'));
         $duration = $request->input('duration', 6);
 
-        for ($i = 0; $i <= $duration; $i++) {
+        for ($i = 0; $i < $duration; $i++) {
             $ret[$currentMonth->locale('zh')->translatedFormat('F')] = ['all' => [], 'new' => [], 'recent' => []];
             $currentMonth->subMonth();
         }
