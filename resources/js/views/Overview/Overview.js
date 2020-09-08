@@ -347,7 +347,7 @@ class Overview extends React.Component {
         const customerWithLatestSchedule = this.props.gym.customers.find(
             item => item.id === parseInt(customerId)
         )
-        if (!customerWithLatestSchedule) {
+        if (!customerWithLatestSchedule || !customerWithLatestSchedule.latest_schedule) {
             return ''
         }
         const getHotmapData = userId => {
