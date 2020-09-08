@@ -378,7 +378,7 @@ class GymController extends Controller
 
         $ret = [];
 
-        $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'));
+        $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'))->setDay(1);
         $duration = $request->input('duration', 6);
 
         for ($i = 0; $i < $duration; $i++) {
@@ -421,7 +421,7 @@ class GymController extends Controller
 
         $ret = [];
 
-        $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'));
+        $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'))->setDay(1);
         $duration = $request->input('duration', 6);
 
         for ($i = 0; $i < $duration; $i++) {
@@ -462,7 +462,7 @@ class GymController extends Controller
 
         $ret = [];
 
-        $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'));
+        $currentMonth = Carbon::createFromFormat('Y-m-d', $request->input('end'))->setDay(1);
         $duration = $request->input('duration', 6);
 
         for ($i = 0; $i < $duration; $i++) {
