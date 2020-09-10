@@ -21,8 +21,8 @@ use DateTime;
 class CoachController extends Controller
 {
 
-    // const SMS_TEMPLATE_INVITE = 'SMS_198667484';
-    const SMS_TEMPLATE_INVITE = 'SMS_198677372'; // tmp
+    const SMS_TEMPLATE_INVITE = 'SMS_198916534';
+    // const SMS_TEMPLATE_INVITE = 'SMS_198677372'; // tmp
     const REDIS_INVITE_PREFIX = 'coach_invite_';
     /**
      * @param $gym_id gym id
@@ -77,8 +77,8 @@ class CoachController extends Controller
                         'SignName' => "氧气教练Pro",
                         'TemplateCode' => self::SMS_TEMPLATE_INVITE,
                         'TemplateParam' => json_encode([
-                            // 'name' => $operator->name,
-                            // 'gym' => $coach->gym->name,
+                            'owner' => $operator->name,
+                            'shop' => $coach->gym->name,
                             'code' => $vcode,
                         ]),
                     ],
