@@ -273,6 +273,37 @@ class Gym extends Model
         Redis::set($key, json_encode($allSchedules));
     }
 
+    public function getGymOrderBalance()
+    {
+        $orders = Order::where('gym_id', $this->id)->get();
+        $ret = [];
+        foreach($orders as $order) {
+            if(!isset($ret[$order->customer_id])){
+                $ret[$order->customer_id] = [
+                    'total' => 0,
+                    'unfinished_count' => 0,
+                    'expired_count' => 0,
+                    'unfinished_price' => 0,
+                    'expired_price' => 0
+                ];
+            }
+
+            $ret[$order->customer_id]['total'] = $order->course_amount;
+            $unfinishedCount = $order->course_amount - $order->booked_amount;
+            $unfinishedPrice = ($order->course_amount && $order->price) ? $order->price * $unfinishedCount / $order->course_amount : 0;
+
+            $ret[$order->customer_id]['unfinished_count'] += $unfinishedCount;
+            $ret[$order->customer_id]['unfinished_price'] += $unfinishedPrice;
+
+            if ($order->hasExpired()) {
+                $ret[$order->customer_id]['expired_count'] += $unfinishedCount;
+                $ret[$order->customer_id]['expired_price'] += $unfinishedPrice;
+            }
+        }
+
+        return $ret;
+    }
+
     public function getGymLatestSchedules()
     {
         $key = self::GYM_LATEST_SCHEDULE_PREFIX . $this->id;

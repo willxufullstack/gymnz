@@ -84,7 +84,7 @@ class Order extends Model
     public function hasExpired(?DateTime $day = null)
     {
 
-        if (count($this->schedules) === 0) {
+        if ($this->booked === 0) {
             return false;
         }
         if (!$day) {

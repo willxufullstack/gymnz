@@ -28,6 +28,7 @@ function SimpleMenu({ ...props }) {
                         onClick={handleClick}
                         style={{
                             fontSize: props.fontSize ? props.fontSize : '14px',
+                            fontWeight: props.fontWeight ? props.fontWeight : '400',
                             color: props.textColor ? props.textColor : 'white',
                             padding: 0,
                             justifyContent: 'flex-start'

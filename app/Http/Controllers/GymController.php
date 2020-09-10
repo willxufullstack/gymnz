@@ -222,9 +222,11 @@ class GymController extends Controller
         $saved = [];
 
         $latestSchedules = $gym->getGymLatestSchedules();
+        $gymStocks = $gym->getGymOrderBalance();
         foreach ($ret as &$item) {
             if (!array_key_exists($item['id'], $saved)) {
                 $item['latest_schedule'] = $latestSchedules[$item['id']] ?? null;
+                $item['stock'] = $gymStocks[$item['id']] ?? null;
                 $saved[$item['id']] = 1;
                 $filtered[] = $item;
             }
