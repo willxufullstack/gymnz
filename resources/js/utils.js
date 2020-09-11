@@ -182,14 +182,14 @@ export function arrayToOptions(arr) {
 export function getOrderStatus(order) {
     const today = new Date()
     const expiry = new Date(order.expiry)
-    if (order.booked_amount === 0) {
-        return '- -'
-    }
-    if (today > expiry) {
-        return L.expired
-    }
     switch (order.status) {
         case 1:
+            if (order.booked_amount === 0) {
+                return '- -'
+            }
+            if (today > expiry) {
+                return L.expired
+            }
             return L.normal
         case 2:
             return L.refunded

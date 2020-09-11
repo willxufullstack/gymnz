@@ -288,7 +288,13 @@ class Gym extends Model
                 ];
             }
 
-            $ret[$order->customer_id]['total'] = $order->course_amount;
+            // if an order has been refund
+            if($order->status === 2) {
+                $ret[$order->customer_id]['total'] += $order->booked_amount;
+                continue;
+            }
+
+            $ret[$order->customer_id]['total'] += $order->course_amount;
             $unfinishedCount = $order->course_amount - $order->booked_amount;
             $unfinishedPrice = ($order->course_amount && $order->price) ? $order->price * $unfinishedCount / $order->course_amount : 0;
 

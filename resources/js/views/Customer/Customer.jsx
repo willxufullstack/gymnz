@@ -391,8 +391,11 @@ class Customer extends React.Component {
                 title: L.action,
                 flex: 3,
                 visibleOnHover: true,
-                render: r =>
-                    r.status === 1 && r.course_amount > r.booked_amount ? (
+                render: r => {
+                    if(r.status === 2) {
+                        return
+                    }
+                    return r.status === 1 && r.course_amount > r.booked_amount ? (
                         <React.Fragment>
                             <RoundButton
                                 onClick={() => this.tapRefund(r)}
@@ -434,9 +437,18 @@ class Customer extends React.Component {
                             variant={'text'}
                         />
                     )
+                }
             }
         ]
-        return <SearchableTable columns={header} data={orders} />
+
+        const lineThrough = r => utils.getOrderStatus(r) === '已退款'
+        return (
+            <SearchableTable
+                columns={header}
+                data={orders}
+                lineThrough={lineThrough}
+            />
+        )
     }
 
     componentWillMount() {

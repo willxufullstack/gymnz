@@ -64,7 +64,7 @@ const Th = ({ classes, columns }) => {
     )
 }
 
-const Tr = ({ classes, columns, row, onClick }) => {
+const Tr = ({ classes, columns, row, onClick, lineThrough }) => {
     const Td = ({ col }) => {
         if (col.render) {
             return (
@@ -95,6 +95,7 @@ const Tr = ({ classes, columns, row, onClick }) => {
     return (
         <div
             className={classNames(classes.row)}
+            style={{textDecoration: lineThrough && lineThrough(row) ? 'line-through' : 'none' }}
             onClick={e => onClick && onClick(e, row)}
         >
             {columns.map((col, i) => (
@@ -112,7 +113,8 @@ const SearchableTable = ({
     data,
     onRowClick,
     onSearch,
-    style
+    style,
+    lineThrough
 }) => {
     const [searchKey, setSearchKey] = useState('')
 
@@ -147,6 +149,7 @@ const SearchableTable = ({
                                 columns={columns}
                                 row={row}
                                 onClick={onRowClick}
+                                lineThrough={lineThrough}
                             />
                         ))}
                     </div>

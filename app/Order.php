@@ -124,8 +124,6 @@ class Order extends Model
         $threshold = $day->getTimestamp();
         $finished = 0;
         foreach ($this->schedules as $date) {
-            // echo($schedule->date."\n");
-            // echo($schedule['date']."\n");
             if (strtotime($date) <= $threshold) {
                 $finished++;
             }
