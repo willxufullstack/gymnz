@@ -33,7 +33,9 @@ const initState = {
 
         monthCourseByCustomerType: {},
         monthSaleByType: {},
-        monthActiveByType: {}
+        monthActiveByType: {},
+
+        customerWithDate: []
     },
     customers: [],
     customerPage: {
@@ -87,6 +89,21 @@ const gym = (state = initState, action = NonAction) => {
                 loading: false
             })
 
+        case ActionTypes.LOAD_CUSTOMER_WITH_DATE:
+            return state;
+        case ActionTypes.LOAD_CUSTOMER_WITH_DATE_SUCCESS: {
+            let report = { ...state.report }
+            report.customerWithDate = action.payload.data
+            return Object.assign({}, state, {
+                loading: false,
+                report
+            })
+        }
+        case ActionTypes.LOAD_CUSTOMER_WITH_DATE_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '加载客户列表失败',
+                loading: false
+            })
         case ActionTypes.LOAD_CUSTOMER_HOTMAP:
             return state
         case ActionTypes.LOAD_CUSTOMER_HOTMAP_SUCCESS:
@@ -95,7 +112,7 @@ const gym = (state = initState, action = NonAction) => {
             })
         case ActionTypes.LOAD_CUSTOMER_HOTMAP_FAIL:
             return Object.assign({}, state, {
-                errorMsg: 'Load customer list failed, please refresh the page'
+                errorMsg: '加载客户Hotmap失败'
             })
 
         case ActionTypes.LOAD_COACH:
@@ -107,7 +124,7 @@ const gym = (state = initState, action = NonAction) => {
             })
         case ActionTypes.LOAD_COACH_FAIL:
             return Object.assign({}, state, {
-                errorMsg: 'Load coach list failed, please refresh the page',
+                errorMsg: '加载教练列表失败',
                 loading: false
             })
 

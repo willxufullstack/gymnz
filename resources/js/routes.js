@@ -18,7 +18,7 @@ const dashboardRoutes = [
     {
         path: "/overview",
         name: '纵览',
-        component: () => <LazyOverview />,
+        component: (props) => <LazyOverview {...props}/>,
         layout: "/admin"
     },
     {

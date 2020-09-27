@@ -68,14 +68,24 @@ class Gym extends Model
         Redis::set($key, json_encode($trialCustomers));
     }
 
-    public function getTrialCustomers(): array
+    public function getTrialCustomers($beforeDays = 30): array
     {
         $key = $this->_trialCustomersRedisKey();
         $trialCustomers = Redis::get($key);
         if (empty($trialCustomers)) {
             return [];
         }
-        return array_keys(json_decode($trialCustomers, true));
+
+        $ret = [];
+        $customerToTs = json_decode($trialCustomers, true);
+        $now = time();
+        foreach($customerToTs as $id => $ts) {
+            if ($ts > $now - $beforeDays * 24 * 60 * 60) {
+                $ret[] = $id;
+            }
+        }
+
+        return $ret;
     }
 
     public function getTimezone()

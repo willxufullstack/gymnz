@@ -125,6 +125,19 @@ export function loadCustomer(gymId, extra = null) {
     };
 }
 
+export function loadCustomerWithDate(gymId, extra = null) {
+    const params = extra ? extra : {}
+    return {
+        type: ActionTypes.LOAD_CUSTOMER_WITH_DATE,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/customer',
+                params
+            }
+        }
+    };
+}
+
 /********LOAD CUSTOMER HOTMAP*********/
 export function loadCustomerHotmap(gymId, extra = null) {
     const params = extra ? extra : {}

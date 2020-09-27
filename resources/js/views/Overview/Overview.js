@@ -17,6 +17,8 @@ import Panel from '../../components/Panel/Panel'
 import DoubleArrowIcon from '-assets/img/double_arrow.svg'
 import LineChart from '../../components/LineChart/LineChart'
 import BarChartPanel from '../../components/BarChart/BarChartPanel'
+import SearchableTable from '../../components/SearchableTable/SearchableTable'
+
 const styles = {
     container: {
         display: 'flex',
@@ -186,6 +188,32 @@ const styles = {
         fontSize: 22,
         fontWeight: '900',
         color: '#999'
+    },
+    customerCardRow: {
+        margin: '8px auto',
+        cursor: 'pointer',
+        '&:hover': {
+            background: '#f6f6f6'
+        }
+    },
+    chart: {
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: 24,
+        flex: 1,
+        width: '100%'
+    },
+    chartTitleContainer: {
+        display: 'flex',
+        marginBottom: 8
+    },
+    chartCategoryTitle: {
+        color: '#333',
+        fontWeight: '700',
+        fontSize: 22,
+        flex: 1,
+        marginTop: 4
     }
 }
 
@@ -277,9 +305,12 @@ class Overview extends React.Component {
         const opts = Object.keys(filters).map(k => ({
             text: filters[k],
             onSelect: () => {
-                this.setState({
-                    coach: k
-                })
+                this.setState(
+                    {
+                        coach: k
+                    },
+                    this.loadCoachCustomers
+                )
             }
         }))
         return (
@@ -347,7 +378,10 @@ class Overview extends React.Component {
         const customerWithLatestSchedule = this.props.gym.customers.find(
             item => item.id === parseInt(customerId)
         )
-        if (!customerWithLatestSchedule || !customerWithLatestSchedule.latest_schedule) {
+        if (
+            !customerWithLatestSchedule ||
+            !customerWithLatestSchedule.latest_schedule
+        ) {
             return ''
         }
         const getHotmapData = userId => {
@@ -368,7 +402,15 @@ class Overview extends React.Component {
 
         // + ' | ' + schedule.coach.user.name
         return (
-            <ListItem key={customerWithLatestSchedule.id} style={{margin: '8px auto'}}>
+            <ListItem
+                onClick={() =>
+                    this.props.history.push({
+                        pathname: `customer/${customerWithLatestSchedule.id}`
+                    })
+                }
+                key={customerWithLatestSchedule.id}
+                className={classes.customerCardRow}
+            >
                 <Avatar
                     src={customerWithLatestSchedule.avatar}
                     style={{
@@ -414,7 +456,7 @@ class Overview extends React.Component {
                         }}
                     />
                 </div>
-                <img src={DoubleArrowIcon} style={{flex: 1}} />
+                <img src={DoubleArrowIcon} style={{ flex: 1 }} />
                 <div className={classes.customerProfileCoach}>
                     {customerWithLatestSchedule.latest_schedule
                         ? customerWithLatestSchedule.latest_schedule.coach.user
@@ -590,6 +632,8 @@ class Overview extends React.Component {
             duration: this.state.duration
         })
 
+        this.loadCoachCustomers()
+
         let hotmapDate = dayjs(end)
         if (dayjs(end).isAfter(dayjs())) {
             hotmapDate = dayjs()
@@ -598,6 +642,97 @@ class Overview extends React.Component {
             date: hotmapDate.format('YYYY-MM-DD'),
             duration: 35
         })
+    }
+
+    loadCoachCustomers = () => {
+        const { _, end } = utils.getMonthStartEnd(this.state.date)
+        const start = dayjs(end)
+            .add(-this.state.duration, 'month')
+            .add(1, 'day')
+            .format('YYYY-MM-DD')
+        this.props.actions.loadCustomerWithDate(this.props.selectedGym.id, {
+            coach: this.state.coach,
+            start,
+            end
+        })
+    }
+
+    customersPanel = () => {
+        const columns = [
+            {
+                title: '姓名',
+                flex: 1,
+                render: row => {
+                    return (
+                        <div
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                flex: 1
+                            }}
+                        >
+                            <span
+                                style={{
+                                    width: 6,
+                                    height: 6,
+                                    marginRight: 8,
+                                    borderRadius: '50%',
+                                    backgroundColor: row.sex
+                                        ? '#C6D3FF'
+                                        : '#FFDFDF'
+                                }}
+                            />
+                            <span style={{ flex: 1 }}>{row.name}</span>
+                        </div>
+                    )
+                }
+            },
+            {
+                title: '上次训练',
+                flex: 1,
+                render: row =>
+                    row.latest_schedule
+                        ? dayjs(row.latest_schedule.date).format('MM/DD')
+                        : '- -'
+            },
+            {
+                title: '上次教练',
+                flex: 1,
+                render: row =>
+                    row.latest_schedule
+                        ? row.latest_schedule.coach.user.name
+                        : '- -'
+            }
+        ]
+        const { classes } = this.props
+        return (
+            <Panel className={classes.chart}>
+                <div className={classes.chartTitleContainer}>
+                    <div className={classes.chartCategoryTitle}>
+                        {'活跃客户'}{' '}
+                        <span
+                            style={{
+                                fontWeight: '400',
+                                color: '#666',
+                                fontSize: 12
+                            }}
+                        >
+                            {this.props.gym.report.customerWithDate.length}
+                        </span>
+                    </div>
+                    {this.coachFilter()}
+                </div>
+                <SearchableTable
+                    columns={columns}
+                    data={this.props.gym.report.customerWithDate}
+                    onRowClick={(_, row) =>
+                        this.props.history.push({
+                            pathname: `customer/${row.id}`
+                        })
+                    }
+                />
+            </Panel>
+        )
     }
 
     statisticsChart = React.memo(({ data, date, duration }) => {
@@ -865,6 +1000,15 @@ class Overview extends React.Component {
                                         rawData={this.props.gym.report.dianping}
                                     />
                                 )}
+                            </Grid>
+                            <Grid
+                                item
+                                xs={12}
+                                justify="center"
+                                alignItems="center"
+                                container
+                            >
+                                {this.customersPanel()}
                             </Grid>
                         </Grid>
                     </div>

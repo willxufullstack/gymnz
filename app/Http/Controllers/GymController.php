@@ -193,13 +193,36 @@ class GymController extends Controller
     public function getCustomerList(Request $request, $id)
     {
         // TODO permission check
-        $customers = Order::with('customer')
-            ->where('gym_id', '=', $id)
-            ->orderBy('updated_at', 'DESC')
-            ->get()
-            ->pluck('customer')
-            ->unique('id')
-            ->toArray();
+        if(!$request->has('start') && !$request->has('end')) {
+            $customers = Order::with('customer')
+                ->where('gym_id', '=', $id)
+                ->orderBy('updated_at', 'DESC')
+                ->get()
+                ->pluck('customer')
+                ->unique('id')
+                ->toArray();
+        } else {
+            $start = $request->get('start');
+            $end = $request->get('end');
+            $coach = $request->get('coach');
+
+
+            $customerQuery = Schedule::with('customer')
+                ->where('gym_id', '=', $id)
+                ->where('date', '>=', $start)
+                ->where('date', '<=', $end)
+                ->orderBy('date', 'DESC');
+            if($coach) {
+                $customerQuery->where('coach_id', $coach);
+            }
+
+            $customers = $customerQuery->get()
+                ->pluck('customer')
+                ->unique('id')
+                ->toArray();
+        }
+
+
         $gym = Gym::find($id);
         $trialIds = $gym->getTrialCustomers();
         $trials = [];
