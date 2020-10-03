@@ -120,8 +120,9 @@ class User extends Authenticatable implements JWTSubject
     public static function schedulesMonthMap($gymId, $date = null)
     {
         $key = self::MONTH_HOT_PREFIX . $gymId . '_' . $date;
-        if (!empty(Redis::get($key))) {
-            return json_decode($key, true);
+        $monthHot = Redis::get($key);
+        if (!empty($monthHot)) {
+            return json_decode($monthHot, true);
         }
 
         $date = new Carbon(strtotime($date));
