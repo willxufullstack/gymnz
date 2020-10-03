@@ -10,7 +10,7 @@ import SearchableTable from '../../components/SearchableTable/SearchableTable'
 import RoundButton from '../../components/RoundButton/RoundButton'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import SimpleMenu from '-components/SimpleMenu/SimpleMenu'
-import { withStyles } from '@material-ui/core'
+import { withStyles, Tooltip } from '@material-ui/core'
 import { pinyin } from '-utils'
 
 const L = i18N('Customers')
@@ -212,10 +212,41 @@ class Customers extends React.Component {
                 }
             },
             {
-                title: '电话',
-                flex: 1,
-                field: 'email'
+                title: '月热度',
+                flex: 2,
+                render: row => {
+                    const bgColor = v => (v === 0 ? '#ececec' : '#29aa99')
+                    const opacity = v => (v === 0 ? 1 : Math.ceil(v / 2) * 0.25)
+                    if (row.monthMap) {
+                        return (
+                            <Tooltip title={row.monthMap.join(' · ')}>
+                                <div>
+                                    {row.monthMap.map((v, i) => (
+                                        <span
+                                            key={i + ''}
+                                            style={{
+                                                borderRadius: 2,
+                                                display: 'inline-block',
+                                                height: 8,
+                                                width: 8,
+                                                marginLeft: 1,
+                                                background: bgColor(v),
+                                                opacity: opacity(v)
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            </Tooltip>
+                        )
+                    }
+                    return <div />
+                }
             },
+            // {
+            //     title: '电话',
+            //     flex: 1,
+            //     field: 'email'
+            // },
             {
                 title: '上次训练',
                 flex: 1,

@@ -15,6 +15,7 @@ class User extends Authenticatable implements JWTSubject
     use HasRoles;
 
     const LATEST_SCHEDULE_PREFIX = 'lastest_schedule__';
+    const MONTH_HOT_PREFIX = 'month_hot__';
     const LATEST_MEASURE_PREFIX = 'lastest_measure__';
 
     public function coach()
@@ -114,6 +115,36 @@ class User extends Authenticatable implements JWTSubject
         ]);
 
         return $query->orderBy('created_at', 'ASC')->first();
+    }
+
+    public static function schedulesMonthMap($gymId, $date = null)
+    {
+        $key = self::MONTH_HOT_PREFIX . $gymId . '_' . $date;
+        if (!empty(Redis::get($key))) {
+            return json_decode($key, true);
+        }
+
+        $date = new Carbon(strtotime($date));
+        $date->endOfMonth();
+        $fromDate = date('Y-m-d', strtotime($date . " -1 year"));
+        $schedules = Schedule::where('date', '>', $fromDate)
+            ->where('date', '<=', $date)
+            ->where('gym_id', $gymId)
+            ->get();
+
+        $ret = [];
+        foreach ($schedules as $s) {
+            if (!isset($ret[$s->customer_id])) {
+                $ret[$s->customer_id] = array_fill(0, 12, 0);
+            }
+            $sDate = Carbon::createFromFormat('Y-m-d', $s->date);
+            $delta = $date->diffInMonths($sDate);
+            $ret[$s->customer_id][12 - 1 - $delta]++;
+            // $s->date->month
+        }
+
+        Redis::set($key, json_encode($ret), 'EX', 24 * 60 * 60);
+        return $ret;
     }
 
     /*

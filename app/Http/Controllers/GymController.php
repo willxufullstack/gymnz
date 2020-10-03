@@ -262,6 +262,11 @@ class GymController extends Controller
             }
         }
 
+        $monthMap = User::schedulesMonthMap($id, date('Y-m-d'));
+        foreach ($filtered as &$item) {
+            $item['monthMap'] = $monthMap[$item['id']] ?? [];
+        }
+
         return response()->json($filtered, 200);
     }
 

@@ -5,7 +5,14 @@ import * as Actions from '../../actions'
 import * as utils from '-utils'
 import dayjs from 'dayjs'
 import HeatMap from 'react-heatmap-grid'
-import { withStyles, Avatar, ListItem, List, Grid } from '@material-ui/core'
+import {
+    withStyles,
+    Avatar,
+    ListItem,
+    List,
+    Grid,
+    Tooltip
+} from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import SimpleMenu from '-components/SimpleMenu/SimpleMenu'
@@ -702,6 +709,37 @@ class Overview extends React.Component {
                     row.latest_schedule
                         ? row.latest_schedule.coach.user.name
                         : '- -'
+            },
+            {
+                title: '月热度',
+                flex: 1,
+                render: row => {
+                    const bgColor = v => (v === 0 ? '#ececec' : '#29aa99')
+                    const opacity = v => (v === 0 ? 1 : Math.ceil(v / 2) * 0.25)
+                    if (row.monthMap) {
+                        return (
+                            <Tooltip title={row.monthMap.join(' · ')}>
+                                <div>
+                                    {row.monthMap.map((v, i) => (
+                                        <span
+                                            key={i + ''}
+                                            style={{
+                                                borderRadius: 2,
+                                                display: 'inline-block',
+                                                height: 8,
+                                                width: 8,
+                                                marginLeft: 1,
+                                                background: bgColor(v),
+                                                opacity: opacity(v)
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            </Tooltip>
+                        )
+                    }
+                    return <div />
+                }
             }
         ]
         const { classes } = this.props
