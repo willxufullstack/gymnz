@@ -211,11 +211,11 @@ class GymController extends Controller
                 ->where('gym_id', '=', $id)
                 ->where('date', '>=', $start)
                 ->where('date', '<=', $end)
+                ->where('order_id', '>', 0)
                 ->orderBy('date', 'DESC');
             if($coach) {
                 $customerQuery->where('coach_id', $coach);
             }
-
             $customers = $customerQuery->get()
                 ->pluck('customer')
                 ->unique('id')
