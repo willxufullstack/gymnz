@@ -140,7 +140,9 @@ class User extends Authenticatable implements JWTSubject
             }
             $sDate = Carbon::createFromFormat('Y-m-d', $s->date);
             $delta = $date->diffInMonths($sDate);
-            $ret[$s->customer_id][12 - 1 - $delta]++;
+            if($delta < 12) {
+                $ret[$s->customer_id][12 - 1 - $delta]++;
+            }
             // $s->date->month
         }
 
