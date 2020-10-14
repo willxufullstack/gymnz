@@ -236,7 +236,9 @@ class Overview extends React.Component {
                 month: dayjs().format('M')
             },
             duration: 6,
-            selectedDate: null
+            selectedDate: null,
+            lastActiveDays: 0,
+            balance: 0
         }
     }
 
@@ -296,6 +298,84 @@ class Overview extends React.Component {
                     textColor={'#666'}
                     displayText={this.props.setting.selectedGym.name}
                     items={menuItems}
+                />
+            </div>
+        )
+    }
+
+    lastActiveDaysFilter = () => {
+        const { classes } = this.props
+        const filters = {
+            0: '不限',
+            7: '<=7天',
+            15: '<=15天',
+            30: '<=30天',
+            35: '<=45天',
+            60: '<=60天'
+        }
+
+        const opts = Object.keys(filters).map(k => ({
+            text: filters[k],
+            onSelect: () => {
+                this.setState(
+                    {
+                        lastActiveDays: k
+                    },
+                    this.refreshYearData
+                )
+            }
+        }))
+        return (
+            <div className={classes.filterItem}>
+                <div className={classes.filterTitle}>最后活跃</div>
+                <SimpleMenu
+                    icon={
+                        <ExpandMore
+                            fontSize="small"
+                            className={classes.filterDropdownIcon}
+                        />
+                    }
+                    textColor={'#666'}
+                    displayText={filters[this.state.lastActiveDays]}
+                    items={opts}
+                />
+            </div>
+        )
+    }
+
+    balanceFilter = () => {
+        const { classes } = this.props
+        const filters = {
+            0: '不限',
+            8: '<=8',
+            15: '<=15',
+            30: '<=30',
+        }
+
+        const opts = Object.keys(filters).map(k => ({
+            text: filters[k],
+            onSelect: () => {
+                this.setState(
+                    {
+                        balance: k
+                    },
+                    this.refreshYearData
+                )
+            }
+        }))
+        return (
+            <div className={classes.filterItem}>
+                <div className={classes.filterTitle}>余额</div>
+                <SimpleMenu
+                    icon={
+                        <ExpandMore
+                            fontSize="small"
+                            className={classes.filterDropdownIcon}
+                        />
+                    }
+                    textColor={'#666'}
+                    displayText={filters[this.state.balance]}
+                    items={opts}
                 />
             </div>
         )
@@ -711,6 +791,14 @@ class Overview extends React.Component {
                         : '- -'
             },
             {
+                title: '余课/总计',
+                flex: 1,
+                render: row =>
+                    row.stock
+                        ? row.stock.unfinished_count + '/' + row.stock.total
+                        : '- -'
+            },
+            {
                 title: '月热度',
                 flex: 1,
                 render: row => {
@@ -743,6 +831,16 @@ class Overview extends React.Component {
             }
         ]
         const { classes } = this.props
+        const filteredCustomers = () => {
+            let filtered = this.props.gym.report.customerWithDate
+            if (this.state.balance > 0) {
+                filtered = filtered.filter(c => c.stock && c.stock.unfinished_count <= this.state.balance)
+            }
+            if (this.state.lastActiveDays > 0 ) {
+                filtered = filtered.filter(c =>  c.latest_schedule && dayjs().diff(c.latest_schedule.date, 'day') <= this.state.lastActiveDays)
+            }
+            return filtered
+        }
         return (
             <Panel className={classes.chart}>
                 <div className={classes.chartTitleContainer}>
@@ -755,14 +853,16 @@ class Overview extends React.Component {
                                 fontSize: 12
                             }}
                         >
-                            {this.props.gym.report.customerWithDate.length}
+                            {filteredCustomers().length}
                         </span>
                     </div>
+                    {this.lastActiveDaysFilter()}
+                    {this.balanceFilter()}
                     {this.coachFilter()}
                 </div>
                 <SearchableTable
                     columns={columns}
-                    data={this.props.gym.report.customerWithDate}
+                    data={filteredCustomers()}
                     onRowClick={(_, row) =>
                         this.props.history.push({
                             pathname: `customer/${row.id}`
