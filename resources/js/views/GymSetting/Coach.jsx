@@ -286,7 +286,7 @@ class Coach extends React.Component {
                                 </div>
                                 <div className={classes.row}>
                                     <span className={classes.rowLabel}>
-                                        店铺管理员
+                                        店长
                                     </span>
                                     <Switch
                                         checked={!!item.is_gym_manager}

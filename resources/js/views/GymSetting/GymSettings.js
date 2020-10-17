@@ -96,6 +96,9 @@ class GymSettings extends React.Component {
             disableAppCompleteSchedule: props.setting
                 ? props.setting.disableAppCompleteSchedule
                 : false,
+            enableBossFeedback: props.setting
+                ? props.setting.enableBossFeedback
+                : false,
             enableAppPlanTemplate: props.setting
                 ? props.setting.enableAppPlanTemplate
                 : false,
@@ -103,8 +106,14 @@ class GymSettings extends React.Component {
                 ? props.setting.enableConfirmInPlanPage
                 : false,
             logo: props.setting ? props.setting.logo : '',
-            planCover: props.setting && props.setting.planCover ? props.setting.planCover : 'http://static.o2-fit.com/image/plan_cover_0808.png',
-            confirmCover: props.setting && props.setting.confirmCover ? props.setting.confirmCover : 'http://static.o2-fit.com/image/summary_cover_0807.png',
+            planCover:
+                props.setting && props.setting.planCover
+                    ? props.setting.planCover
+                    : 'http://static.o2-fit.com/image/plan_cover_0808.png',
+            confirmCover:
+                props.setting && props.setting.confirmCover
+                    ? props.setting.confirmCover
+                    : 'http://static.o2-fit.com/image/summary_cover_0807.png',
             workingHours: {
                 max:
                     props.setting &&
@@ -211,8 +220,8 @@ class GymSettings extends React.Component {
         this.props.actions.refreshUploadToken()
     }
 
-    saveImageSetting = option => (url) => {
-        this.setState({[option]: url}, () => this.saveSetting(option))
+    saveImageSetting = option => url => {
+        this.setState({ [option]: url }, () => this.saveSetting(option))
         this.props.actions.refreshUploadToken()
     }
 
@@ -480,6 +489,11 @@ class GymSettings extends React.Component {
                     'disableAppCompleteSchedule',
                     '禁用APP课程完成',
                     '开启后，教练无法在APP完成课程，只能由客户在小程序端以及管理员在Web端完成课程。可以避免教练漏发训练计划。'
+                )}
+                {this.swithItem(
+                    'enableBossFeedback',
+                    '老板悄悄话',
+                    '开启后，客户可以在小程序中向店长反馈意见'
                 )}
                 {this.swithItem(
                     'enableAppPlanTemplate',
