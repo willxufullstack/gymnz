@@ -182,7 +182,7 @@ class SalaryReceipt extends Model
         // SPECIAL CASES!!!!!
         if ($this->course_percentage) {
             foreach ($query as $s) {
-                $money = 120;
+                $money = 100;
                 if ($s->order_id === 0) {
                     continue;
                 }
