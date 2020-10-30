@@ -58,7 +58,7 @@ class weeklyreport extends Command
 
     private static function processGym(Gym $gym, string $date)
     {
-        $coaches = Coach::where(['gym_id' => $gym->id, 'status' => 1])->get();
+        $coaches = Coach::where(['gym_id' => $gym->id, 'status' => 1, 'hidden' => 0])->get();
         foreach ($coaches as $coach) {
             CoachWeeklyReport::updateOrInsertReport($gym->id, $coach->id, $date);
         }

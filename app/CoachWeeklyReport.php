@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class CoachWeeklyReport extends Model
 {
     protected $fillable = ['gym_id', 'coach_id', 'date', 'duration'];
+
+    protected $casts = [
+        'detail' => 'array',
+    ];
     /**
      * Get the gym.
      */
