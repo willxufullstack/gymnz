@@ -109,6 +109,7 @@ Route::group([
     Route::get('gym/{gym}/coach/{coach}/invite', 'CoachController@invite');
 
     Route::resource('gym.order', 'OrderController');
+    Route::resource('gym.coachweeklyreport', 'CoachWeeklyReport');
     Route::get('gym/{gym}/chart/monthcoursebycustomertype', 'GymController@monthCourseByCustomerType');
     Route::get('gym/{gym}/chart/monthsalebytype', 'GymController@monthSaleByType');
     Route::get('gym/{gym}/chart/monthactivebytype', 'GymController@monthActiveByType');

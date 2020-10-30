@@ -34,6 +34,8 @@ class Kernel extends ConsoleKernel
             ->dailyAt('04:00');
         $schedule->command('analyze:orders --duration=1')
             ->dailyAt('05:00');
+        $schedule->command('report:coach --weeks=8')
+            ->dailyAt('05:30');
     }
 
     /**
