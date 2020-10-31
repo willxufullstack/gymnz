@@ -54,10 +54,10 @@ class CoachWeeklyReport extends Model
         $customerCount = count($customers);
 
         $row = self::firstOrNew(['gym_id' => $gymId, 'coach_id' => $coachId, 'date' => $date, 'duration' => $duration]);
-        $row->detail = json_encode([
+        $row->detail = [
             'schedule_count' => $scheduleCount,
             'customer_count' => $customerCount,
-        ]);
+        ];
         $row->save();
 
         return $row;
