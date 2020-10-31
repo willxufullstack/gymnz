@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Auth;
 use App\Reimbursement;
+use Carbon\Carbon;
 
 class ReimbursementController extends Controller
 {
@@ -21,8 +22,8 @@ class ReimbursementController extends Controller
 
         $query = Reimbursement::with(['op', 'coach.user'])
             ->where('gym_id', $gymId)
-            ->where('created_at', '>=', $request->input('start'))
-            ->where('created_at', '<=', $request->input('end'))
+            ->where('created_at', '>=', Carbon::createFromFormat('Y-m-d', $request->input('start')))
+            ->where('created_at', '<=', Carbon::createFromFormat('Y-m-d', $request->input('end')))
             ->orderBy('created_at', 'DESC');
 
         if ($request->has('coach')) {
