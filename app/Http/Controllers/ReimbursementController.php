@@ -24,6 +24,7 @@ class ReimbursementController extends Controller
             ->where('gym_id', $gymId)
             ->where('created_at', '>=', Carbon::createFromFormat('Y-m-d', $request->input('start')))
             ->where('created_at', '<=', Carbon::createFromFormat('Y-m-d', $request->input('end')))
+            ->where('status', '>', 0)
             ->orderBy('created_at', 'DESC');
 
         if ($request->has('coach')) {
