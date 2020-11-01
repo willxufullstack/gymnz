@@ -105,6 +105,9 @@ class GymSettings extends React.Component {
             enableConfirmInPlanPage: props.setting
                 ? props.setting.enableConfirmInPlanPage
                 : false,
+            enableCoachTrain: props.setting
+                ? props.setting.enableCoachTrain
+                : false,
             logo: props.setting ? props.setting.logo : '',
             planCover:
                 props.setting && props.setting.planCover
@@ -494,6 +497,11 @@ class GymSettings extends React.Component {
                     'enableBossFeedback',
                     '老板悄悄话',
                     '开启后，客户可以在小程序中向店长反馈意见'
+                )}
+                {this.swithItem(
+                    'enableCoachTrain',
+                    '教练训练记录',
+                    '开启后，支持记录教练训练'
                 )}
                 {this.swithItem(
                     'enableAppPlanTemplate',
