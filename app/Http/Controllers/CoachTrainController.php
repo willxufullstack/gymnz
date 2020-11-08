@@ -54,7 +54,7 @@ class CoachTrainController extends Controller
         $train = new CoachTrain([
             'date' => $request->input('date'),
             'start' => $request->input('start'),
-            'end' => $request->input('end'),
+            'end' => $request->input('start'),
             'detail' => $request->input('detail'),
             'images' => $request->input('images'),
             'gym_id' => $gymId,
