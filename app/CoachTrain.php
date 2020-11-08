@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CoachTrain extends Model
 {
-    protected $fillable = ['gym_id', 'coach_id', 'date', 'detail', 'images'];
+    protected $fillable = ['gym_id', 'coach_id', 'date', 'detail', 'images', 'start', 'end'];
 
     protected $casts = [
         'images' => 'array',
