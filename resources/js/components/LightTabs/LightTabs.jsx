@@ -30,7 +30,7 @@ const LightTabs = ({ classes, title, tabs, style, noVr, onSwitch }) => {
         <div className={classes.container} style={style}>
             <Titlebar noVr={noVr} label={title}>
                 <div className={classes.header}>
-                    {tabs.map((tab, i) => (
+                    {tabs.filter(tab => !tab.hidden).map((tab, i) => (
                         <div key={i} onClick={onClickTab(i)}>
                             <LightTabTitle
                                 label={tab.tabName}

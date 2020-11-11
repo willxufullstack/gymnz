@@ -6,8 +6,6 @@ use App\Organization;
 use App\User;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\PermissionRegistrar;
-
 class MigratePermission extends Migration
 {
     /**

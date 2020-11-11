@@ -284,25 +284,28 @@ class Coach extends React.Component {
                                         }}
                                     />
                                 </div>
-                                <div className={classes.row}>
-                                    <span className={classes.rowLabel}>
-                                        店长
-                                    </span>
-                                    <Switch
-                                        checked={!!item.is_gym_manager}
-                                        onChange={e =>
-                                            this.onChangeHidden(
-                                                item,
-                                                'is_gym_manager',
-                                                e
-                                            )
-                                        }
-                                        color="primary"
-                                        inputProps={{
-                                            'aria-label': 'secondary checkbox'
-                                        }}
-                                    />
-                                </div>
+                                { hasOrg == 1 && (
+                                    <div className={classes.row}>
+                                        <span className={classes.rowLabel}>
+                                            店长
+                                        </span>
+                                        <Switch
+                                            checked={!!item.is_gym_manager}
+                                            onChange={e =>
+                                                this.onChangeHidden(
+                                                    item,
+                                                    'is_gym_manager',
+                                                    e
+                                                )
+                                            }
+                                            color="primary"
+                                            inputProps={{
+                                                'aria-label':
+                                                    'secondary checkbox'
+                                            }}
+                                        />
+                                    </div>
+                                )}
                                 <div
                                     className={classNames(
                                         classes.bottom,

@@ -782,7 +782,8 @@ class GymSettings extends React.Component {
                     },
                     {
                         tabName: '分店',
-                        tabContent: <Organization />
+                        tabContent: <Organization />,
+                        hidden: !hasOrg  // comes from home.blade
                     },
                     {
                         tabName: '账户',

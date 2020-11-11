@@ -49,7 +49,8 @@ const dashboardRoutes = [
         path: "/accounting",
         name: L.finance,
         component: ()=><LazyAccountingPage/>,
-        layout: "/admin"
+        layout: "/admin",
+        hideMenu: !hasFinance
     },
     {
         path: "/customer/:id",

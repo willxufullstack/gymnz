@@ -12,7 +12,7 @@ import * as Actions from '../actions'
 import connect from 'react-redux/es/connect/connect'
 import './Admin.scss'
 import HashLoader from 'react-spinners/HashLoader'
-import {Snackbar} from '@material-ui/core'
+import { Snackbar } from '@material-ui/core'
 
 const switchRoutes = (
     <Switch>
