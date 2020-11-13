@@ -222,6 +222,22 @@ class ScheduleController extends Controller
         return $schedule;
     }
 
+
+    public function preSchedule(Request $request)
+    {
+        $scheduleData = $request->only('customer', 'coach', 'gym', 'date', 'start', 'end');
+
+        $order = Order::where([
+            'customer_id' => $scheduleData['customer'],
+            'gym_id' => $scheduleData['gym'],
+            'status' => 1,
+        ])->whereRaw('booked_amount<course_amount')
+            ->orderBy('expiry', 'ASC')
+            ->first();
+
+        return $order;
+    }
+
     /**
      * Store a newly created resource in storage.
      *

@@ -123,6 +123,7 @@ Route::group([
 
     Route::get('schedule/history', 'ScheduleController@history');
     Route::resource('gym.schedule', 'ScheduleController');
+    Route::post('gym/{gym}/preschedule', 'ScheduleController@preSchedule');
     Route::get('gym/{gym}/schedule/{schedule}/complete', 'ScheduleController@complete');
     Route::post('gym/{gym}/schedule/{schedule}/complete', 'ScheduleController@complete');
     Route::post('gym/{gym}/schedule/{schedule}/coupon', 'ScheduleController@coupon');
