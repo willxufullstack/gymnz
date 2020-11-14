@@ -120,16 +120,6 @@ class SalarySettingItem extends React.Component {
         )
     }
 
-    get simpleOptions() {
-        return {
-            base: L.base,
-            course_trial: '课提(体验课)',
-            course_free: L.courseFree,
-            course_percentage: L.coursePercent,
-            tax: L.tax
-        }
-    }
-
     saleRow = () => {
         let setting = JSON.parse(this.props.data.sale_configuration)
         if (!setting || !setting.mode) {
@@ -205,6 +195,7 @@ class SalarySettingItem extends React.Component {
             course_trial: '课提(体验课)',
             course_free: L.courseFree,
             course_percentage: L.coursePercent,
+            finished_percentage: '完课提成(%)',
             tax: L.tax
         }
         return (
@@ -213,7 +204,7 @@ class SalarySettingItem extends React.Component {
                     title={<Titlebar color={'#89ECC2'} fontSize={20} label={data.coach.user.name} />}
                 />
                 <CardContent className={classes.cardContent}>
-                    {Object.keys(this.simpleOptions).map(opt => {
+                    {Object.keys(options).map(opt => {
                         return (
                             <this.SimpleRow
                                 key={opt}

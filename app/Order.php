@@ -26,7 +26,7 @@ class Order extends Model
 
     public function getImagesAttribute($images)
     {
-        if(!$images || $images === 'null') {
+        if (!$images || $images === 'null') {
             $images = '[]';
         }
         return json_decode($images);
@@ -136,5 +136,22 @@ class Order extends Model
         $order = Order::find($orderId);
         $order->booked_amount = Schedule::where('order_id', $orderId)->count();
         $order->save();
+    }
+
+    public function getLatestSchedule()
+    {
+        return Schedule::where('order_id', $this->id)->orderBy('date', 'DESC')->first();
+    }
+
+    public function getFinishedDate(): ?string
+    {
+        if ($this->course_amount !== $this->booked_amount) {
+            return null;
+        }
+        $latestSchedule = $this->getLatestSchedule();
+        if(!$latestSchedule || $latestSchedule->status !== 2) {
+            return null;
+        }
+        return $latestSchedule->date;
     }
 }

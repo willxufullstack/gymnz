@@ -116,19 +116,15 @@ class SalarySummary extends React.Component {
                 editable: 'never'
             },
             {
-                title: '课程(含体验/赠课)',
+                title: '完课提成',
+                field: 'finished',
+                editable: 'never'
+            },
+            {
+                title: '课程(普通/体验/赠课)',
                 flex: 2,
-                field: 'course_count',
-                editable: 'never'
-            },
-            {
-                title: '体验课',
-                field: 'trial_course_count',
-                editable: 'never'
-            },
-            {
-                title: '赠课',
-                field: 'free_course_count'
+                editable: 'never',
+                render: rowData => `${rowData.course_count - rowData.trial_course_count - rowData.free_course_count}/${rowData.trial_course_count}/${rowData.free_course_count}`
             },
             { title: L.adjustment, field: 'adjustment' },
             { title: L.comments, field: 'adjustment_reason' },

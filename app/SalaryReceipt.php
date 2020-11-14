@@ -14,6 +14,7 @@ class SalaryReceipt extends Model
         'course_free',
         'course_percentage',
         'sale_percentage',
+        'finished_percentage',
         'tax',
         'gym_id',
         'coach_id',
@@ -42,6 +43,7 @@ class SalaryReceipt extends Model
         $this->course_trial = $setting->course_trial;
         $this->course_free = $setting->course_free;
         $this->course_percentage = $setting->course_percentage;
+        $this->finished_percentage = $setting->finished_percentage;
         $this->sale_percentage = $setting->sale_percentage;
         $this->course_fixed_configuration = $setting->course_fixed_configuration;
         $this->sale_configuration = $setting->sale_configuration;
@@ -88,6 +90,31 @@ class SalaryReceipt extends Model
             return self::calcByUnified($courseCount, $setting);
         }
         return 0;
+    }
+
+    private function calcFinishedSaleSalary($startTs, $endTs): int
+    {
+        if (!$this->finished_percentage) {
+            return 0;
+        }
+        // 1. get finished order
+        $orders = Order::where('coach_id', $this->coach_id)
+            ->where('gym_id', $this->gym_id)
+            ->where('price', '!=', 0)
+            ->whereRaw('booked_amount=course_amount')
+            ->get();
+
+        $price = 0;
+        foreach ($orders as $order) {
+            if ($finishedDate = $order->getFinishedDate()) {
+                $ts = strtotime($finishedDate);
+                if ($ts >= $startTs && $ts <= $endTs) {
+                    $price += $order->price;
+                }
+            }
+        }
+
+        return round($price * $this->finished_percentage / 100);
     }
 
     private function calcSaleSalaryByConfiguration(int $orderPrice): int
@@ -225,12 +252,14 @@ class SalaryReceipt extends Model
         $this->trial_course_count = $trialCourseCount;
         $this->free_course_count = $freeCourseCount;
         $this->sale = $orderPrice;
+        $this->finished_salary = $this->calcFinishedSaleSalary($start, $end);
         $this->total = (int)($this->base
             + $this->calcCourseSalaryByConfiguration($normalCourseCount)
             + $freeCourseCount * $this->course_free
             + $trialCourseCount * $this->course_trial
             + $this->adjustment
             + $moneyByCoursePercentage
+            + $this->finished_salary
             + $this->calcSaleSalaryByConfiguration($orderPrice)
             - $this->tax);
     }
@@ -240,10 +269,11 @@ class SalaryReceipt extends Model
         $formatted = [];
         $map = [
             'base' => '底薪',
-            // 'course_fixed' => '课程薪资(元）',
+            'course_fixed' => '课程薪资(元）',
             'course_percentage' => '课程薪资(%）',
             'course_free' => '赠课薪资',
-            // 'sale_percentage' => '销售提成(%）',
+            'sale_percentage' => '销售提成(%）',
+            'finished_percentage' => '完课提成(%）',
 
             'sale' => '销售',
             'course_count' => '所有课时(含赠/体验)',

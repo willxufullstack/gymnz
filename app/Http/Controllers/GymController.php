@@ -234,7 +234,9 @@ class GymController extends Controller
             $ret = array_values($customers);
         }
         foreach ($trials as $c) {
-            $ret[] = $c->toArray();
+            $customer = $c->toArray();
+            $customer['name'] .= '🚀';
+            $ret[] = $customer;
         }
 
         // get customer id list
