@@ -35,7 +35,7 @@ class ScheduleController extends Controller
             return response()->json(array('message' => 'invalid analyse type'), 500);
         }
 
-        $foreignKeys = ['coach.user', 'customer'];
+        $foreignKeys = ['coach.user', 'customer', 'order'];
         $query = Schedule::with($foreignKeys);
 
         $group = ''; //keep count param to add a `group by` at the end
@@ -83,17 +83,15 @@ class ScheduleController extends Controller
             }
         }
 
-        if ($request->input('price')) {
-            foreach ($ret as &$row) {
-                if ($row['order_id']) {
-                    $order = Order::find($row['order_id']);
-                    $row['price'] = $order->price / $order->course_amount;
-                }
-            }
-        }
-        if ($request->input('balance')) {
-            foreach ($ret as &$row) {
-                $row['balance'] = $row->getBalance();
+        foreach ($ret as &$row) {
+            if ($row['order_id']) {
+                $row['price'] = $row->order->price / $row->order->course_amount;
+                $row['balance'] = [
+                    'booked' => $row->order->booked_amount,
+                    'total' => $row->order->course_amount,
+                ];
+            } else {
+                $row['balance'] = '体验课';
             }
         }
 

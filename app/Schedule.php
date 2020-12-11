@@ -38,6 +38,14 @@ class Schedule extends Model
         return $this->belongsTo('App\Coach');
     }
 
+        /**
+     * Get the customer
+     */
+    public function order()
+    {
+        return $this->belongsTo('App\Order');
+    }
+
     public function getPrice()
     {
         $orderId = $this->order_id;
