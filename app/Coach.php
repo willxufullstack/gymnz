@@ -41,17 +41,15 @@ class Coach extends Model
 
     public function getIsGymManagerAttribute()
     {
-        $user = User::find($this->user_id);
-        return $user->hasRole('gym manager');
+        return $this->user->hasRole('gym manager');
     }
 
     public function setIsGymManagerAttribute($value)
     {
-        $user = User::find($this->user_id);
         if ($value) {
-            return $user->assignRole('gym manager');
+            return $this->user->assignRole('gym manager');
         } else {
-            return $user->removeRole('gym manager');
+            return $this->user->removeRole('gym manager');
         }
 
     }
