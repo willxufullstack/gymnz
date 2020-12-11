@@ -34,6 +34,9 @@ class CoachController extends Controller
             ->where("gym_id", "=", $gym_id)
             ->where("status", "=", "1")
             ->get();
+        foreach($ret as &$coach) {
+            $coach->setAppends(['is_gym_manager']);
+        }
         if ($ret) {
             foreach ($ret as $coach) {
                 if (empty(SalarySetting::where('coach_id', $coach->id)->first())) {

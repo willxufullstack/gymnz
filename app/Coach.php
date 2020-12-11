@@ -21,8 +21,6 @@ class Coach extends Model
         'created_at', 'updated_at', 'created_by'
     ];
 
-    protected $appends = ['is_gym_manager'];
-
     /**
      * Get the gym with the coach.
      */
