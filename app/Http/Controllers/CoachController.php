@@ -256,7 +256,8 @@ class CoachController extends Controller
         $ret = Coach::with('user')
             ->where("user_id", "=", $user->id)
             ->where('status', 1)
-            ->first();
+            ->first()
+            ->setAppends(['is_gym_manager']);
 
         if (!$ret) {
             $ret = $this->getCoachInfoForAdmin($user);
