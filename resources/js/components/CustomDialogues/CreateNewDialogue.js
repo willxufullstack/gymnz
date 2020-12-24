@@ -125,7 +125,7 @@ class CreateNewDialogue extends React.Component {
                     validateFunc = v => v && v.length >= 8
                     break
                 case 'number':
-                    validateFunc = v => v && v.length && /^\d+$/.test(v)
+                    validateFunc = v => v && v.length && /^-?\d+$/.test(v)
                     break
                 case 'decimal':
                     validateFunc = v => v && v.length && /^[\d\.]+$/.test(v)
