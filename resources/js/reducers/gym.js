@@ -35,7 +35,8 @@ const initState = {
         monthSaleByType: {},
         monthActiveByType: {},
 
-        customerWithDate: []
+        customerWithDate: [],
+        coachSummary: []
     },
     customers: [],
     customerPage: {
@@ -104,6 +105,23 @@ const gym = (state = initState, action = NonAction) => {
                 errorMsg: '加载客户列表失败',
                 loading: false
             })
+
+        case ActionTypes.LOAD_COACH_SUMMARY:
+            return state;
+        case ActionTypes.LOAD_COACH_SUMMARY_SUCCESS: {
+            let report = { ...state.report }
+            report.coachSummary = action.payload.data
+            return Object.assign({}, state, {
+                loading: false,
+                report
+            })
+        }
+        case ActionTypes.LOAD_COACH_SUMMARY_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '加载教练统计数据失败',
+                loading: false
+            })
+
         case ActionTypes.LOAD_CUSTOMER_HOTMAP:
             return state
         case ActionTypes.LOAD_CUSTOMER_HOTMAP_SUCCESS:

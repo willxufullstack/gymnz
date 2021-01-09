@@ -111,6 +111,7 @@ class History extends React.Component {
     refresh = () => {
         const refreshFunc = [
             this.refershMonthSchedule,
+            this.refreshCoachSummary,
             this.refreshMonthSale,
             this.refreshDayHotMap,
             this.refreshCustomerQuadrantData
@@ -165,6 +166,18 @@ class History extends React.Component {
             count: 'coach_id,month(date)'
         }
         this.props.actions.loadGymScheduleCount(
+            this.props.selectedGym.id,
+            params
+        )
+    }
+
+    refreshCoachSummary = () => {
+        const dateRange = utils.getYearStartEnd(this.state.date,  'YYYY-MM-DD HH:mm:ss')
+        const params = {
+            start: dateRange.start,
+            end: dateRange.end
+        }
+        this.props.actions.loadCoachSaleSummary(
             this.props.selectedGym.id,
             params
         )
@@ -564,6 +577,34 @@ class History extends React.Component {
         )
     }
 
+    getCoachMonthTab = () => {
+        // const baseRow = {
+        //     totalOrder: 0,
+        //     bonusOrder: 0,
+        //     firstOrder: 0,
+        //     totalOrderPrice: 0,
+        //     coachName: ''
+        // }
+        // ...coaches.map(c => ({ title: c, field: c }))
+        let columns = [
+            { title: '教练', field: 'coachName' },
+            { title: '销售订单（含赠课）', field: 'totalOrder' },
+            { title: '体验课', field: 'trialSchedule' },
+            { title: '新客订单', field: 'firstOrder' },
+            { title: '赠课订单', field: 'bonusOrder' },
+            { title: '销售总价', field: 'totalOrderPrice' },
+            { title: '销售课程', field: 'totalOrderAmount' },
+            { title: '耗课（含体验）', field: 'schedule' },
+        ]
+
+        let data = this.props.gym.report.coachSummary
+        return (
+            <Panel style={{ padding: '0 24px' }}>
+                <SearchableTable columns={columns} data={data} />
+            </Panel>
+        )
+    }
+
     getMonthScheduleTab = () => {
         const coaches = Object.keys(
             this.props.gym.report.scheduleCountByMonthPerCoachOfYear
@@ -670,15 +711,19 @@ class History extends React.Component {
                 onSwitch={this.tapTab}
                 tabs={[
                     {
-                        tabName: '月度耗课',
+                        tabName: '教练耗课',
                         tabContent: this.getMonthScheduleTab()
                     },
                     {
-                        tabName: '月度销售',
+                        tabName: '教练销售',
+                        tabContent: this.getCoachMonthTab()
+                    },
+                    {
+                        tabName: '店铺销售',
                         tabContent: this.getMonthSaleTab()
                     },
                     {
-                        tabName: '教练分析',
+                        tabName: '耗课分析',
                         tabContent: this.getDayHotMap()
                     },
                     {

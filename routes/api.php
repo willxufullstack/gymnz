@@ -102,6 +102,7 @@ Route::group([
 
     Route::get('gym/{gym}/dianping', 'DianpingController@index');
     Route::get('gym/{gym}/statistics', 'StatisticsController@index');
+    Route::get('gym/{gym}/coach/summary', 'CoachController@summary');
 
     Route::resource('gym', 'GymController');
     Route::resource('gym.coach', 'CoachController');

@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use AlibabaCloud\Client\AlibabaCloud;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
+use App\Order;
+use App\Schedule;
 use DateTime;
 
 /**
@@ -34,7 +36,7 @@ class CoachController extends Controller
             ->where("gym_id", "=", $gym_id)
             ->where("status", "=", "1")
             ->get();
-        foreach($ret as &$coach) {
+        foreach ($ret as &$coach) {
             $coach->setAppends(['is_gym_manager']);
         }
         if ($ret) {
@@ -284,5 +286,53 @@ class CoachController extends Controller
             return response()->json($coachItem, 200);
         }
         return response()->json(array('message' => 'fail'), 500);
+    }
+
+    public function summary(Request $request, $gymId)
+    {
+        $startGymTimezone = $request->input('start');
+        $endGymTimezone = $request->input('end');
+
+        $orders = Order::with(['coach.user'])
+            ->where('gym_id', '=', $gymId)
+            ->where('created_at', '>=', $startGymTimezone)
+            ->where('created_at', '<=', $endGymTimezone)
+            ->get();
+        $ret = [];
+        foreach ($orders as &$order) {
+            if (!isset($ret[$order->coach_id])) {
+                $scheduleCount = Schedule::where('coach_id', $order->coach_id)
+                    ->where('date', '>=', $startGymTimezone)
+                    ->where('date', '<=', $endGymTimezone)
+                    ->count();
+                $trialScheduleCount = Schedule::where('coach_id', $order->coach_id)
+                    ->where('date', '>=', $startGymTimezone)
+                    ->where('date', '<=', $endGymTimezone)
+                    ->where('order_id', 0)
+                    ->count();
+                $ret[$order->coach_id] = [
+                    'trialSchedule' => $trialScheduleCount,
+                    'schedule' => $scheduleCount,
+                    'totalOrder' => 0,
+                    'bonusOrder' => 0,
+                    'firstOrder' => 0,
+                    'totalOrderPrice' => 0,
+                    'totalOrderAmount' => 0,
+                    'coachName' => $order->coach->user->name
+                ];
+            }
+            $ret[$order->coach_id]['totalOrder']++;
+            if ($order->price === 0) {
+                $ret[$order->coach_id]['bonusOrder']++;
+            }
+            if ($order->customer_order_index === 1) {
+                $ret[$order->coach_id]['firstOrder']++;
+            }
+
+            $ret[$order->coach_id]['totalOrderPrice'] += $order->price;
+            $ret[$order->coach_id]['totalOrderAmount'] += $order->course_amount;
+        }
+
+        return array_values($ret);
     }
 }

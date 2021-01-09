@@ -106,6 +106,8 @@ class OrderController extends Controller
         // 6. return
         $order->save();
 
+        Order::refreshCustomerOrderIndex($customer->id);
+
         //dispatch event for accounting
         event(new \App\Events\OrderEvent($order, $userId));
 
@@ -219,6 +221,8 @@ class OrderController extends Controller
         $childOrder->duration = $oriOrder->duration;
         $childOrder->expiry = $oriOrder->expiry;
         $childOrder->save();
+
+        Order::refreshCustomerOrderIndex($customer->id);
 
         // 2. modify current order price amount
         $oriOrder->price -= $childOrderPrice;

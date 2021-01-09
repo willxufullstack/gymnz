@@ -154,4 +154,16 @@ class Order extends Model
         }
         return $latestSchedule->date;
     }
+
+    public static function refreshCustomerOrderIndex($customerId)
+    {
+        $orders = Order::where('customer_id', $customerId);
+        foreach ($orders as &$order) {
+            $count = Order::where('customer_id', $customerId)
+                ->where('id', '<=', $order->id)
+                ->count();
+            $order->customer_order_index = $count;
+            $order->save();
+        }
+    }
 }

@@ -60,6 +60,7 @@ class BonusListener
         // $order->coach()->associate($coach);
         // 6. return
         $order->save();
+        Order::refreshCustomerOrderIndex($order->customer_id);
         Redis::set($key, 1);
 
     }

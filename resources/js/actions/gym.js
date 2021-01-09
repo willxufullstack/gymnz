@@ -446,6 +446,19 @@ export function loadGymScheduleCount(gymId, params) {
     };
 }
 
+export function loadCoachSaleSummary(gymId, params) {
+    return {
+        type: ActionTypes.LOAD_COACH_SUMMARY,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/coach/summary',
+                params
+            }
+        }
+    };
+}
+
+
 /********Accounting*********/
 export function createAccountingRow(gymId, data) {
     return {
