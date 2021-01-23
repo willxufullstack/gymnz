@@ -588,13 +588,14 @@ class History extends React.Component {
         // ...coaches.map(c => ({ title: c, field: c }))
         let columns = [
             { title: '教练', field: 'coachName' },
-            { title: '销售订单（含赠课）', field: 'totalOrder' },
-            { title: '体验课', field: 'trialSchedule' },
+            { title: '订单数量', field: 'totalOrder' },
             { title: '新客订单', field: 'firstOrder' },
-            { title: '赠课订单', field: 'bonusOrder' },
             { title: '销售总价', field: 'totalOrderPrice' },
             { title: '销售课程', field: 'totalOrderAmount' },
-            { title: '耗课（含体验）', field: 'schedule' },
+            { title: '赠课', field: 'bonusOrder' },
+            { title: '体验课', field: 'trialSchedule' },
+            { title: '耗课', field: 'schedule' },
+            { title: '耗课总价', field: 'totalSchedulePrice' },
         ]
 
         let data = this.props.gym.report.coachSummary

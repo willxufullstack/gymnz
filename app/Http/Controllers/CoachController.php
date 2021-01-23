@@ -15,6 +15,7 @@ use AlibabaCloud\Client\Exception\ServerException;
 use App\Order;
 use App\Schedule;
 use DateTime;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class CoachController
@@ -301,10 +302,19 @@ class CoachController extends Controller
         $ret = [];
         foreach ($orders as &$order) {
             if (!isset($ret[$order->coach_id])) {
-                $scheduleCount = Schedule::where('coach_id', $order->coach_id)
+                $schedules= Schedule::with(['order'])
+                    ->where('schedules.coach_id', $order->coach_id)
                     ->where('date', '>=', $startGymTimezone)
                     ->where('date', '<=', $endGymTimezone)
-                    ->count();
+                    ->where('order_id', '>', 0)
+                    ->get();
+
+                $scheduleCount = count($schedules);
+                $totalSchedulePrice = 0;
+                foreach($schedules as &$schedule) {
+                    $totalSchedulePrice += (int)($schedule->order->price / $schedule->order->course_amount);
+                }
+
                 $trialScheduleCount = Schedule::where('coach_id', $order->coach_id)
                     ->where('date', '>=', $startGymTimezone)
                     ->where('date', '<=', $endGymTimezone)
@@ -318,19 +328,21 @@ class CoachController extends Controller
                     'firstOrder' => 0,
                     'totalOrderPrice' => 0,
                     'totalOrderAmount' => 0,
+                    'totalSchedulePrice' => $totalSchedulePrice,
                     'coachName' => $order->coach->user->name
                 ];
             }
-            $ret[$order->coach_id]['totalOrder']++;
+
             if ($order->price === 0) {
                 $ret[$order->coach_id]['bonusOrder']++;
+            } else {
+                $ret[$order->coach_id]['totalOrder']++;
+                $ret[$order->coach_id]['totalOrderAmount'] += $order->course_amount;
+                $ret[$order->coach_id]['totalOrderPrice'] += $order->price;
             }
             if ($order->customer_order_index === 1) {
                 $ret[$order->coach_id]['firstOrder']++;
             }
-
-            $ret[$order->coach_id]['totalOrderPrice'] += $order->price;
-            $ret[$order->coach_id]['totalOrderAmount'] += $order->course_amount;
         }
 
         return array_values($ret);
