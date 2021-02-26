@@ -18,7 +18,12 @@ class WorkoutActionController extends Controller
         if($request->has('customer')){
             $customerId = $request->input('customer');
         }
-        return WorkoutAction::actionsWithDefaultValueByCustomer($customerId);
+        $actions = WorkoutAction::actionsWithDefaultValueByCustomer($customerId);
+        foreach($actions as &$action) {
+            unset($action->updated_at);
+            unset($action->created_at);
+        }
+        return $actions;
     }
 
     /**

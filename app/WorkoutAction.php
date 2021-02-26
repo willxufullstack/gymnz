@@ -20,7 +20,7 @@ class WorkoutAction extends Model
     static function allFromRedis() {
         $allActionsStr = Redis::get(self::ALL_ACTIONS_KEY);
         if(empty($allActionsStr)) {
-            $ret = WorkoutAction::all();
+            $ret = (array)WorkoutAction::all();
             Redis::set(self::ALL_ACTIONS_KEY, json_encode($ret));
             return $ret;
         }
