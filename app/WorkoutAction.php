@@ -28,7 +28,7 @@ class WorkoutAction extends Model
     }
 
     static function actionsWithDefaultValueByCustomer($customerId){
-        $ori = (array)WorkoutAction::all();
+        $ori = WorkoutAction::all();
         if(empty($customerId)){
             return $ori;
         }
@@ -40,11 +40,13 @@ class WorkoutAction extends Model
         }
 
         $ret = [];
-        foreach($ori as $action) {
-            if(array_key_exists($action->id, $defaultValues)){
-                $ret[] = $defaultValues[$action->id];
-                continue;
+
+        foreach($ori as &$action) {
+            if(array_key_exists($action['id'], $defaultValues)){
+                $action = $defaultValues[$action['id']];
             }
+            unset($action['updated_at']);
+            unset($action['created_at']);
             $ret[] = $action;
         }
         return $ret;

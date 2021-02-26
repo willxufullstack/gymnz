@@ -19,10 +19,6 @@ class WorkoutActionController extends Controller
             $customerId = $request->input('customer');
         }
         $actions = WorkoutAction::actionsWithDefaultValueByCustomer($customerId);
-        foreach($actions as &$action) {
-            unset($action->updated_at);
-            unset($action->created_at);
-        }
         return $actions;
     }
 
