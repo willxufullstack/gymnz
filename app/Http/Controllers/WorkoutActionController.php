@@ -15,11 +15,14 @@ class WorkoutActionController extends Controller
     public function index(Request $request)
     {
         $customerId = null;
-        if($request->has('customer')){
+        if ($request->has('customer')) {
             $customerId = $request->input('customer');
         }
-        $actions = WorkoutAction::actionsWithDefaultValueByCustomer($customerId);
-        return $actions;
+        if ($request->has('customerOnly')) {
+            return  WorkoutAction::actionsWithDefaultValueByCustomer($customerId);
+        }
+
+        return WorkoutAction::allActionsWithDefaultValueByCustomer($customerId);;
     }
 
     /**
@@ -28,7 +31,8 @@ class WorkoutActionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    { }
+    {
+    }
 
     /**
      * Store a newly created resource in storage.
