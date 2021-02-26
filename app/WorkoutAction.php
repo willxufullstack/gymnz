@@ -28,7 +28,7 @@ class WorkoutAction extends Model
     }
 
     static function actionsWithDefaultValueByCustomer($customerId){
-        $ori = WorkoutAction::allFromRedis();
+        $ori = (array)WorkoutAction::all();
         if(empty($customerId)){
             return $ori;
         }
