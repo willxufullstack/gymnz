@@ -31,7 +31,16 @@ class WorkoutAction extends Model
 
     static function allActionsWithDefaultValueByCustomer($customerId)
     {
-        $ori = WorkoutAction::orderBy('id', 'desc')->distinct('name')->get();
+        $ori = WorkoutAction::orderBy('id')->get();
+        $names = [];
+        $uniqued = [];
+        foreach ($ori as &$action) {
+            if (!array_key_exists($action['name'], $names)) {
+                $uniqued[] = $action;
+                $$names[$action['name']] = true;
+            }
+        }
+
         if (empty($customerId)) {
             return $ori;
         }
@@ -44,7 +53,7 @@ class WorkoutAction extends Model
 
         $ret = [];
 
-        foreach ($ori as &$action) {
+        foreach ($uniqued as &$action) {
             if (array_key_exists($action['id'], $defaultValues)) {
                 $action = $defaultValues[$action['id']];
             }
