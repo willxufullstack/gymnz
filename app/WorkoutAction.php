@@ -37,7 +37,7 @@ class WorkoutAction extends Model
         foreach ($ori as &$action) {
             if (!array_key_exists($action['name'], $names)) {
                 $uniqued[] = $action;
-                $$names[$action['name']] = true;
+                $names[$action['name']] = true;
             }
         }
 
