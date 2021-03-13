@@ -31,7 +31,7 @@ class WorkoutAction extends Model
 
     static function allActionsWithDefaultValueByCustomer($customerId)
     {
-        $ori = WorkoutAction::all();
+        $ori = WorkoutAction::orderBy('id', 'desc')->distinct('name')->get();
         if (empty($customerId)) {
             return $ori;
         }
