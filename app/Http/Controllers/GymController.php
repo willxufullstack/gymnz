@@ -28,8 +28,8 @@ class GymController extends Controller
         // cond 1. => is admin
         $ret = Gym::where("created_by", $userId)->get();
 
-        foreach($ret as $gym) {
-             // try init account_id
+        foreach ($ret as $gym) {
+            // try init account_id
             if (!$gym->account_id) {
                 $user = User::find($gym->created_by);
                 $gym = $this->bindAccountByPhone($user, $gym->id);
@@ -193,7 +193,7 @@ class GymController extends Controller
     public function getCustomerList(Request $request, $id)
     {
         // TODO permission check
-        if(!$request->has('start') && !$request->has('end')) {
+        if (!$request->has('start') && !$request->has('end')) {
             $customers = Order::with('customer')
                 ->where('gym_id', '=', $id)
                 ->orderBy('updated_at', 'DESC')
@@ -213,7 +213,7 @@ class GymController extends Controller
                 ->where('date', '<=', $end)
                 ->where('order_id', '>', 0)
                 ->orderBy('date', 'DESC');
-            if($coach) {
+            if ($coach) {
                 $customerQuery->where('coach_id', $coach);
             }
             $customers = $customerQuery->get()
@@ -248,9 +248,19 @@ class GymController extends Controller
 
         $latestSchedules = $gym->getGymLatestSchedules();
         $gymStocks = $gym->getGymOrderBalance();
+
+        $mobile = $request->has('mobile');
+
         foreach ($ret as &$item) {
             if (!array_key_exists($item['id'], $saved)) {
                 $item['latest_schedule'] = $latestSchedules[$item['id']] ?? null;
+                if ($mobile && $item['latest_schedule']) {
+                    $item['latest_schedule'] = [
+                        'id' => $item['latest_schedule']['id'],
+                        'date' => $item['latest_schedule']['date'],
+                    ];
+                }
+
                 $item['stock'] = $gymStocks[$item['id']] ?? null;
                 $saved[$item['id']] = 1;
                 $filtered[] = $item;
@@ -264,9 +274,11 @@ class GymController extends Controller
             }
         }
 
-        $monthMap = User::schedulesMonthMap($id, date('Y-m-d'));
-        foreach ($filtered as &$item) {
-            $item['monthMap'] = $monthMap[$item['id']] ?? [];
+        if (!$mobile) {
+            $monthMap = User::schedulesMonthMap($id, date('Y-m-d'));
+            foreach ($filtered as &$item) {
+                $item['monthMap'] = $monthMap[$item['id']] ?? [];
+            }
         }
 
         return response()->json($filtered, 200);
@@ -541,17 +553,18 @@ class GymController extends Controller
 
         $user = User::where('email', $phone)->first();
 
-        if($gym = $this->bindAccountByPhone($user, $gymId)) {
+        if ($gym = $this->bindAccountByPhone($user, $gymId)) {
             return response()->json($gym);
         }
 
         return response()->json(array('message' => 'invalid input'), 500);
     }
 
-    private function bindAccountByPhone(User $user, int $gymId) {
+    private function bindAccountByPhone(User $user, int $gymId)
+    {
         $gym = Gym::find($gymId);
 
-        if(empty($user) || empty($gym)) {
+        if (empty($user) || empty($gym)) {
             return null;
         }
 
@@ -562,6 +575,5 @@ class GymController extends Controller
         $gym->save();
 
         return $gym;
-
     }
 }
