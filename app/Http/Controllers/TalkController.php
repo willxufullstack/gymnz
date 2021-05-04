@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Talk;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -53,7 +54,15 @@ class TalkController extends Controller
 
         $talk->to_id = (int) $data['to'];
         $talk->from_id = $by;
-        $talk->gym_id = (int) $data['gym'];
+        if (array_key_exists('gym', $data)) {
+            $talk->gym_id = (int) $data['gym'];
+        } else {
+            // use the latest schedule's gym
+            if ($latestSchedule = User::getLatestScheduleById($by)) {
+                $talk->gym_id = $latestSchedule->gym_id;
+            }
+        }
+
         $talk->message = $data['message'];
         $talk->type = 'message';
         $talk->save();
