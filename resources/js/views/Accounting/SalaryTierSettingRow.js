@@ -113,7 +113,7 @@ const SalaryTierSettingRow = ({
             onMouseLeave={() => isEditing && setHover(false)}
         >
             <EditDialog />
-            <span className={classes.greater}>{'> '}</span>
+            <span className={classes.greater}>{'≥ '}</span>
             <span className={classes.amount}>{row.amount}</span>
             <span className={classes.unit}>{row.amountUnit}</span>
             <span className={classes.value}>{row.value}</span>

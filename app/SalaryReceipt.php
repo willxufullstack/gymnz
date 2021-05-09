@@ -68,7 +68,7 @@ class SalaryReceipt extends Model
     {
         $ret = 0;
         foreach ($configuration['rows'] as $row) {
-            if ($courseCount > $row['amount']) {
+            if ($courseCount >= $row['amount']) {
                 $ret = $courseCount * $row['value'];
             }
         }
