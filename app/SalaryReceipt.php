@@ -234,6 +234,7 @@ class SalaryReceipt extends Model
         // handle free course and normal course with different setting
         $normalCourseCount = $freeCourseCount = $trialCourseCount = 0;
         foreach ($query as $schedule) {
+            $normalCourseCount++;
             if ($schedule->order_id === 0) {
                 $trialCourseCount++;
                 continue;
@@ -242,7 +243,6 @@ class SalaryReceipt extends Model
                 $freeCourseCount++;
                 continue;
             }
-            $normalCourseCount++;
         }
 
         // update total
