@@ -270,7 +270,7 @@ class Dashboard extends React.Component {
                     label: '客户',
                     type: 'customer',
                     customers: this.props.gym.customers,
-                    columns: { name: 'name', sex: 'sex', phone: 'phone' }
+                    columns: { name: 'name', sex: 'sex', phone: 'phone', birthday: 'birthday' }
                 },
                 {
                     name: 'duration',

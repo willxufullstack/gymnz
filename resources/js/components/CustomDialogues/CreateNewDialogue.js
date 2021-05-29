@@ -136,7 +136,8 @@ class CreateNewDialogue extends React.Component {
                     break
                 case 'email':
                     validateFunc = v =>
-                        v && v.length &&
+                        v &&
+                        v.length &&
                         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v)
                     break
                 default:
@@ -145,7 +146,7 @@ class CreateNewDialogue extends React.Component {
                     }
             }
         }
-        return validateFunc(this.state[field.name]+'')
+        return validateFunc(this.state[field.name] + '')
     }
 
     explainedFields = () => {
@@ -164,7 +165,8 @@ class CreateNewDialogue extends React.Component {
         const names = {
             name: field.columns.name || 'name',
             sex: field.columns.sex || 'sex',
-            phone: field.columns.phone || 'phone'
+            phone: field.columns.phone || 'phone',
+            birthday: field.columns.birthday || 'birthday'
         }
         const sexOpt = value => {
             const labels = ['女', '男']
@@ -197,6 +199,11 @@ class CreateNewDialogue extends React.Component {
                 name: names.sex,
                 label: '性别',
                 options: [{ value: 0, label: '女' }, { value: 1, label: '男' }]
+            },
+            {
+                name: names.birthday,
+                label: '生日',
+                type: 'date'
             }
         ]
     }
@@ -290,7 +297,15 @@ class CreateNewDialogue extends React.Component {
                     />
                 </DialogTitle>
                 <DialogContent style={{ minHeight: this.props.minHeight }}>
-                    <form className={classes.form} autoComplete="off" style={{gridTemplateColumns: `repeat(${this.explainedFields().length <= 4 ? 1 : 2 }, 1fr)`}}>
+                    <form
+                        className={classes.form}
+                        autoComplete="off"
+                        style={{
+                            gridTemplateColumns: `repeat(${
+                                this.explainedFields().length <= 4 ? 1 : 2
+                            }, 1fr)`
+                        }}
+                    >
                         {this.explainedFields().map(field => {
                             // selection list
                             if (field.options) {

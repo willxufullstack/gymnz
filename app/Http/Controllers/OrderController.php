@@ -85,6 +85,9 @@ class OrderController extends Controller
             $customer->email = $customerEmail;
             $customer->name = $customerData['name'];
             $customer->sex = $customerData['sex'];
+            if ($birthday = $request->input('birthday')){
+                $customer->birthday = $birthday;
+            }
             $customer->save();
         }
         // 2. create order
