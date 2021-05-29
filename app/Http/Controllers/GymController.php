@@ -410,6 +410,9 @@ class GymController extends Controller
         $customer->name = $request->input('name');
         $customer->email = $request->input('email');
         $customer->sex = $request->input('sex');
+        if ($birthday = $request->input('birthday')) {
+            $customer->birthday = $birthday;
+        }
         $customer->save();
         return response()->json($customer);
     }

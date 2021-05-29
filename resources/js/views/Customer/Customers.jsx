@@ -92,6 +92,12 @@ class Customers extends React.Component {
                         value: this.state.editProfileDialogue.email
                     },
                     {
+                        name: 'birthday',
+                        label: '生日',
+                        type: 'date',
+                        value: this.state.editProfileDialogue.birthday
+                    },
+                    {
                         name: 'sex',
                         label: '性别',
                         options: [
@@ -126,20 +132,20 @@ class Customers extends React.Component {
         }))
         return (
             <div>
-            <span>教练</span>
-            <SimpleMenu
-                icon={
-                    <ExpandMore
-                        fontSize="small"
-                        className={classes.filterDropdownIcon}
-                    />
-                }
-                textColor={'#333'}
-                fontSize={'12px'}
-                displayText={filters[this.state.coachFilter]}
-                items={opts}
-            />
-           </div>
+                <span>教练</span>
+                <SimpleMenu
+                    icon={
+                        <ExpandMore
+                            fontSize="small"
+                            className={classes.filterDropdownIcon}
+                        />
+                    }
+                    textColor={'#333'}
+                    fontSize={'12px'}
+                    displayText={filters[this.state.coachFilter]}
+                    items={opts}
+                />
+            </div>
         )
     }
 
@@ -165,7 +171,13 @@ class Customers extends React.Component {
                 }
             })
 
-            return <span style={{fontWeight:'400', color: '#666', fontSize: 12}}>{count + ' / ' + (price / 10000).toFixed(2) + 'w'}</span>
+            return (
+                <span
+                    style={{ fontWeight: '400', color: '#666', fontSize: 12 }}
+                >
+                    {count + ' / ' + (price / 10000).toFixed(2) + 'w'}
+                </span>
+            )
         }
 
         const expired = () => {
@@ -178,13 +190,32 @@ class Customers extends React.Component {
                 }
             })
 
-            return <span style={{fontWeight:'400', color: '#666', fontSize: 12}}>{count + ' / ' + (price / 10000).toFixed(2) + 'w'}</span>
+            return (
+                <span
+                    style={{ fontWeight: '400', color: '#666', fontSize: 12 }}
+                >
+                    {count + ' / ' + (price / 10000).toFixed(2) + 'w'}
+                </span>
+            )
         }
-
 
         const columns = [
             {
-                title: <div>{L.name}<br /><span style={{fontWeight: '400', color: '#666', fontSize: 12}}>{filteredCustomers().length}</span></div>,
+                title: (
+                    <div>
+                        {L.name}
+                        <br />
+                        <span
+                            style={{
+                                fontWeight: '400',
+                                color: '#666',
+                                fontSize: 12
+                            }}
+                        >
+                            {filteredCustomers().length}
+                        </span>
+                    </div>
+                ),
                 flex: 1,
                 render: row => {
                     return (
@@ -210,6 +241,14 @@ class Customers extends React.Component {
                         </div>
                     )
                 }
+            },
+            {
+                title: '生日',
+                flex: 1,
+                render: row =>
+                row.birthday
+                    ? dayjs(row.birthday).format('YYYY/MM/DD')
+                    : '- -'
             },
             {
                 title: '月热度',
@@ -242,11 +281,6 @@ class Customers extends React.Component {
                     return <div />
                 }
             },
-            // {
-            //     title: '电话',
-            //     flex: 1,
-            //     field: 'email'
-            // },
             {
                 title: '上次训练',
                 flex: 1,
@@ -264,23 +298,43 @@ class Customers extends React.Component {
                         : '- -'
             },
             {
-                title: <div>{'库存课程 / 总价'}<br />{unfinished()}</div>,
+                title: (
+                    <div>
+                        {'库存课程 / 总价'}
+                        <br />
+                        {unfinished()}
+                    </div>
+                ),
                 flex: 2,
                 render: row =>
                     row.stock
-                        ? (row.stock.unfinished_count ? row.stock.unfinished_count : '-') +
+                        ? (row.stock.unfinished_count
+                              ? row.stock.unfinished_count
+                              : '-') +
                           '/' +
-                          (row.stock.unfinished_price ? Math.floor(row.stock.unfinished_price) : '-')
+                          (row.stock.unfinished_price
+                              ? Math.floor(row.stock.unfinished_price)
+                              : '-')
                         : '- -'
             },
             {
-                title: <div>{'过期课程 / 总价'}<br />{expired()}</div>,
+                title: (
+                    <div>
+                        {'过期课程 / 总价'}
+                        <br />
+                        {expired()}
+                    </div>
+                ),
                 flex: 2,
                 render: row =>
                     row.stock
-                        ? (row.stock.expired_count ? row.stock.expired_count : '-') +
+                        ? (row.stock.expired_count
+                              ? row.stock.expired_count
+                              : '-') +
                           '/' +
-                          (row.stock.expired_price ? Math.floor(row.stock.expired_price) : '-')
+                          (row.stock.expired_price
+                              ? Math.floor(row.stock.expired_price)
+                              : '-')
                         : '- -'
             },
             {
