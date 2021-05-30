@@ -332,7 +332,7 @@ class GymController extends Controller
             ->where('status', 2)
             ->where('date', '>=', $request->input('start'))
             ->where('date', '<=', $request->input('end'))
-            ->where('order', '>', 0);
+            ->where('order_id', '>', 0);
 
         $scheduleCount = $schedules->count();
 
