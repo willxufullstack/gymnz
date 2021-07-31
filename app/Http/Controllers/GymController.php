@@ -25,6 +25,11 @@ class GymController extends Controller
     {
         $userId = Auth::user()->id;
 
+        // super admin
+        if($userId == 1) {
+            return Gym::all();
+        }
+
         // cond 1. => is admin
         $ret = Gym::where("created_by", $userId)->get();
 
