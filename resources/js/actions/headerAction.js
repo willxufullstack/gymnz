@@ -34,12 +34,13 @@ export function loadLoggedInCoachInfo() {
     }
 }
 
-export function refreshUploadToken() {
+export function refreshUploadToken(params) {
     return  {
         type: ActionTypes.LOAD_UPLOAD_TOKEN,
         payload: {
             request:{
-                url:'/token/upload'
+                url:'/token/upload',
+                params
             }
         }
     }

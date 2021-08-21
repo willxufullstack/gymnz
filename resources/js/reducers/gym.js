@@ -6,6 +6,7 @@ const L = i18N('GymRedux')
 
 const initState = {
     // data
+    documents: [],
     coaches: [],
     schedules: [],
     schedulesTomorrow: [],
@@ -918,6 +919,40 @@ const gym = (state = initState, action = NonAction) => {
             return Object.assign({}, state, {
                 errorMsg: '加载失败'
             })
+
+        case ActionTypes.LOAD_GYM_DOCUMENTS:
+            return state
+        case ActionTypes.LOAD_GYM_DOCUMENTS_SUCCESS:
+            return Object.assign({}, state, {
+                documents: action.payload.data
+            })
+        case ActionTypes.LOAD_GYM_DOCUMENTS_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '加载Documents失败'
+            })
+
+        case ActionTypes.UPDATE_GYM_DOCUMENTS:
+            return state
+        case ActionTypes.UPDATE_GYM_DOCUMENTS_SUCCESS:
+            return Object.assign({}, state, {
+                documents: action.payload.data
+            })
+        case ActionTypes.UPDATE_GYM_DOCUMENTS_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '更新Document失败'
+            })
+
+        case ActionTypes.CREATE_GYM_DOCUMENTS:
+            return state
+        case ActionTypes.CREATE_GYM_DOCUMENTS_SUCCESS:
+            return Object.assign({}, state, {
+                documents: action.payload.data
+            })
+        case ActionTypes.CREATE_GYM_DOCUMENTS_FAIL:
+            return Object.assign({}, state, {
+                errorMsg: '新建Document失败'
+            })
+
         default:
             return state
     }

@@ -39,9 +39,9 @@
     var hasFinance = {{ Auth::user() ? (Auth::user()->can('manage gym finance') ? 1 : 0 ) : 0 }};
     var hasOrg = {{ Auth::user() ? (Auth::user()->can('manage org') ? 1 : 0 ) : 0 }};
 </script>
-<script src="http://static.o2-fit.com/pro/js/manifest.js?v=87" defer></script>
-<script src="http://static.o2-fit.com/pro/js/vendor.js?v=87" defer></script>
-<script src="http://static.o2-fit.com/pro/js/app.js?v=87" defer></script>
+<script src="http://static.o2-fit.com/pro/js/manifest.js?v=88" defer></script>
+<script src="http://static.o2-fit.com/pro/js/vendor.js?v=88" defer></script>
+<script src="http://static.o2-fit.com/pro/js/app.js?v=88" defer></script>
 <!-- <script src="{{ asset('js/manifest.js') }}?v=34" defer></script>
 <script src="{{ asset('js/vendor.js') }}?v=34" defer></script>
 <script src="{{ asset('js/app.js') }}?v=34" defer></script> -->

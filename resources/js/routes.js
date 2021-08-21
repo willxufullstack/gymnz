@@ -6,6 +6,7 @@ const LazyMonthlyReport = React.lazy(()=> import("-views/Report/MonthlyReport"))
 const LazyAccountingPage = React.lazy(()=> import("-views/Accounting/AccountingPage"))
 const LazyCustomer = React.lazy(()=> import("-views/Customer/Customer"))
 const LazyGymSettings = React.lazy(()=> import("-views/GymSetting/GymSettings"))
+const LazyDocuments = React.lazy(()=> import("-views/Documents/Documents"))
 const LazyHistory = React.lazy(()=> import("-views/History/History"))
 const LazyOverview = React.lazy(()=> import("-views/Overview/Overview"))
 
@@ -58,6 +59,12 @@ const dashboardRoutes = [
         hideMenu: true,
         // props is to pass the url
         component: props => <LazyCustomer {...props}/>,
+        layout: "/admin"
+    },
+    {
+        path: "/documents",
+        name: L.documents,
+        component: ()=><LazyDocuments/>,
         layout: "/admin"
     },
     {

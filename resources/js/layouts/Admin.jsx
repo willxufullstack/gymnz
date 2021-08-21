@@ -81,10 +81,9 @@ class Admin extends React.Component {
                                 this.props.setting.errorMsg
                             )
                         }
-                        closeNotification={() =>
+                        onClose={() =>
                             this.props.actions.closeErrMsg()
                         }
-                        close
                     />
                     <Snackbar
                         place="br"

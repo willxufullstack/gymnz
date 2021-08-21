@@ -114,7 +114,8 @@ const SearchableTable = ({
     onRowClick,
     onSearch,
     style,
-    lineThrough
+    lineThrough,
+    actions
 }) => {
     const [searchKey, setSearchKey] = useState('')
 
@@ -136,6 +137,7 @@ const SearchableTable = ({
                             style={{ backgroundColor: '#fff' }}
                         />
                     )}
+                    {actions && <div style={{ display: 'flex' }}>{actions}</div>}
                 </Titlebar>
             )}
             <div className={classes.container}>

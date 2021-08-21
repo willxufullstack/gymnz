@@ -17,14 +17,16 @@ const Lang = {
             customer: '客户',
             finance: '财务',
             report: '数据',
-            manage: '设置'
+            manage: '设置',
+            documents: '文档'
         },
         en: {
             dashboard: 'Dashboard',
             customer: 'Customer',
             finance: 'Accounting',
             report: 'Report',
-            manage: 'Manage'
+            manage: 'Manage',
+            documents: 'documents'
         }
     },
     Utils: {
@@ -103,6 +105,30 @@ const Lang = {
         en: {
             cancel: 'Cancel',
             save: 'Save'
+        }
+    },
+    Documents: {
+        zh: {
+            documents: '文档管理',
+            modify: '修改',
+            title: '标题',
+            description: '描述',
+            author: '作者',
+            file: '文件',
+            option: '操作',
+            upload: '上传',
+            download: '下载'
+        },
+        en: {
+            documents: 'Documents',
+            modify: 'Modify',
+            title: 'Title',
+            description: 'Description',
+            author: 'Author',
+            file: 'File',
+            option: 'Option',
+            upload: 'Upload',
+            download: 'Download'
         }
     },
     CustomerPhotoSection: {

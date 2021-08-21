@@ -142,6 +142,8 @@ Route::group([
 
     Route::resource('talk', 'TalkController');
 
+    Route::resource('gym.documents', 'DocumentsController');
+
     Route::resource('gym.coachweeklyreport', 'CoachWeeklyReportController');
     Route::resource('gym.coachtrain', 'CoachTrainController');
 });

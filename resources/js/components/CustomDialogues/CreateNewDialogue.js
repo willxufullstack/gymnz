@@ -1,6 +1,7 @@
 import React from 'react'
 // @material-ui/core components
 import withStyles from '@material-ui/core/styles/withStyles'
+import connect from 'react-redux/es/connect/connect'
 // core components
 import PropTypes from 'prop-types'
 import Dialog from '@material-ui/core/Dialog'
@@ -11,6 +12,7 @@ import i18N from '../../lang'
 import Titlebar from '../TitleBar/Titlebar'
 import { TextField, MenuItem } from '@material-ui/core'
 import RoundButton from '../RoundButton/RoundButton'
+import QNUploader from "-components/QNUploader/QNUploader";
 
 const L = i18N('CreateNewDialogue')
 
@@ -134,6 +136,10 @@ class CreateNewDialogue extends React.Component {
                     validateFunc = v =>
                         v && v.length && /^[1]([3-9])[0-9]{9}$/.test(v)
                     break
+                case 'file':
+                    validateFunc = v =>
+                        v && v.length && /^[a-zA-Z0-9].+\.[a-zA-Z]{3,}$/.test(v)
+                    break
                 case 'email':
                     validateFunc = v =>
                         v &&
@@ -142,7 +148,7 @@ class CreateNewDialogue extends React.Component {
                     break
                 default:
                     validateFunc = v => {
-                        return v !== undefined
+                        return v !== undefined && v
                     }
             }
         }
@@ -159,6 +165,11 @@ class CreateNewDialogue extends React.Component {
             }
         })
         return explained
+    }
+
+    saveFile = field => e => {
+        this.setState({ [field.name]: e })
+        field.refreshToken()
     }
 
     customerRow = field => {
@@ -281,6 +292,25 @@ class CreateNewDialogue extends React.Component {
         )
     }
 
+    fileRow = ({ field, classes}) => {
+        return (
+            <div className={classes.inputFields}>
+                <QNUploader
+                    title={'上传文档(PDF)'}
+                    variant="outline"
+                    fontSize={12}
+                    onSuccess={this.saveFile(field)}
+                    onFail={e => console.log(e)}
+                    type="file"
+                    {...this.props.setting.uploadToken}
+                />
+                <div style={{ position: 'relative', left: 120, top: -23 }}>
+                    {this.state[field.name]}
+                </div>
+            </div>
+        )
+    }
+
     getDialogue = () => {
         const { classes, col } = this.props
         return (
@@ -313,6 +343,15 @@ class CreateNewDialogue extends React.Component {
                                     <this.optionsRow
                                         key={field.name}
                                         field={field}
+                                    />
+                                )
+                            }
+                            if( field.type === 'file') {
+                                return (
+                                    <this.fileRow
+                                        key={field.name}
+                                        field={field}
+                                        classes={classes}
                                     />
                                 )
                             }
@@ -355,11 +394,14 @@ class CreateNewDialogue extends React.Component {
     }
 }
 
-CreateNewDialogue.propTypes = {
-    onSave: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
-    inputFields: PropTypes.array,
-    title: PropTypes.string
+const mapStoreToProps = store => {
+    return {
+        setting: store.setting,
+    }
 }
 
-export default withStyles(styles)(CreateNewDialogue)
+const LinkedCreateNewDialogue = connect(
+    mapStoreToProps
+)(CreateNewDialogue)
+
+export default withStyles(styles)(LinkedCreateNewDialogue)

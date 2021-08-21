@@ -114,9 +114,10 @@ class PhotoController extends Controller
         $qnkey = config('services.qn.key');
         $qnSecret = config('services.qn.secret');
         $bucket = config('services.qn.bucket');
+        $fileType = $request->input('fileType', 'jpg');
 
         $auth = new QNAuth($qnkey, $qnSecret);
-        $fileName =  $userId.'_'.time().'.jpg';
+        $fileName =  $userId.'_'.time().'.'.$fileType;
         if($request->has('fileName')){
             $fileName = $request->input('fileName');
         }

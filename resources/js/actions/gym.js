@@ -662,3 +662,40 @@ export function loadMonthActiveByType(gymId, params) {
         }
     }
 }
+
+export function loadGymDocuments(gymId) {
+    return {
+        type: ActionTypes.LOAD_GYM_DOCUMENTS,
+        payload: {
+            request: {
+                url: '/gym/' + gymId + '/documents',
+            }
+        }
+    }
+}
+
+export function updateGymDocument(gymId, documentId, document) {
+    return {
+        type: ActionTypes.UPDATE_GYM_DOCUMENTS,
+        payload: {
+            request: {
+                method: 'patch',
+                url: '/gym/' + gymId + '/documents/' + documentId,
+                data: { document }
+            }
+        }
+    }
+}
+
+export function createGymDocument(gymId, data) {
+    return {
+        type: ActionTypes.CREATE_GYM_DOCUMENTS,
+        payload: {
+            request: {
+                method: 'post',
+                url: '/gym/' + gymId + '/documents',
+                data
+            }
+        }
+    }
+}
