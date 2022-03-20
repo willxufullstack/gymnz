@@ -115,7 +115,8 @@ const SearchableTable = ({
     onSearch,
     style,
     lineThrough,
-    actions
+    actions,
+    csv,
 }) => {
     const [searchKey, setSearchKey] = useState('')
 

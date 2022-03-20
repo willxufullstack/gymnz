@@ -12,6 +12,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import SimpleMenu from '-components/SimpleMenu/SimpleMenu'
 import { withStyles, Tooltip } from '@material-ui/core'
 import { pinyin } from '-utils'
+import { CSVLink } from "react-csv";
 
 const L = i18N('Customers')
 
@@ -38,6 +39,12 @@ const styles = {
     },
     filterDropdownIcon: {
         marginLeft: 6
+    },
+    tableTitle: {
+        marginRight: 12
+    },
+    exportBtn: {
+        color: "#999",
     }
 }
 class Customers extends React.Component {
@@ -147,6 +154,10 @@ class Customers extends React.Component {
                 />
             </div>
         )
+    }
+
+    export = () => {
+        console.log("xxxxxx")
     }
 
     render() {
@@ -368,13 +379,40 @@ class Customers extends React.Component {
             )
         }
 
+        const exportFields = [
+            {label:"姓名", key:"name"},
+            {label:"生日", key:"birthday"},
+            {label:"电话", key:"email"},
+            {label:"上次训练", key: "latest_schedule.date"},
+            {label:"教练", key: "latest_schedule.coach.user.name"},
+            {label:"剩余课程", key: 'stock.unfinished_count'}
+        ]
+
+        const titleWithExport = () => {
+            return <>
+                <span className={this.props.classes.tableTitle}>客户</span>
+                <RoundButton
+                    onClick={this.export}
+                    fontSize={12}
+                    label={<CSVLink
+                        data={filteredCustomers()}
+                        headers={exportFields}
+                        filename={"客户列表.csv"}
+                        className={this.props.classes.exportBtn}
+                        target="_blank">导出</CSVLink>}
+                    color={'#999'}
+                    variant={'text'}
+                />
+            </>
+        }
+
         return (
             <div className="customers-page">
                 {this.state.editProfileDialogue && <this.editProfileDialog />}
                 {
                     <SearchableTable
                         onSearch={onSearch}
-                        title={L.customers}
+                        title={titleWithExport()}
                         columns={columns}
                         data={filteredCustomers()}
                         onRowClick={this.onRowClick}

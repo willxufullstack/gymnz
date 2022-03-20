@@ -59,7 +59,7 @@ const Titlebar = ({
                 />
             )}
             <span className={classes.title} style={{ fontSize }}>
-                {label}{' '}
+                {label}
                 <span
                     className={classes.description}
                     style={{ fontSize: fontSize - 4 }}
