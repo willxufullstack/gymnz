@@ -36,11 +36,11 @@ class TVController extends Controller
         // 2. Set month
         $month = Carbon::now()->format('M');
         // 3. SetBillboard
-        $start = Carbon::now()->setYear(2020)->startOfMonth();
+        $start = Carbon::now()->startOfMonth();
         $end = Carbon::now()->endOfMonth();
         $timesToUsers = Gym::getMonthBoard($gymId, $start->format('Y-m-d'), $end->format('Y-m-d'));
 
-        $allHotmaps = User::getUserIdToHotmap($gymId, $start->format('Y-m-d'), 30);
+        $allHotmaps = User::getUserIdToHotmap($gymId, $end->format('Y-m-d'), 30);
         foreach ($timesToUsers as &$item) {
             $item->hotmap = $allHotmaps[$item->customer->id] ?? str_repeat('0', 30);
             if (strlen($item->customer->name) >= 2) {

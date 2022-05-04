@@ -313,7 +313,6 @@ class Schedule extends Model
         $query->where('status', 2);
         $query->groupBy('customer_id');
         $query->orderBy('course_amount', 'desc');
-        $query->limit(20);
         return $query->get()->makeHidden('detail');
     }
 }
