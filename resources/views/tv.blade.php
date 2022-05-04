@@ -112,7 +112,7 @@
             background: transparent;
             color: #7F8188;
             font-weight: 900;
-            font-size: 1.4rem;
+            font-size: 1.8rem;
         }
 
         .top-corner-0 {
@@ -189,5 +189,10 @@
     @endforeach
     </div>
 </body>
+<script>
+    setInterval(function() {
+        location.reload();
+    }, 1000 * 60)
+</script>
 
 </html>
