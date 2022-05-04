@@ -79,7 +79,7 @@ class Gym extends Model
         $ret = [];
         $customerToTs = json_decode($trialCustomers, true);
         $now = time();
-        foreach($customerToTs as $id => $ts) {
+        foreach ($customerToTs as $id => $ts) {
             if ($ts > $now - $beforeDays * 24 * 60 * 60) {
                 $ret[] = $id;
             }
@@ -152,10 +152,10 @@ class Gym extends Model
             if ($async) {
                 $jobs[] = new DianpingJob($task, $this->id, $value->format('Y-m-d'));
             } else {
-                if($task === 'traffic') {
+                if ($task === 'traffic') {
                     $this->crawlTrafficDay($value->format('Y-m-d'));
                 }
-                if($task === 'comment') {
+                if ($task === 'comment') {
                     $this->crawlCommentDay($value->format('Y-m-d'));
                 }
                 sleep($delay);
@@ -230,10 +230,11 @@ class Gym extends Model
         }
     }
 
-    public function refreshSession(bool $force = false) {
+    public function refreshSession(bool $force = false)
+    {
 
         $expiresIn3Days = 3 * 24 * 60 * 60;
-        if(!$force && $this->dianping_expires_in - time() > $expiresIn3Days){
+        if (!$force && $this->dianping_expires_in - time() > $expiresIn3Days) {
             echo "no need to refresh token for {$this->id} \n";
             return;
         }
@@ -243,7 +244,7 @@ class Gym extends Model
         $appSecret = config('services.dianping.secret');
         $sessionData = DianpingCrawler::refreshSession($appKey, $appSecret, $this->dianping_refresh_token);
 
-        if((int)$sessionData['code'] === 200){
+        if ((int)$sessionData['code'] === 200) {
             $this->dianping_session = $sessionData['access_token'];
             $this->dianping_refresh_token = $sessionData['refresh_token'];
             $this->dianping_expires_in = time() + (int)$sessionData['expires_in'];
@@ -256,11 +257,12 @@ class Gym extends Model
         }
     }
 
-    public function setGymLatestSchedules($userId) {
+    public function setGymLatestSchedules($userId)
+    {
         $key = self::GYM_LATEST_SCHEDULE_PREFIX . $this->id;
         $allSchedulesStr = Redis::get($key);
         // init if empty
-        if(empty($allSchedulesStr)) {
+        if (empty($allSchedulesStr)) {
             $this->getGymLatestSchedules();
             return;
         }
@@ -271,7 +273,7 @@ class Gym extends Model
             ->with('coach.user')
             ->orderBy('date', 'DESC')
             ->first();
-        if(empty($schedule)) {
+        if (empty($schedule)) {
             return;
         }
         // update the user
@@ -287,8 +289,8 @@ class Gym extends Model
     {
         $orders = Order::where('gym_id', $this->id)->get();
         $ret = [];
-        foreach($orders as $order) {
-            if(!isset($ret[$order->customer_id])){
+        foreach ($orders as $order) {
+            if (!isset($ret[$order->customer_id])) {
                 $ret[$order->customer_id] = [
                     'total' => 0,
                     'unfinished_count' => 0,
@@ -299,7 +301,7 @@ class Gym extends Model
             }
 
             // if an order has been refund
-            if($order->status === 2) {
+            if ($order->status === 2) {
                 $ret[$order->customer_id]['total'] += $order->booked_amount;
                 continue;
             }
@@ -337,8 +339,8 @@ class Gym extends Model
             }
 
             $schedules = Schedule::with(['coach.user'])
-            ->whereIn('id', $allIds)
-            ->get();
+                ->whereIn('id', $allIds)
+                ->get();
 
             // userId => schedules
             $map = [];
@@ -350,5 +352,10 @@ class Gym extends Model
         }
 
         return json_decode($allSchedulesStr, true);
+    }
+
+    public static function getMonthBoard($gymId, $start, $end)
+    {
+        return Schedule::getTopN($gymId, $start, $end);
     }
 }

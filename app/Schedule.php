@@ -3,6 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 
@@ -38,7 +39,7 @@ class Schedule extends Model
         return $this->belongsTo('App\Coach');
     }
 
-        /**
+    /**
      * Get the customer
      */
     public function order()
@@ -298,5 +299,21 @@ class Schedule extends Model
         // set date to tomorrow
         $followup->date = date('Y-m-d', strtotime("+{$postponeDays} day", strtotime($this->date)));
         $followup->save();
+    }
+
+    public static function getTopN($gymId, $start, $end, $n = 20)
+    {
+        $foreignKeys = ['customer'];
+        $query = Schedule::with($foreignKeys);
+        $query->select('*', DB::raw('count(id) as course_amount'));
+        $query->where('order_id', '>', 0);
+        $query->where('gym_id', $gymId);
+        $query->where('date', '>=', $start);
+        $query->where('date', '<=', $end);
+        $query->where('status', 2);
+        $query->groupBy('customer_id');
+        $query->orderBy('course_amount', 'desc');
+        $query->limit(20);
+        return $query->get()->makeHidden('detail');
     }
 }

@@ -676,6 +676,11 @@ class GymSettings extends React.Component {
                         {'图片长宽比5:4（建议>=500*400), 不超过120Kb'}
                     </div>
                 </Panel>
+                {this.swithItem(
+                    'enableTV',
+                    '启用TV排行榜',
+                    '开启后，可以在电视上查看训练排行榜：http://pro.o2-fit.com/tv/' + this.state.selectedGymId
+                )}
             </div>
         )
     }
