@@ -69,6 +69,7 @@
             display: flex;
             padding: 6px 12px 16px 12px;
             align-items: flex-start;
+            position: relative;
         }
 
         .medal {
@@ -96,6 +97,34 @@
 
         .top-2 {
             background: linear-gradient(101.65deg, #E99D57 0.7%, #FFEFE1 90.74%);
+        }
+
+        .top-corner {
+            position: absolute;
+            left: 62px;
+            top: 18px;
+            margin-top: 52px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            color: #7F8188;
+            font-weight: 900;
+            font-size: 1.4rem;
+        }
+
+        .top-corner-0 {
+            color: #FFF8D3;
+        }
+
+        .top-corner-1 {
+            color: #a5a5a5;
+        }
+
+        .top-corner-2 {
+            color: #D78100;
         }
 
         .other-rank {
@@ -146,6 +175,9 @@
                     <span class="hot-{{$m}}"></span>
                     @endforeach
                 </div>
+            </div>
+            <div class="top-corner top-corner-{{$i}}">
+                {{$user->course_amount}}
             </div>
     </div>
     @else
