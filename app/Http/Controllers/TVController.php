@@ -29,7 +29,7 @@ class TVController extends Controller
 
         // 1. check whether TV enabled
         $gym = Gym::find($gymId);
-        if (!$gym->setting['enableCancelCompletedSchedule']) {
+        if (!$gym->setting['enableTV']) {
             return '未启用';
         }
 
