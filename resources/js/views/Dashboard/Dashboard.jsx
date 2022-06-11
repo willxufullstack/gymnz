@@ -285,11 +285,18 @@ class Dashboard extends React.Component {
                 },
                 {
                     name: 'price',
-                    label: 'Price',
                     type: 'number',
                     label: L.price
                 },
-
+                {
+                    name: 'len',
+                    label: '时长',
+                    options: [
+                        { label: '60分钟', value: 4 },
+                        { label: '45分钟', value: 3 },
+                        { label: '30分钟', value: 2 },
+                    ]
+                },
                 {
                     name: 'gym',
                     value: this.props.selectedGym.id,
@@ -331,7 +338,7 @@ class Dashboard extends React.Component {
 
     onTapTimeSlot = (schedule, coach, start) => {
         let isOverlap = (schedule, start) => {
-            const end = start + 3
+            const end = start + 1
             if (end >= schedule.start && end < schedule.end) {
                 return true
             }
@@ -341,11 +348,7 @@ class Dashboard extends React.Component {
             return false
         }
         // skip when the time slot overlap with existing schedules
-        if (
-            this.props.gym.schedules.filter(
-                s => coach.id === s.coach_id && isOverlap(s, start)
-            ).length
-        ) {
+        if (schedule && schedule.length) {
             // show schedule detail
             this.onTapScheduleDetails(schedule[0])
         } else {

@@ -196,7 +196,8 @@ class CreateNewDialogue extends React.Component {
                     if (customer) {
                         this.setState({
                             [names.sex]: customer.sex,
-                            [names.phone]: customer.email
+                            [names.phone]: customer.email,
+                            [names.birthday]: customer.birthday
                         })
                     }
                 }

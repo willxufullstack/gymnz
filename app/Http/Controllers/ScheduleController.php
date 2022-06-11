@@ -283,7 +283,9 @@ class ScheduleController extends Controller
         $schedule->order_id = $order->id;
         $schedule->date = $scheduleData['date'];
         $schedule->start = $scheduleData['start'];
-        $schedule->end = $scheduleData['end'];
+
+        $len = $order->len > 0 ?  $order->len : 4;
+        $schedule->end = $schedule->start + $len - 1;
 
         // try to get detail from redis
         $detail = Redis::get('tmp_schedule_plan_' . $scheduleData['customer']);
