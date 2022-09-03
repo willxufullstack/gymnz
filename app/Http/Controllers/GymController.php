@@ -336,8 +336,7 @@ class GymController extends Controller
         $schedules = Schedule::where('gym_id', $id)
             ->where('status', 2)
             ->where('date', '>=', $request->input('start'))
-            ->where('date', '<=', $request->input('end'))
-            ->where('order_id', '>', 0);
+            ->where('date', '<=', $request->input('end'));
 
         $scheduleCount = $schedules->count();
 
