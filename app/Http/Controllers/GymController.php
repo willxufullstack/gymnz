@@ -374,7 +374,9 @@ class GymController extends Controller
             ->whereHas('customer', function ($query) use ($startGymTimezone, $endGymTimezone) {
                 $query->where('created_at', '>=', $startGymTimezone)
                     ->where('created_at', '<=', $endGymTimezone);
-            })->count();
+            })
+            ->groupby('customer_id')
+            ->count();
 
         $res = [
             'orderCount' => $orderCount,
