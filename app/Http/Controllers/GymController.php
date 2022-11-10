@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Account;
 use App\Gym;
 use App\Order;
@@ -26,7 +27,7 @@ class GymController extends Controller
         $userId = Auth::user()->id;
 
         // super admin
-        if($userId == 1) {
+        if ($userId == 1) {
             return Gym::all();
         }
 
@@ -375,9 +376,7 @@ class GymController extends Controller
                 $query->where('created_at', '>=', $startGymTimezone)
                     ->where('created_at', '<=', $endGymTimezone);
             })
-            ->groupby('customer_id')
-            ->distinct()
-            ->count();
+            ->count(DB::raw('DISTINCT customer_id'));
 
         $res = [
             'orderCount' => $orderCount,
