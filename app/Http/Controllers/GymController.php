@@ -376,6 +376,7 @@ class GymController extends Controller
                     ->where('created_at', '<=', $endGymTimezone);
             })
             ->groupby('customer_id')
+            ->distinct()
             ->count();
 
         $res = [
