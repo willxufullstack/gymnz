@@ -244,7 +244,7 @@ class ScheduleController extends Controller
      */
     public function store(Request $request)
     {
-        DB::transaction(function () use ($request) {
+        return DB::transaction(function () use ($request) {
             $userId = Auth::User()->id;
 
             $scheduleData = $request->only('customer', 'coach', 'gym', 'date', 'start', 'end');
