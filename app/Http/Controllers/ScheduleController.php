@@ -244,90 +244,94 @@ class ScheduleController extends Controller
      */
     public function store(Request $request)
     {
-        $userId = Auth::User()->id;
+        DB::transaction(function () use ($request) {
+            $userId = Auth::User()->id;
 
-        $scheduleData = $request->only('customer', 'coach', 'gym', 'date', 'start', 'end');
-        // handle trial new
-        if ($request->has('trial')) {
+            $scheduleData = $request->only('customer', 'coach', 'gym', 'date', 'start', 'end');
+            // handle trial new
+            if ($request->has('trial')) {
 
-            $trial = $this->_createTrialSchedule($scheduleData, $userId);
-            return response()->json($trial, 201);
-        }
-        // handle trial old
-        $allOrders = Order::where([
-            'customer_id' => $scheduleData['customer'],
-            'gym_id' => $scheduleData['gym'],
-        ])->count();
-        if ($allOrders === 0) {
-            $customer = User::find($scheduleData['customer']);
-            $trial = $this->_createTrialSchedule($scheduleData, $userId, $customer);
-            return response()->json($trial, 201);
-        }
+                $trial = $this->_createTrialSchedule($scheduleData, $userId);
+                return response()->json($trial, 201);
+            }
+            // handle trial old
+            $allOrders = Order::where([
+                'customer_id' => $scheduleData['customer'],
+                'gym_id' => $scheduleData['gym'],
+            ])->count();
+            if ($allOrders === 0) {
+                $customer = User::find($scheduleData['customer']);
+                $trial = $this->_createTrialSchedule($scheduleData, $userId, $customer);
+                return response()->json($trial, 201);
+            }
 
 
-        // 1. try to find available orders
-        $order = Order::where([
-            'customer_id' => $scheduleData['customer'],
-            'gym_id' => $scheduleData['gym'],
-            'status' => 1,
-        ])->whereRaw('booked_amount<course_amount')
-            ->orderBy('expiry', 'ASC')
-            ->first();
-        //return 404 if no available order
-        if (empty($order)) {
-            return response()->json(['message' => 'no available order'], 404);
-        }
-        // 2. create schedule
-        $schedule = new Schedule();
-        $schedule->created_by = $userId;
-        $schedule->order_id = $order->id;
-        $schedule->date = $scheduleData['date'];
-        $schedule->start = $scheduleData['start'];
+            // 1. try to find available orders
+            $order = Order::where([
+                'customer_id' => $scheduleData['customer'],
+                'gym_id' => $scheduleData['gym'],
+                'status' => 1,
+            ])->whereRaw('booked_amount<course_amount')
+                ->orderBy('expiry', 'ASC')
+                ->first();
+            //return 404 if no available order
+            if (empty($order)) {
+                return response()->json(['message' => 'no available order'], 404);
+            }
+            // 2. create schedule
+            $schedule = new Schedule();
+            $schedule->created_by = $userId;
+            $schedule->order_id = $order->id;
+            $schedule->date = $scheduleData['date'];
+            $schedule->start = $scheduleData['start'];
 
-        $len = $order->len > 0 ?  $order->len : 4;
-        $schedule->end = $schedule->start + $len - 1;
+            $len = $order->len > 0 ?  $order->len : 4;
+            $schedule->end = $schedule->start + $len - 1;
 
-        // try to get detail from redis
-        $detail = Redis::get('tmp_schedule_plan_' . $scheduleData['customer']);
-        if (!$detail) {
-            $detail = '[]';
-        } else {
-            Redis::del('tmp_schedule_plan_' . $scheduleData['customer']);
-        }
-        $schedule->detail = $detail;
+            // try to get detail from redis
+            $detail = Redis::get('tmp_schedule_plan_' . $scheduleData['customer']);
+            if (!$detail) {
+                $detail = '[]';
+            } else {
+                Redis::del('tmp_schedule_plan_' . $scheduleData['customer']);
+            }
+            $schedule->detail = $detail;
 
-        $schedule->status = 1;
-        $schedule->conclusion = '';
+            $schedule->status = 1;
+            $schedule->conclusion = '';
 
-        $gym = Gym::find($scheduleData['gym']);
-        $schedule->customer()->associate(User::find($scheduleData['customer']));
-        $schedule->coach()->associate(Coach::with('user')->find($scheduleData['coach']));
-        $schedule->gym()->associate($gym);
+            $gym = Gym::find($scheduleData['gym']);
+            $schedule->customer()->associate(User::find($scheduleData['customer']));
+            $schedule->coach()->associate(Coach::with('user')->find($scheduleData['coach']));
+            $schedule->gym()->associate($gym);
 
-        if ($schedule->hasTimeConflicts()) {
-            return response()->json(['message' => 'conflict with other schedules'], 400);
-        }
-        $schedule->save();
 
-        // link the followup
-        $schedule->linkFollowup();
-        event(new \App\Events\ScheduleCreateEvent($schedule));
-        // TODO handle save error
-        // 3. update order booked_amount / expiry
-        if (!$order->booked_amount) {
-            $order->expiry = Carbon::createFromFormat('Y-m-d', $scheduleData['date'])->addMonths($order->duration);
-        }
-        $order->booked_amount++;
-        $order->save();
+            if ($schedule->hasTimeConflicts()) {
+                return response()->json(['message' => 'conflict with other schedules'], 400);
+            }
+            $schedule->save();
 
-        $schedule['balance'] = $schedule->getBalance();
 
-        // clear cache 'latest_schedule'
-        User::setLatestScheduleCache($schedule->customer_id);
-        User::clearLatestMeasureDate($schedule->customer_id);
+            // link the followup
+            $schedule->linkFollowup();
+            event(new \App\Events\ScheduleCreateEvent($schedule));
+            // TODO handle save error
+            // 3. update order booked_amount / expiry
+            if (!$order->booked_amount) {
+                $order->expiry = Carbon::createFromFormat('Y-m-d', $scheduleData['date'])->addMonths($order->duration);
+            }
+            $order->booked_amount++;
+            $order->save();
 
-        Billing::consume($schedule);
-        return response()->json($schedule, 201);
+            $schedule['balance'] = $schedule->getBalance();
+
+            // clear cache 'latest_schedule'
+            User::setLatestScheduleCache($schedule->customer_id);
+            User::clearLatestMeasureDate($schedule->customer_id);
+
+            Billing::consume($schedule);
+            return response()->json($schedule, 201);
+        });
     }
 
     /**
