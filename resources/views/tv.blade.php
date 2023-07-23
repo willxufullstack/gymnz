@@ -17,6 +17,16 @@
             font-family: Roboto, Helvetica, Arial, sans-serif;
         }
 
+        .row {
+            display: flex;
+        }
+
+        .col {
+            display: flex;
+            flex-direction: column;
+        }
+
+
         .logo {
             width: 120px;
             position: absolute;
@@ -157,36 +167,99 @@
             color: #DCDCDC;
             letter-spacing: 4px;
         }
+
+        .customers-rank-div {
+            /* height: 100vh */
+        }
+
+        .coaches-div {
+            padding-top: 48px;
+            /* display: inline-block */
+        }
+
+        .coach-div {
+            display: flex;
+            flex: 1;
+            padding: 4% 6%;
+            border-radius: 4px;
+            margin-bottom: 32px;
+        }
+
+        .coach-detail {
+            display: flex;
+            flex: 1;
+        }
+
+        .coach-detail-text {
+            flex: 1;
+        }
+
+        .coach-avatar {
+            width: 10rem;
+            margin-right: 3rem;
+            border-radius: 12%;
+        }
+
+        .coach-name {
+            color: #fff;
+            font-weight: 900;
+            height: 5rem;
+            margin: 0;
+            font-size: 3rem;
+        }
+
+        .coach-desc {
+            flex: 1;
+            color: #fff;
+            opacity: 0.7;
+            margin: 0;
+            font-size: 1.4rem;
+        }
     </style>
 </head>
 
 <body>
-    <img class="logo" src="/images/logo_pro.png?v=20220503" />
-    <div>
-        <a class="month">{{$month}}</a>
-        @foreach($timesToUsers as $i => $user)
-        @if($i < 3) <div class="top top-{{$i}}">
-            <!-- <div>{{$user->course_amount}}</div> -->
-            <img class="medal" src='{{ asset("images/medal-$i.svg") }}' />
-            <div class="top-detail">
-                <div class="top-user-name">{{ $user->maskedName }}</div>
-                <div class="hotmap">
-                    @foreach(str_split($user->hotmap) as $m)
-                    <span class="hot-{{$m}}"></span>
-                    @endforeach
+    <div class="customers-rank-div">
+        <img class="logo" src="/images/logo_pro.png?v=20220503" />
+        <div>
+            <a class="month">{{$month}}</a>
+            @foreach($timesToUsers as $i => $user)
+            @if($i < 3) <div class="top top-{{$i}}">
+                <!-- <div>{{$user->course_amount}}</div> -->
+                <img class="medal" src='{{ asset("images/medal-$i.svg") }}' />
+                <div class="top-detail">
+                    <div class="top-user-name">{{ $user->maskedName }}</div>
+                    <div class="hotmap">
+                        @foreach(str_split($user->hotmap) as $m)
+                        <span class="hot-{{$m}}"></span>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="top-corner top-corner-{{$i}}">
+                    {{$user->course_amount}}
+                </div>
+        </div>
+        @else
+        <div class="other-rank">
+            <div class="other-times">{{$user->course_amount}}</div>
+            <div class="other-user-name">{{ $user->maskedName }}</div>
+        </div>
+        @endif
+        @endforeach
+    </div>
+    </div>
+    <div class="coaches-div">
+        @foreach($coaches as $i => $user)
+        <div class="coach-div">
+            <div class="coach-detail">
+                <img class="coach-avatar" src='{{ $user->user->avatar }}' />
+                <div class="col coach-detail-text">
+                    <p class="coach-name">{{ $user->user->name }}</p>
+                    <p class="coach-desc">{{ $user->user->description }}</p>
                 </div>
             </div>
-            <div class="top-corner top-corner-{{$i}}">
-                {{$user->course_amount}}
-            </div>
-    </div>
-    @else
-    <div class="other-rank">
-        <div class="other-times">{{$user->course_amount}}</div>
-        <div class="other-user-name">{{ $user->maskedName }}</div>
-    </div>
-    @endif
-    @endforeach
+        </div>
+        @endforeach
     </div>
 </body>
 <script>

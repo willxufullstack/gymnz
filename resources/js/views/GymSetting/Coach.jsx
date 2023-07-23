@@ -14,6 +14,7 @@ import { Switch, withStyles } from '@material-ui/core'
 import Panel from '../../components/Panel/Panel'
 import RoundButton from '../../components/RoundButton/RoundButton'
 import Titlebar from '../../components/TitleBar/Titlebar'
+import QNUploader from '-components/QNUploader/QNUploader'
 
 const L = i18N('Coach')
 const styles = {
@@ -26,6 +27,10 @@ const styles = {
             visibility: 'visible',
             opacity: 1
         }
+    },
+    avatar: {
+        width: "4rem",
+        borderRadius: 4,
     },
     header: {
         padding: '8px 12px',
@@ -75,7 +80,8 @@ class Coach extends React.Component {
             resetPasswordConfirmation: false,
             showDeleteConfirmation: false,
             resendInviteConfirmation: false,
-            deletingCoach: null
+            deletingCoach: null,
+            editDescDialog: false
         }
     }
 
@@ -165,6 +171,38 @@ class Coach extends React.Component {
             .then(() => {
                 this.props.actions.loadCoach(this.props.selectedGym.id)
             })
+    }
+
+    editDescDialog = () => {
+        return (
+            <CreateNewDialogue
+                col={1}
+                onCancel={() => {
+                    this.setState({ editDescDialog: false })
+                }}
+                onSave={data => {
+                    this.props.actions
+                        .updateCoach(
+                            this.props.selectedGym.id,
+                            this.state.editDescDialog.id,
+                            data
+                        )
+                        .then(() => {
+                            this.setState({ editDescDialog: false })
+                            this.props.actions.loadCoach(this.props.selectedGym.id)
+                        })
+                }}
+                inputFields={[
+                    {
+                        name: 'description',
+                        label: '描述',
+                        value: this.state.editDescDialog.description
+                    },
+                ]}
+                dialogue={true}
+                title={'修改描述'}
+            />
+        )
     }
 
     render() {
@@ -258,6 +296,40 @@ class Coach extends React.Component {
                                             (item.invite_at ? '（未激活)' : '')
                                         }
                                     />
+                                </div>
+                                <div className={classes.row} style={{marginTop: "0.5rem", marginBottom:"0.5rem"}}>
+                                    <img src={item.user.avatar} className={classes.avatar}/>
+                                    <div style={{flex: 1}}></div>
+                                    <QNUploader
+                                        title={'上传头像'}
+                                        variant="outline"
+                                        fontSize={12}
+                                        {...this.props.rootSetting.uploadToken}
+                                        onSuccess={(url)=>{
+                                            this.props.actions
+                                            .updateCoach(this.props.selectedGym.id, item.id, {
+                                                avatar: url
+                                            })
+                                            .then(() => {
+                                                this.props.actions.loadCoach(this.props.selectedGym.id)
+                                            })
+                                        }}
+                                        onFail={e => console.log(e)}
+                                    />
+                                </div>
+                                <div className={classes.row} style={{marginTop: "0.5rem", marginBottom:"0.5rem"}}>
+                                    <span className={classes.rowLabel}>
+                                       {item.user.description ?? "暂无介绍"}
+                                    </span>
+                                    <RoundButton
+                                        color="#999"
+                                        variant="outline"
+                                        onClick={() => {
+                                            this.setState({ editDescDialog: item })
+                                        }}
+                                        fontSize={12}
+                                        label={'修改介绍'}
+                                        />
                                 </div>
                                 <div className={classes.row}>
                                     <span className={classes.rowLabel}>
@@ -373,6 +445,7 @@ class Coach extends React.Component {
                         title={L.createCoach}
                     />
                 )}
+                {this.state.editDescDialog && <this.editDescDialog />}
             </React.Fragment>
         )
     }

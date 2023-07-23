@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Gym;
+use App\Coach;
 use App\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -50,6 +51,11 @@ class TVController extends Controller
             }
         }
 
-        return view('tv', compact('month', 'timesToUsers'));
+        $coaches =  $ret = Coach::with('user')
+            ->where("gym_id", "=", $gymId)
+            ->where("status", "=", "1")
+            ->get();
+
+        return view('tv', compact('month', 'timesToUsers', 'coaches'));
     }
 }

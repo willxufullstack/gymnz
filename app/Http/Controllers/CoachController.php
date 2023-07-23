@@ -206,6 +206,16 @@ class CoachController extends Controller
         if ($request->has('is_gym_manager')) {
             $coachItem->is_gym_manager = (bool) $request->input('is_gym_manager');
         }
+        if ($request->has('avatar')) {
+            $coachItem->user->avatar = $request->input('avatar');
+            $coachItem->user->save();
+        }
+
+        if ($request->has('description')) {
+            $coachItem->user->description = $request->input('description');
+            dd($coachItem->user->save());
+        }
+
         $success = $coachItem->save();
         if ($success) {
             return response()->json($coachItem, 200);
@@ -302,7 +312,7 @@ class CoachController extends Controller
         $ret = [];
         foreach ($orders as &$order) {
             if (!isset($ret[$order->coach_id])) {
-                $schedules= Schedule::with(['order'])
+                $schedules = Schedule::with(['order'])
                     ->where('schedules.coach_id', $order->coach_id)
                     ->where('date', '>=', $startGymTimezone)
                     ->where('date', '<=', $endGymTimezone)
@@ -311,7 +321,7 @@ class CoachController extends Controller
 
                 $scheduleCount = count($schedules);
                 $totalSchedulePrice = 0;
-                foreach($schedules as &$schedule) {
+                foreach ($schedules as &$schedule) {
                     $totalSchedulePrice += (int)($schedule->order->price / $schedule->order->course_amount);
                 }
 
