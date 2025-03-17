@@ -259,6 +259,11 @@ class OrderController extends Controller
         if ($request->input('gym')) {
             $query = $query->where('gym_id', '=', $request->input('gym'));
         }
+        // limit order count when fetching schedule, or it will be too low and large
+        if ($request->input('schedule')){
+            $query = $query->limit(20);
+        }
+
         $ret = $query->get();
         foreach ($ret as $order) {
             $order->formatTimestamp();
