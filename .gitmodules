@@ -1,0 +1,3 @@
+[submodule "phpredis"]
+	path = phpredis
+	url = https://github.com/phpredis/phpredis.git
