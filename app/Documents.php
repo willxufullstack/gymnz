@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Documents extends Model
 {
-    protected $tableName = "documents";
+    protected $table = 'documents';
 
     /**
      * The attributes that are mass assignable.

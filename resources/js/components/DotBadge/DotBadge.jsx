@@ -1,10 +1,20 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React from 'react'
 import classNames from 'classnames'
 import Panel from '../Panel/Panel'
 
-const styles = {
-    panel: {
+const PREFIX = 'DotBadge';
+
+const classes = {
+    panel: `${PREFIX}-panel`,
+    textContainer: `${PREFIX}-textContainer`,
+    circle: `${PREFIX}-circle`,
+    label: `${PREFIX}-label`,
+    value: `${PREFIX}-value`
+};
+
+const StyledPanel = styled(Panel)({
+    [`&.${classes.panel}`]: {
         display: 'flex',
         alignItems: 'center',
         padding: '0 8px',
@@ -13,12 +23,12 @@ const styles = {
         marginLeft: 12,
         height: 40
     },
-    textContainer: {
+    [`& .${classes.textContainer}`]: {
         display: 'flex',
         flexDirection: 'column',
         marginLeft: 8
     },
-    circle: {
+    [`& .${classes.circle}`]: {
         borderRadius: '50%',
         width: 16,
         height: 16,
@@ -42,30 +52,30 @@ const styles = {
             borderColor: '#FFF0D9'
         }
     },
-    label: {
+    [`& .${classes.label}`]: {
         fontSize: 10,
         color: '#aaa',
         lineHeight: '12px',
         fontWeight: '500'
     },
-    value: {
+    [`& .${classes.value}`]: {
         fontSize: 16,
         color: '#333',
         fontWeight: '500',
         lineHeight: '20px'
     }
-}
+});
 
-const DotBadge = ({ classes, color, label, value, style }) => {
+const DotBadge = ({  color, label, value, style }) => {
     return (
-        <Panel className={classes.panel} style={style}>
+        <StyledPanel className={classes.panel} style={style}>
             {color && <div className={classNames(classes.circle, color)} />}
             <div className={classes.textContainer}>
                 <span className={classes.label}>{label}</span>
                 <span className={classes.value}>{value}</span>
             </div>
-        </Panel>
-    )
+        </StyledPanel>
+    );
 }
 
-export default withStyles(styles)(DotBadge)
+export default (DotBadge)

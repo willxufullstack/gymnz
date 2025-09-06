@@ -10,10 +10,10 @@
     position: relative;
     height: 100%;
     transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
-    width: calc(100% - 140px);
+    width: calc(100% - 160px); /* reserve more space for scrollbars in BS5 */
 }
 
-.container {
+.app-container {
     margin-left: auto;
     margin-right: auto;
     height: 100%;

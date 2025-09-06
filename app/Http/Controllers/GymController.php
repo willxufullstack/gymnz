@@ -198,7 +198,14 @@ class GymController extends Controller
 
     public function getCustomerList(Request $request, $id)
     {
-        // TODO permission check
+        // permission check
+        $gym = Gym::find($id);
+        if (!$gym) {
+            return response()->json(['message' => 'gym not found'], 404);
+        }
+        if (!\Gate::allows('view', $gym)) {
+            return response()->json(['message' => 'forbidden'], 403);
+        }
         if (!$request->has('start') && !$request->has('end')) {
             $customers = Order::with('customer')
                 ->where('gym_id', '=', $id)
@@ -339,9 +346,9 @@ class GymController extends Controller
             ->where('date', '>=', $request->input('start'))
             ->where('date', '<=', $request->input('end'));
 
-        $scheduleCount = $schedules->count();
+        $scheduleCount = (clone $schedules)->count();
 
-        $activeCustomerCount = count($schedules->groupBy('customer_id')->get('customer_id'));
+        $activeCustomerCount = (clone $schedules)->distinct()->count('customer_id');
 
         $gym = Gym::find($id);
         $endWithSeconds = $request->input('end') . ' 23:59:59';
@@ -354,7 +361,7 @@ class GymController extends Controller
             ->where('created_at', '>=', $startGymTimezone)
             ->where('created_at', '<=', $endGymTimezone);
         // order count
-        $orderCount = $orders->count();
+        $orderCount = (clone $orders)->count();
 
         // order total price
         $orderPrice = $orders->sum('price');
@@ -376,7 +383,7 @@ class GymController extends Controller
                 $query->where('created_at', '>=', $startGymTimezone)
                     ->where('created_at', '<=', $endGymTimezone);
             })
-            ->count(DB::raw('DISTINCT customer_id'));
+            ->distinct('customer_id')->count('customer_id');
 
         $res = [
             'orderCount' => $orderCount,

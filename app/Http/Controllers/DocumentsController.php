@@ -50,7 +50,7 @@ class DocumentsController extends Controller
      */
     public function store(Request $request, $gymId)
     {
-        $this->validate($request, [
+        $request->validate([
             'title' => 'required|max:255',
             'file_path' => 'required'
         ]);

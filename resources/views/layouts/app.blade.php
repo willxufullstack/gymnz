@@ -12,16 +12,14 @@
 
     {{--<!-- Scripts -->--}}
 
-    {{--<script src="{{ asset('js/manifest.js') }}" defer></script>--}}
-    {{--<script src="{{ asset('js/vendor.js') }}" defer></script>--}}
-    {{--<script src="{{ asset('js/app.js') }}" defer></script>--}}
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
-    <!-- Styles -->
-    <link href="{{ asset('css/app-release.css')}}?v=53" rel="stylesheet">
+    <!-- Bootstrap 5 CSS for auth pages -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <!-- Vite not loaded here to avoid mounting React SPA on auth pages -->
     <style>
         body {
             font-family: Nunito,sans-serif;

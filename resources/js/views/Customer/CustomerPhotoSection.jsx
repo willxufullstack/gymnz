@@ -1,33 +1,44 @@
 import '../../../sass/customer.scss'
+import { styled } from '@mui/material/styles';
 import React from 'react'
 import Gallery from 'react-grid-gallery'
 import { wrapImgToGalleryItem } from '-utils'
 import QNUploader from '-components/QNUploader/QNUploader'
-import { withStyles, Divider, Typography } from '@material-ui/core'
+import { Divider, Typography } from '@mui/material';
 import dayjs from 'dayjs'
 import Confirmation from '-components/CustomDialogues/Confirmation'
 import i18N from '../../lang'
 import RoundButton from '../../components/RoundButton/RoundButton'
 
-const L = i18N('CustomerPhotoSection')
+const PREFIX = 'CustomerPhotoSection';
 
-const styles = {
-    actionRow: {
+const classes = {
+    actionRow: `${PREFIX}-actionRow`,
+    caption: `${PREFIX}-caption`,
+    removeBtn: `${PREFIX}-removeBtn`,
+    date: `${PREFIX}-date`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')({
+    [`& .${classes.actionRow}`]: {
         width: '100%',
         textAlign: 'right'
     },
-    caption: {
+    [`& .${classes.caption}`]: {
         width: '100%',
         display: 'flex',
         alignItems: 'center'
     },
-    removeBtn: {},
-    date: {
+    [`& .${classes.removeBtn}`]: {},
+    [`& .${classes.date}`]: {
         flex: 1,
         paddingLeft: 16,
         lineHeight: '38px'
     }
-}
+});
+
+const L = i18N('CustomerPhotoSection')
 
 class CustomerPhotoSection extends React.Component {
     constructor(props) {
@@ -77,7 +88,7 @@ class CustomerPhotoSection extends React.Component {
 
     getGallaryItems = () => {
         const caption = pic => (
-            <div className={this.props.classes.caption}>
+            <div className={classes.caption}>
                 <Typography
                     className={this.props.classes.date}
                     variant="caption"
@@ -100,16 +111,16 @@ class CustomerPhotoSection extends React.Component {
         )
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.actions.refreshUploadToken()
         this.props.actions.loadCustomerPhotos(this.props.customerId)
     }
 
     render() {
-        const { classes } = this.props
+        const { } = this.props
 
         return (
-            <React.Fragment>
+            <Root>
                 {this.state.deleteConfirmation && (
                     <Confirmation
                         message={L.deleteConfirm}
@@ -133,9 +144,9 @@ class CustomerPhotoSection extends React.Component {
                     enableImageSelection={false}
                     margin={6}
                 />
-            </React.Fragment>
-        )
+            </Root>
+        );
     }
 }
 
-export default withStyles(styles)(CustomerPhotoSection)
+export default (CustomerPhotoSection)

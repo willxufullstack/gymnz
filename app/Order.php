@@ -7,7 +7,7 @@ use DateTime;
 
 class Order extends Model
 {
-    protected $tableName = "orders";
+    protected $table = 'orders';
 
     public function gym()
     {

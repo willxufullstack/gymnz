@@ -1,17 +1,23 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React from 'react'
 import classNames from 'classnames'
 
-const styles = {
-    hr: {
+const PREFIX = 'YGrid';
+
+const classes = {
+    hr: `${PREFIX}-hr`
+};
+
+const Root = styled('div')({
+    [`&.${classes.hr}`]: {
         width: '100%',
         height: '100%',
         borderTop: '1px dotted #D3D3D3'
     }
+});
+
+const YGrid = ({  className }) => {
+    return <Root className={classNames(classes.hr, className)} />;
 }
 
-const YGrid = ({ classes, className }) => {
-    return <div className={classNames(classes.hr, className)} />
-}
-
-export default withStyles(styles)(YGrid)
+export default (YGrid)

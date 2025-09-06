@@ -1,9 +1,16 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React from 'react'
 import classNames from 'classnames'
 
-const styles = {
-    label: {
+const PREFIX = 'YAxis';
+
+const classes = {
+    label: `${PREFIX}-label`,
+    vr: `${PREFIX}-vr`
+};
+
+const Root = styled('div')({
+    [`& .${classes.label}`]: {
         flex: 1,
         textAlign: 'right',
         paddingRight: 12,
@@ -13,23 +20,23 @@ const styles = {
         position: 'relative',
         marginTop: -9
     },
-    vr: {
+    [`&.${classes.vr}`]: {
         height: '100%',
         display: 'flex',
         flexDirection: 'column-reverse'
     }
-}
+});
 
-const YAxis = ({ classes, className, labels, style }) => {
+const YAxis = ({  className, labels, style }) => {
     return (
-        <div className={classNames(classes.vr, className)} style={style}>
+        <Root className={classNames(classes.vr, className)} style={style}>
             {labels.map((label, i) => (
                 <span key={i} className={classes.label}>
                     {label || ''}
                 </span>
             ))}
-        </div>
-    )
+        </Root>
+    );
 }
 
-export default withStyles(styles)(YAxis)
+export default (YAxis)

@@ -15,6 +15,9 @@ use App\Libraries\Ucpaas\Ucpaas;
 use AlibabaCloud\Client\AlibabaCloud;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
+use Illuminate\Support\Facades\Http;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Facades\JWTFactory;
 
 class AuthController extends Controller
 {
@@ -52,12 +55,12 @@ class AuthController extends Controller
                     }
                 }
 
-                $token = $this->guard()->tokenById($user->id);
+                $token = JWTAuth::fromUser($user);
                 return $this->respondWithToken($token);
             }
         }
 
-        if ($token = $this->guard()->attempt($credentials)) {
+        if ($token = JWTAuth::attempt($credentials)) {
             return $this->respondWithToken($token);
         }
 
@@ -80,7 +83,7 @@ class AuthController extends Controller
 
         event(new Registered($user));
 
-        if ($token = $this->guard()->tokenById($user->id)) {
+        if ($token = JWTAuth::fromUser($user)) {
             return $this->respondWithToken($token);
         }
 
@@ -99,7 +102,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $credentials['email'])->first();
 
-        if (!$user->verifyVCode($vcode) && !$this->guard()->attempt($credentials)) {
+        if (!$user->verifyVCode($vcode) && !JWTAuth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -107,7 +110,7 @@ class AuthController extends Controller
         $user->password = Hash::make($password);
         $user->setRememberToken(Str::random(60));
         $user->save();
-        $token = $this->guard()->tokenById($user->id);
+        $token = JWTAuth::fromUser($user);
         return $this->respondWithToken($token);
     }
 
@@ -140,7 +143,7 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken($this->guard()->refresh());
+        return $this->respondWithToken(JWTAuth::refresh());
     }
 
     /**
@@ -155,7 +158,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => $this->guard()->factory()->getTTL() * 60
+            'expires_in' => JWTFactory::getTTL() * 60
         ]);
     }
 
@@ -174,14 +177,18 @@ class AuthController extends Controller
         $appId = 'wx6cda57a3aa04e5aa';
         $secret = config('services.wx.secret'); // TODO replace
         $url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' . $appId . '&secret=' . $secret . '&js_code=' . $code . '&grant_type=authorization_code';
-        $json = json_decode(file_get_contents($url), true);
-        $openid = $json['openid'];
+        $json = Http::timeout(5)->get($url)->json();
+        $openid = $json['openid'] ?? null;
+        if (!$openid) {
+            Log::error('cannot get wx openid: ', ['resp' => $json]);
+            return response()->json(['message' => 'cannot get openid via wx api'], 500);
+        }
         $ret = [
             'openid' => $openid
         ];
         $user = User::where('openid', $openid)->first();
         if (!empty($user)) {
-            $ret['token'] = $this->guard()->tokenById($user->id);
+            $ret['token'] = JWTAuth::fromUser($user);
         }
 
         return response()->json($ret);
@@ -193,8 +200,12 @@ class AuthController extends Controller
         $appId = config('services.wx.id');
         $secret = config('services.wx.secret');
         $url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' . $appId . '&secret=' . $secret . '&js_code=' . $code . '&grant_type=authorization_code';
-        $json = json_decode(file_get_contents($url), true);
-        $openid = $json['openid'];
+        $json = Http::timeout(5)->get($url)->json();
+        $openid = $json['openid'] ?? null;
+        if (!$openid) {
+            Log::error('cannot get wx openid: ', ['resp' => $json]);
+            return response()->json(['message' => 'cannot get openid via wx api'], 500);
+        }
         $ret = [
             'openid' => $openid
         ];
@@ -204,7 +215,7 @@ class AuthController extends Controller
             if ($request->input('customer') && Coach::where('user_id', $user->id)->count() > 0) {
                 $user = User::find($request->input('customer'));
             }
-            $ret['token'] = $this->guard()->tokenById($user->id);
+            $ret['token'] = JWTAuth::fromUser($user);
         }
 
         return response()->json($ret);
@@ -216,10 +227,10 @@ class AuthController extends Controller
         $appId = config('services.wx.id');
         $secret = config('services.wx.secret');
         $url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' . $appId . '&secret=' . $secret . '&js_code=' . $code . '&grant_type=authorization_code';
-        $resp = file_get_contents($url);
-        $json = json_decode($resp, true);
+        $resp = Http::timeout(5)->get($url);
+        $json = $resp->json();
         if (!array_key_exists('openid', $json)) {
-            Log::error('cannot get wx openid: ', [$resp]);
+            Log::error('cannot get wx openid: ', ['resp' => $json]);
             return response()->json(array('message' => 'cannot get openid via wx api'), 500);
         }
         $openid = $json['openid'];
@@ -228,7 +239,7 @@ class AuthController extends Controller
         if (empty($user)) {
             return response()->json(array('message' => 'cannot find the user'), 500);
         }
-        $token = $this->guard()->tokenById($user->id);
+        $token = JWTAuth::fromUser($user);
         return $this->respondWithToken($token);
     }
 
@@ -251,7 +262,7 @@ class AuthController extends Controller
         $user->save();
 
         // return token
-        $token = $this->guard()->tokenById($user->id);
+        $token = JWTAuth::fromUser($user);
         return $this->respondWithToken($token);
     }
 
@@ -276,7 +287,7 @@ class AuthController extends Controller
         $vcode = $user->refreshVCode();
         $param = $vcode . ',5';
 
-        return $ucpass->SendSms($appId, $templateId, $param, $mobile, $user->id);
+        return $ucpass->SendSms($appId, $templateId, $param, $mobile, $user->id); // @phpstan-ignore-line
         // return response()->json(['vcode' => $vcode]);
     }
 

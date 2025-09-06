@@ -1,36 +1,47 @@
 import React from 'react'
+import { styled } from '@mui/material/styles';
 import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import connect from 'react-redux/es/connect/connect'
-import Add from '@material-ui/icons/Add'
-import Edit from '@material-ui/icons/Edit'
+import Add from '@mui/icons-material/Add'
+import Edit from '@mui/icons-material/Edit'
 // core components
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import '../../../sass/org.scss'
 import classNames from 'classnames'
-import { IconButton, withStyles, Tooltip } from '@material-ui/core'
+import { IconButton, Tooltip } from '@mui/material';
 import Confirmation from '-components/CustomDialogues/Confirmation'
 import i18N from '../../lang'
 import Panel from '../../components/Panel/Panel'
 import Titlebar from '../../components/TitleBar/Titlebar'
 import RoundButton from '../../components/RoundButton/RoundButton'
 
-const L = i18N('Organization')
+const PREFIX = 'Organization';
 
-const style = {
-    itemContainer: {
+const classes = {
+    itemContainer: `${PREFIX}-itemContainer`,
+    header: `${PREFIX}-header`,
+    row: `${PREFIX}-row`,
+    rowLabel: `${PREFIX}-rowLabel`,
+    bottom: `${PREFIX}-bottom`,
+    newOrg: `${PREFIX}-newOrg`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')({
+    [`& .${classes.itemContainer}`]: {
         '&:hover': {
             boxShadow: '0px 2px 24px rgba(0, 0, 0, 0.1)'
         }
     },
-    header: {
+    [`& .${classes.header}`]: {
         padding: '8px 12px',
         fontSize: 16,
         fontWeight: '900',
         display: 'flex',
         alignItems: 'center'
     },
-    row: {
+    [`& .${classes.row}`]: {
         padding: '2px 16px',
         display: 'flex',
         alignItems: 'center',
@@ -38,18 +49,18 @@ const style = {
         fontWeight: '500',
         color: '#666'
     },
-    rowLabel: {
+    [`& .${classes.rowLabel}`]: {
         flex: 1,
         fontSize: 14,
         fontWeight: '700'
     },
-    bottom: {
+    [`& .${classes.bottom}`]: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         margin: 6
     },
-    newOrg: {
+    [`& .${classes.newOrg}`]: {
         margin: 'auto',
         fontSize: 72,
         color: '#aaa',
@@ -60,7 +71,10 @@ const style = {
             color: '#29aa99'
         }
     }
-}
+});
+
+const L = i18N('Organization')
+
 class Organization extends React.Component {
     constructor(props) {
         super(props)
@@ -181,10 +195,10 @@ class Organization extends React.Component {
             onCancel: this.hideDeleteOrgConfirmation,
             onConfirm: this.deleteOrg
         }
-        const { classes } = this.props
+        const { } = this.props
 
         return (
-            <React.Fragment>
+            <Root>
                 {this.state.showDeleteConfirmation && (
                     <Confirmation {...deleteOrgParams} />
                 )}
@@ -217,7 +231,7 @@ class Organization extends React.Component {
                                                         editOrgNameDialogue: item
                                                     })
                                                 }
-                                            >
+                                                size="large">
                                                 <Edit fontSize="small" />
                                             </IconButton>
                                         }
@@ -265,12 +279,12 @@ class Organization extends React.Component {
                                     />
                                 </div>
                             </Panel>
-                        )
+                        );
                     })}
                     <Add onClick={this.showAddOrg} className={classes.newOrg} />
                 </div>
-            </React.Fragment>
-        )
+            </Root>
+        );
     }
 }
 
@@ -298,4 +312,4 @@ const LinkedOrganization = connect(
 )(Organization)
 
 
-export default withStyles(style)(LinkedOrganization)
+export default (LinkedOrganization)

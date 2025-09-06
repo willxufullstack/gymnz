@@ -95,7 +95,7 @@ class Schedule extends Model
                 $hash[$action['id']] = $action;
             }
         }
-        Redis::set($key, json_encode($hash));
+        Redis::set($key, json_encode($hash)); // no TTL here by design (stable ordering cache)
     }
 
     public function getStartDateTime()

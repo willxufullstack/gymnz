@@ -1,10 +1,19 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React, { useState } from 'react'
 import dayjs from 'dayjs'
 import * as utils from '-utils'
 
-const styles = {
-    container: {
+const PREFIX = 'CalendarStyleDatePicker';
+
+const classes = {
+    container: `${PREFIX}-container`,
+    month: `${PREFIX}-month`,
+    arrow: `${PREFIX}-arrow`,
+    day: `${PREFIX}-day`
+};
+
+const Root = styled('div')({
+    [`&.${classes.container}`]: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -17,7 +26,7 @@ const styles = {
         background: '#fff',
         cursor: 'pointer'
     },
-    month: {
+    [`& .${classes.month}`]: {
         fontSize: '12px',
         lineHeight: '18px',
         fontWeight: '700',
@@ -27,12 +36,12 @@ const styles = {
         width: '100%',
         boxShadow: '0px 1px 2px rgba(41, 170, 153, 0.25)'
     },
-    arrow: {
+    [`& .${classes.arrow}`]: {
         fontSize: 16,
         color: '#29aa99',
         margin: '0 1px'
     },
-    day: {
+    [`& .${classes.day}`]: {
         fontSize: 28,
         lineHeight: '34px',
         display: 'flex',
@@ -44,9 +53,9 @@ const styles = {
             }
         }
     }
-}
+});
 
-const CalendarStyleDatePicker = ({ classes, date, onClick, month, setDate}) => {
+const CalendarStyleDatePicker = ({  date, onClick, month, setDate}) => {
     const [hover, setHover] = useState()
     const day = dayjs(date)
     const changeDate = (value) => (e) => {
@@ -55,7 +64,7 @@ const CalendarStyleDatePicker = ({ classes, date, onClick, month, setDate}) => {
         setDate(changedDay)
     }
     return (
-        <div
+        <Root
             className={classes.container}
             onClick={onClick}
             onMouseEnter={() => setHover(true)}
@@ -69,8 +78,8 @@ const CalendarStyleDatePicker = ({ classes, date, onClick, month, setDate}) => {
                 {month ? day.month() + 1 : day.date()}
                 {hover && <span className={classes.arrow} onClick={changeDate(1)}>❱</span>}
             </span>
-        </div>
-    )
+        </Root>
+    );
 }
 
-export default withStyles(styles)(CalendarStyleDatePicker)
+export default (CalendarStyleDatePicker)

@@ -1,15 +1,23 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React from 'react'
 import classNames from 'classnames'
 
-const styles = {
-    container: {
+const PREFIX = 'LightTabTitle';
+
+const classes = {
+    container: `${PREFIX}-container`,
+    label: `${PREFIX}-label`,
+    underline: `${PREFIX}-underline`
+};
+
+const Root = styled('div')({
+    [`&.${classes.container}`]: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         cursor: 'pointer'
     },
-    label: {
+    [`& .${classes.label}`]: {
         color: '#999',
         minWidth: 80,
         textAlign: 'center',
@@ -22,7 +30,7 @@ const styles = {
             fontSize: 16
         }
     },
-    underline: {
+    [`& .${classes.underline}`]: {
         backgroundColor: '#333',
         visibility: 'hidden',
         height: 6,
@@ -34,17 +42,17 @@ const styles = {
             visibility: 'visible',
         }
     }
-}
+});
 
-const LightTabTitle = ({ classes, label, active }) => {
+const LightTabTitle = ({  label, active }) => {
     return (
-        <div className={classes.container}>
+        <Root className={classes.container}>
             <div className={classNames(classes.label, active && 'active')}>
                 {label}
             </div>
             <span className={classNames(classes.underline, active && 'active')} />
-        </div>
-    )
+        </Root>
+    );
 }
 
-export default withStyles(styles)(LightTabTitle)
+export default (LightTabTitle)

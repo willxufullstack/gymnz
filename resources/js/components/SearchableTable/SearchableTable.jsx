@@ -1,22 +1,32 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React, { useState } from 'react'
 import classNames from 'classnames'
 import Titlebar from '../TitleBar/Titlebar'
 import SearchInput from '../SearchInput/SearchInput'
 
-const styles = {
-    container: {
+const PREFIX = 'SearchableTable';
+
+const classes = {
+    container: `${PREFIX}-container`,
+    tableBody: `${PREFIX}-tableBody`,
+    row: `${PREFIX}-row`,
+    th: `${PREFIX}-th`,
+    emptyText: `${PREFIX}-emptyText`
+};
+
+const Root = styled('div')({
+    [`& .${classes.container}`]: {
         flex: 1,
         overflow: 'scroll',
         display: 'flex',
         flexDirection: 'column',
         marginTop: 6
     },
-    tableBody: {
+    [`& .${classes.tableBody}`]: {
         flex: 1,
         overflow: 'scroll'
     },
-    row: {
+    [`&.${classes.row}`]: {
         display: 'flex',
         alignItems: 'center',
         fontSize: 14,
@@ -34,7 +44,7 @@ const styles = {
             visibility: 'visible'
         }
     },
-    th: {
+    [`&.${classes.th}`]: {
         minHeight: 42,
         borderBottom: '1px solid #ececec',
         fontWeight: '900',
@@ -44,27 +54,27 @@ const styles = {
             background: 'none'
         }
     },
-    emptyText: {
+    [`& .${classes.emptyText}`]: {
         textAlign: 'center',
         fontSize: 18,
         fontWeight: 700,
         color: '#ccc'
     }
-}
+});
 
-const Th = ({ classes, columns }) => {
+const Th = ({  columns }) => {
     return (
-        <div className={classNames(classes.row, classes.th)}>
+        <Root className={classNames(classes.row, classes.th)}>
             {columns.map((col, i) => (
                 <div key={i} style={{ flex: col.flex ? col.flex : 1 }}>
                     {col.title}
                 </div>
             ))}
-        </div>
-    )
+        </Root>
+    );
 }
 
-const Tr = ({ classes, columns, row, onClick, lineThrough }) => {
+const Tr = ({  columns, row, onClick, lineThrough }) => {
     const Td = ({ col }) => {
         if (col.render) {
             return (
@@ -106,7 +116,6 @@ const Tr = ({ classes, columns, row, onClick, lineThrough }) => {
 }
 
 const SearchableTable = ({
-    classes,
     title,
     columns,
     className,
@@ -142,13 +151,12 @@ const SearchableTable = ({
                 </Titlebar>
             )}
             <div className={classes.container}>
-                <Th classes={classes} columns={columns} />
+                <Th columns={columns} />
                 {filteredData().length ? (
                     <div className={classes.tableBody}>
                         {filteredData().map((row, i) => (
                             <Tr
                                 key={i}
-                                classes={classes}
                                 columns={columns}
                                 row={row}
                                 onClick={onRowClick}
@@ -164,4 +172,4 @@ const SearchableTable = ({
     )
 }
 
-export default withStyles(styles)(SearchableTable)
+export default (SearchableTable)

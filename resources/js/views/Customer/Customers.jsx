@@ -1,4 +1,5 @@
 import connect from 'react-redux/es/connect/connect'
+import { styled } from '@mui/material/styles';
 import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import React from 'react'
@@ -8,45 +9,58 @@ import i18N from '../../lang'
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import SearchableTable from '../../components/SearchableTable/SearchableTable'
 import RoundButton from '../../components/RoundButton/RoundButton'
-import ExpandMore from '@material-ui/icons/ExpandMore'
+import ExpandMore from '@mui/icons-material/ExpandMore'
 import SimpleMenu from '-components/SimpleMenu/SimpleMenu'
-import { withStyles, Tooltip } from '@material-ui/core'
+import { Tooltip } from '@mui/material';
 import { pinyin } from '-utils'
 import { CSVLink } from "react-csv";
 
-const L = i18N('Customers')
+const PREFIX = 'Customers';
 
-const styles = {
-    filterBar: {
+const classes = {
+    filterBar: `${PREFIX}-filterBar`,
+    filterItem: `${PREFIX}-filterItem`,
+    filterItemFlex: `${PREFIX}-filterItemFlex`,
+    filterTitle: `${PREFIX}-filterTitle`,
+    filterDropdownIcon: `${PREFIX}-filterDropdownIcon`,
+    tableTitle: `${PREFIX}-tableTitle`,
+    exportBtn: `${PREFIX}-exportBtn`
+};
+
+const Root = styled('div')({
+    [`& .${classes.filterBar}`]: {
         display: 'flex',
         height: 36,
         width: '100%'
     },
-    filterItem: {
+    [`& .${classes.filterItem}`]: {
         maxWidth: 150,
         marginLeft: 32
     },
-    filterItemFlex: {
+    [`& .${classes.filterItemFlex}`]: {
         flex: 1,
         marginLeft: 32
     },
-    filterTitle: {
+    [`& .${classes.filterTitle}`]: {
         width: 60,
         lineHeight: '12px',
         textAlign: 'left',
         fontSize: 12,
         color: '#999'
     },
-    filterDropdownIcon: {
+    [`& .${classes.filterDropdownIcon}`]: {
         marginLeft: 6
     },
-    tableTitle: {
+    [`& .${classes.tableTitle}`]: {
         marginRight: 12
     },
-    exportBtn: {
+    [`& .${classes.exportBtn}`]: {
         color: "#999",
     }
-}
+});
+
+const L = i18N('Customers')
+
 class Customers extends React.Component {
     constructor(props) {
         super(props)
@@ -121,7 +135,7 @@ class Customers extends React.Component {
     }
 
     coachFilter = () => {
-        const { classes } = this.props
+        const { } = this.props
         const filters = {
             所有: '所有'
         }
@@ -138,7 +152,7 @@ class Customers extends React.Component {
             onSelect: () => this.setState({ coachFilter: k })
         }))
         return (
-            <div>
+            <Root>
                 <span>教练</span>
                 <SimpleMenu
                     icon={
@@ -152,8 +166,8 @@ class Customers extends React.Component {
                     displayText={filters[this.state.coachFilter]}
                     items={opts}
                 />
-            </div>
-        )
+            </Root>
+        );
     }
 
     export = () => {
@@ -390,7 +404,7 @@ class Customers extends React.Component {
 
         const titleWithExport = () => {
             return <>
-                <span className={this.props.classes.tableTitle}>客户</span>
+                <span className={classes.tableTitle}>客户</span>
                 <RoundButton
                     onClick={this.export}
                     fontSize={12}
@@ -398,7 +412,7 @@ class Customers extends React.Component {
                         data={filteredCustomers()}
                         headers={exportFields}
                         filename={"客户列表.csv"}
-                        className={this.props.classes.exportBtn}
+                        className={classes.exportBtn}
                         target="_blank">导出</CSVLink>}
                     color={'#999'}
                     variant={'text'}
@@ -441,4 +455,4 @@ const LinkedCustomers = connect(
     mapDispatchToProps
 )(Customers)
 
-export default withStyles(styles)(LinkedCustomers)
+export default (LinkedCustomers)

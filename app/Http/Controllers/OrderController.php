@@ -28,8 +28,17 @@ class OrderController extends Controller
         }
 
         $gym = Gym::find($gymId);
-        $startGymTimezone = $gym->convertGymTimezoneToUTC($request->input('start'));
-        $endGymTimezone = $gym->convertGymTimezoneToUTC($request->input('end'));
+        if (!$gym) {
+            return response()->json(['message' => 'gym not found'], 404);
+        }
+        try {
+            $startGymTimezone = $gym->convertGymTimezoneToUTC($request->input('start'));
+            $endGymTimezone = $gym->convertGymTimezoneToUTC($request->input('end'));
+        } catch (\Throwable $e) {
+            // Fallback to raw values if parsing fails
+            $startGymTimezone = $request->input('start');
+            $endGymTimezone = $request->input('end');
+        }
 
         $orders = Order::with(['customer', 'coach.user'])
             ->where('gym_id', '=', $gymId)
@@ -41,10 +50,8 @@ class OrderController extends Controller
             $order->formatTimestamp();
         }
 
-        if ($orders) {
-            return response()->json($orders, 200);
-        }
-        return response()->json(array('message' => 'fail'), 500);
+        // Always return the list (can be empty)
+        return response()->json($orders, 200);
     }
 
     /**
@@ -63,7 +70,7 @@ class OrderController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\OrderStoreRequest $request)
     {
 
         // TODO validate

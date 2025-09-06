@@ -17,6 +17,10 @@ use Auth;
 use DateTime;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
+use App\Http\Requests\ScheduleStoreRequest;
+use App\Http\Requests\ScheduleUpdateRequest;
+use App\Http\Requests\ScheduleDestroyRequest;
+use App\Http\Requests\ScheduleCompleteRequest;
 
 class ScheduleController extends Controller
 {
@@ -242,7 +246,7 @@ class ScheduleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ScheduleStoreRequest $request)
     {
         return DB::transaction(function () use ($request) {
             $userId = Auth::User()->id;
@@ -365,7 +369,7 @@ class ScheduleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $gymId, $id)
+    public function update(ScheduleUpdateRequest $request, $gymId, $id)
     {
         $oriOrderId = $newOrderId = 0;
         $schedule = Schedule::with(['coach.user', 'customer'])->where(['id' => $id, 'gym_id' => $gymId])->first();
@@ -391,12 +395,9 @@ class ScheduleController extends Controller
         $success = $schedule->save();
         $schedule['balance'] = $schedule->getBalance();
 
-        if ($oriOrderId) {
-            Order::refreshBooked($oriOrderId);
-        }
-        if ($newOrderId) {
-            Order::refreshBooked($newOrderId);
-        }
+        // decouple order booked refresh via events
+        event(new \App\Events\ScheduleUpdatedEvent($schedule, $oriOrderId ?: null));
+
         if ($success) {
             return response()->json($schedule, 200);
         }
@@ -409,7 +410,7 @@ class ScheduleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($gymId, $id)
+    public function destroy(ScheduleDestroyRequest $request, $gymId, $id)
     {
         $schedule = Schedule::where(['id' => $id, 'gym_id' => $gymId])->first();
         if (empty($schedule)) {
@@ -427,9 +428,8 @@ class ScheduleController extends Controller
             // update order booked when it's non-trial schedule
             // TODO need to use event pattern
             if ($schedule['order_id']) {
-                $order = Order::find($schedule['order_id']);
-                $order->booked_amount--;
-                $order->save();
+                // decouple via event
+                event(new \App\Events\ScheduleDeletedEvent($schedule));
             }
 
             $schedule->gym->setGymLatestSchedules($schedule->customer_id);
@@ -483,7 +483,7 @@ class ScheduleController extends Controller
         return response()->json($processed, 200);
     }
 
-    public function complete(Request $request, $gymId, $id)
+    public function complete(ScheduleCompleteRequest $request, $gymId, $id)
     {
         $schedule = Schedule::with(['coach.user', 'customer', 'gym'])
             ->where(['id' => $id, 'gym_id' => $gymId])

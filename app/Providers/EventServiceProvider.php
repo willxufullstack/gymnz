@@ -34,9 +34,15 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\BonusEvent' => [
             'App\Listeners\BonusListener',
         ],
-        'App\Events\ScheduleCreateEvent' => [
-            'App\Listeners\BodyDataMeasureAction',
-        ]
+        'App\\Events\\ScheduleCreateEvent' => [
+            'App\\Listeners\\BodyDataMeasureAction',
+        ],
+        'App\\Events\\ScheduleDeletedEvent' => [
+            'App\\Listeners\\ScheduleBookedAmountRefresher',
+        ],
+        'App\\Events\\ScheduleUpdatedEvent' => [
+            'App\\Listeners\\ScheduleBookedAmountRefresher',
+        ],
     ];
 
     /**

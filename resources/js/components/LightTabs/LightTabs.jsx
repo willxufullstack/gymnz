@@ -1,37 +1,45 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React, { useState } from 'react'
 import LightTabTitle from './LightTabTitle'
 import Titlebar from '../TitleBar/Titlebar'
 
-const styles = {
-    container: {
+const PREFIX = 'LightTabs';
+
+const classes = {
+    container: `${PREFIX}-container`,
+    header: `${PREFIX}-header`,
+    body: `${PREFIX}-body`
+};
+
+const Root = styled('div')({
+    [`&.${classes.container}`]: {
         display: 'flex',
         flexDirection: 'column'
     },
-    header: {
+    [`& .${classes.header}`]: {
         display: 'flex',
         // minHeight: 48,
         alignItems: 'center'
     },
-    body: {
+    [`& .${classes.body}`]: {
         marginTop: 8,
         padding: '0 20px',
         overflow: 'scroll'
     }
-}
+});
 
-const LightTabs = ({ classes, title, tabs, style, noVr, onSwitch }) => {
+const LightTabs = ({  title, tabs, style, noVr, onSwitch }) => {
     const [activeTab, setActiveTab] = useState(0)
     const onClickTab = i => () => {
         setActiveTab(i)
         onSwitch && onSwitch(i)
     }
     return (
-        <div className={classes.container} style={style}>
+        <Root className={classes.container} style={style}>
             <Titlebar noVr={noVr} label={title}>
                 <div className={classes.header}>
                     {tabs.filter(tab => !tab.hidden).map((tab, i) => (
-                        <div key={i} onClick={onClickTab(i)}>
+                        <div key={tab.tabName} onClick={onClickTab(i)}>
                             <LightTabTitle
                                 label={tab.tabName}
                                 active={i === activeTab}
@@ -41,8 +49,8 @@ const LightTabs = ({ classes, title, tabs, style, noVr, onSwitch }) => {
                 </div>
             </Titlebar>
             <div className={classes.body}>{tabs[activeTab].tabContent}</div>
-        </div>
-    )
+        </Root>
+    );
 }
 
-export default withStyles(styles)(LightTabs)
+export default (LightTabs)

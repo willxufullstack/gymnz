@@ -19,7 +19,7 @@ class BillingController extends Controller
      */
     public function index()
     {
-        //
+        return response()->noContent();
     }
 
     /**
@@ -29,14 +29,14 @@ class BillingController extends Controller
      */
     public function create()
     {
-        //
+        return response()->noContent();
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -60,45 +60,45 @@ class BillingController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\billing  $billing
+     * @param  \App\Billing  $billing
      * @return \Illuminate\Http\Response
      */
-    public function show(billing $billing)
+    public function show(Billing $billing)
     {
-        //
+        return response()->noContent();
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\billing  $billing
+     * @param  \App\Billing  $billing
      * @return \Illuminate\Http\Response
      */
-    public function edit(billing $billing)
+    public function edit(Billing $billing)
     {
-        //
+        return response()->noContent();
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\billing  $billing
+     * @param  \App\Billing  $billing
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, billing $billing)
+    public function update(Request $request, Billing $billing)
     {
-        //
+        return response()->noContent();
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\billing  $billing
+     * @param  \App\Billing  $billing
      * @return \Illuminate\Http\Response
      */
-    public function destroy(billing $billing)
+    public function destroy(Billing $billing)
     {
-        //
+        return response()->noContent();
     }
 }

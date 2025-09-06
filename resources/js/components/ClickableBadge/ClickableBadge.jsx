@@ -1,22 +1,30 @@
-import { withStyles, Tooltip } from '@material-ui/core'
+import { Tooltip } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react'
 
-const styles = {
-    container: {
+const PREFIX = 'ClickableBadge';
+
+const classes = {
+    container: `${PREFIX}-container`,
+    label: `${PREFIX}-label`,
+    number: `${PREFIX}-number`
+};
+
+const StyledTooltip = styled(Tooltip)({
+    [`& .${classes.container}`]: {
         cursor: 'pointer',
         display: 'inline-block',
         padding: '0px 4px 0px 8px',
         border: '1px solid #000',
         borderRadius: 18,
-        display: 'flex',
         height: 22,
         alignItems: 'center'
     },
-    label: {
+    [`& .${classes.label}`]: {
         fontSize: 12,
         fontWeight: 400
     },
-    number: {
+    [`& .${classes.number}`]: {
         width: 16,
         height: 16,
         display: 'inline-block',
@@ -29,10 +37,9 @@ const styles = {
         lineHeight: '16px',
         marginLeft: 6
     }
-}
+});
 
 const ClickableBadge = ({
-    classes,
     color,
     label,
     number,
@@ -59,7 +66,7 @@ const ClickableBadge = ({
 
 
     return (
-        <Tooltip title={tooltip || ''}>
+        <StyledTooltip title={tooltip || ''}>
             <div
                 onClick={() => onClick && onClick()}
                 className={classes.container}
@@ -74,8 +81,8 @@ const ClickableBadge = ({
                     </span>
                 )}
             </div>
-        </Tooltip>
-    )
+        </StyledTooltip>
+    );
 }
 
-export default withStyles(styles)(ClickableBadge)
+export default (ClickableBadge)

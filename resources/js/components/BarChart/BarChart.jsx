@@ -1,4 +1,4 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React from 'react'
 import YGrid from './YGrid'
 import YAxis from './YAxis'
@@ -6,15 +6,27 @@ import XAxis from './XAxis'
 import Bar from './Bar'
 import Legend from './Legend'
 
-const styles = {
-    panel: {
+const PREFIX = 'BarChart';
+
+const classes = {
+    panel: `${PREFIX}-panel`,
+    container: `${PREFIX}-container`,
+    bg: `${PREFIX}-bg`,
+    bars: `${PREFIX}-bars`,
+    yAxis: `${PREFIX}-yAxis`,
+    yGrids: `${PREFIX}-yGrids`,
+    legendContainer: `${PREFIX}-legendContainer`
+};
+
+const Root = styled('div')({
+    [`&.${classes.panel}`]: {
         width: '100%',
         height: '100%',
         alignItems: 'center',
         display: 'flex',
         flexDirection: 'column'
     },
-    container: {
+    [`& .${classes.container}`]: {
         minHeight: 160,
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
@@ -24,30 +36,29 @@ const styles = {
         width: '100%',
         height: '100%'
     },
-    bg: {
+    [`& .${classes.bg}`]: {
         gridArea: '1 / 1 / 5 / 5',
         display: 'flex',
         width: '100%'
     },
-    bars: {
+    [`& .${classes.bars}`]: {
         gridArea: '1 / 1 / 5 / 5',
         display: 'flex'
     },
-    yAxis: {
+    [`& .${classes.yAxis}`]: {
         width: 30
     },
-    yGrids: {
+    [`& .${classes.yGrids}`]: {
         flex: 1,
         display: 'flex',
         flexDirection: 'column'
     },
-    legendContainer: {
+    [`& .${classes.legendContainer}`]: {
         display: 'flex'
     }
-}
+});
 
 const BarChart = ({
-    classes,
     data,
     xLabels,
     colors,
@@ -87,7 +98,7 @@ const BarChart = ({
     ))
 
     return (
-        <div className={classes.panel}>
+        <Root className={classes.panel}>
             <div className={classes.container}>
                 <div className={classes.bg}>
                     <YAxis
@@ -113,8 +124,8 @@ const BarChart = ({
             <div className={classes.legendContainer}>
                 {legends.map((label,i) => <Legend key={i} color={colors[i]} label={label} />)}
             </div>
-        </div>
-    )
+        </Root>
+    );
 }
 
-export default withStyles(styles)(BarChart)
+export default (BarChart)

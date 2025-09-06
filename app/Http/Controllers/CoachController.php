@@ -110,7 +110,9 @@ class CoachController extends Controller
     public function store(Request $request, $gym_id)
     {
         $operater = Auth::User();
-        $userId = $operater->id;
+        /** @var \App\User $authenticatedUser */
+        $authenticatedUser = $operater;
+        $userId = $authenticatedUser->id;
 
         $coachData = $request->only('name', 'phone', 'sex');
 
@@ -161,6 +163,11 @@ class CoachController extends Controller
         if (empty($coachItem)) {
             return response()->json(array('message' => 'can not find coach_id ' . $coachId), 500);
         }
+        /** @var \App\User $user */
+        /** @var \App\User $user */
+        /** @var \App\User $user */
+        /** @var \App\User $user */
+        /** @var \App\User $user */
         $user = $coachItem->user;
         // send invitation
         $vcode = $user->refreshVCode(365 * 24 * 60 * 60);
@@ -207,13 +214,21 @@ class CoachController extends Controller
             $coachItem->is_gym_manager = (bool) $request->input('is_gym_manager');
         }
         if ($request->has('avatar')) {
-            $coachItem->user->avatar = $request->input('avatar');
-            $coachItem->user->save();
+            /** @var \App\User $user */
+            $user = $coachItem->user;
+            $user->avatar = $request->input('avatar');
+            /** @var \App\User $user */
+            $user = $coachItem->user;
+            $user->save();
         }
 
         if ($request->has('description')) {
-            $coachItem->user->description = $request->input('description');
-            dd($coachItem->user->save());
+            /** @var \App\User $user */
+            $user = $coachItem->user;
+            $user->description = $request->input('description');
+            /** @var \App\User $user */
+            $user = $coachItem->user;
+            dd($user->save());
         }
 
         $success = $coachItem->save();
@@ -246,7 +261,7 @@ class CoachController extends Controller
         return response()->json(array('message' => 'fail'), 500);
     }
 
-    public function getCoachInfoForAdmin(User $user): Coach
+    public function getCoachInfoForAdmin(User $user): ?Coach
     {
         $gyms = Gym::where("created_by", "=", $user->id)->get();
         foreach ($gyms as $gym) {
@@ -256,8 +271,6 @@ class CoachController extends Controller
             if (empty($coach)) {
                 continue;
             }
-            $coach->user = $user;
-            $coach->coach_id = 0;
             return $coach;
         }
         return null;
@@ -273,7 +286,9 @@ class CoachController extends Controller
             ->setAppends(['is_gym_manager']);
 
         if (!$ret) {
-            $ret = $this->getCoachInfoForAdmin($user);
+            /** @var \App\User $authenticatedUser */
+        $authenticatedUser = $user;
+        $ret = $this->getCoachInfoForAdmin($authenticatedUser);
         }
 
         if ($ret) {
@@ -289,6 +304,7 @@ class CoachController extends Controller
         if (empty($coachItem)) {
             return response()->json(array('message' => 'can not find coach_id ' . $coachId), 500);
         }
+        /** @var \App\User $usr */
         $usr = $coachItem->user;
         // reset password
         $usr->password = Hash::make('00000000');
@@ -330,6 +346,10 @@ class CoachController extends Controller
                     ->where('date', '<=', $endGymTimezone)
                     ->where('order_id', 0)
                     ->count();
+                /** @var \App\Coach $coach */
+                $coach = $order->coach;
+                /** @var \App\User $user */
+                $user = $coach->user;
                 $ret[$order->coach_id] = [
                     'trialSchedule' => $trialScheduleCount,
                     'schedule' => $scheduleCount,
@@ -339,7 +359,7 @@ class CoachController extends Controller
                     'totalOrderPrice' => 0,
                     'totalOrderAmount' => 0,
                     'totalSchedulePrice' => $totalSchedulePrice,
-                    'coachName' => $order->coach->user->name
+                    'coachName' => $user->name
                 ];
             }
 

@@ -1,8 +1,18 @@
-import { withStyles, Tooltip } from '@material-ui/core'
+import { Tooltip } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react'
 
-const styles = {
-    container: {
+const PREFIX = 'Bar';
+
+const classes = {
+    container: `${PREFIX}-container`,
+    barContainer: `${PREFIX}-barContainer`,
+    flexContainer: `${PREFIX}-flexContainer`,
+    bar: `${PREFIX}-bar`
+};
+
+const Root = styled('div')({
+    [`& .${classes.container}`]: {
         flex: 1,
         display: 'grid',
         gridTemplateColumns: 'repeat(1, 1fr)',
@@ -10,13 +20,13 @@ const styles = {
         gridColumnGap: 0,
         gridRowGap: 0
     },
-    barContainer: {
+    [`&.${classes.barContainer}`]: {
         height: '100%',
         gridArea: '1 / 1 / 2 / 2',
         display: 'flex',
         alignItems: 'flex-end'
     },
-    flexContainer: {
+    [`& .${classes.flexContainer}`]: {
         width: 10,
         height: '100%',
         margin: 'auto',
@@ -24,15 +34,15 @@ const styles = {
         gridTemplateColumns: 'repeat(1, 1fr)',
         gridTemplateRows: 'repeat(1, 1fr)'
     },
-    bar: {
+    [`& .${classes.bar}`]: {
         width: '100%',
         boxShadow: '0 0 4px #e3e3e3'
     }
-}
+});
 
-const BarItem = ({ classes, width, value, max, color }) => {
+const BarItem = ({  width, value, max, color }) => {
     return (
-        <div
+        <Root
             className={classes.barContainer}
             style={{
                 width
@@ -46,11 +56,11 @@ const BarItem = ({ classes, width, value, max, color }) => {
                     backgroundColor: color
                 }}
             />
-        </div>
-    )
+        </Root>
+    );
 }
 
-const Bar = ({ classes, data, colors, legends, max = 100, width = 10 }) => {
+const Bar = ({  data, colors, legends, max = 100, width = 10 }) => {
     const TooltipTitle = ({ data, colors }) => {
         return (
             <React.Fragment>
@@ -94,4 +104,4 @@ const Bar = ({ classes, data, colors, legends, max = 100, width = 10 }) => {
     )
 }
 
-export default withStyles(styles)(Bar)
+export default (Bar)

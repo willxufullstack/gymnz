@@ -5,14 +5,14 @@ import { Switch, Route, Redirect } from 'react-router-dom'
 import 'perfect-scrollbar/css/perfect-scrollbar.css'
 // core components
 import Sidebar from '-components/Sidebar/Sidebar.jsx'
-import routes from '../routes.js'
+import routes from '../routes.jsx'
 
 import { bindActionCreators } from 'redux'
 import * as Actions from '../actions'
 import connect from 'react-redux/es/connect/connect'
 import './Admin.scss'
 import HashLoader from 'react-spinners/HashLoader'
-import { Snackbar } from '@material-ui/core'
+import { Snackbar } from '@mui/material'
 
 const switchRoutes = (
     <Switch>
@@ -40,26 +40,30 @@ class Admin extends React.Component {
         }
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.actions.loadGym()
-        //load customer list when init
+        // load customer list when init if selected gym already set
         if (this.props.setting.selectedGym.id) {
             this.props.actions.loadCustomer(this.props.setting.selectedGym.id, {
                 hotmap: 1
             })
+        } else if (this.props.gyms && this.props.gyms.length > 0) {
+            this.selectDefaultGym()
         }
     }
 
-    componentDidUpdate(e) {
-        if (e.history.location.pathname !== e.location.pathname) {
+    componentDidUpdate(prevProps) {
+        if (prevProps.history.location.pathname !== this.props.location.pathname) {
             this.refs.mainPanel.scrollTop = 0
+        }
+        // select default gym when gyms are loaded but no selected gym yet
+        if (!this.props.setting.selectedGym.id && this.props.gyms && this.props.gyms.length > 0 && prevProps.gyms !== this.props.gyms) {
+            this.selectDefaultGym()
         }
     }
 
     render() {
-        if (!this.props.setting.selectedGym.id) {
-            this.selectDefaultGym()
-        }
+        
         return (
             <div className="wrapper">
                 <Sidebar routes={routes} />
@@ -107,7 +111,7 @@ class Admin extends React.Component {
                             this.props.actions.closeSuccessMsg()
                         }}
                     />
-                    <div className="container">
+                    <div className="app-container">
                         <Suspense
                             fallback={
                                 <div

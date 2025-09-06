@@ -1,17 +1,17 @@
 import React from 'react'
+import { styled } from '@mui/material/styles';
 import connect from 'react-redux/es/connect/connect'
 import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import PropTypes from 'prop-types'
-// @material-ui/core
-import withStyles from '@material-ui/core/styles/withStyles'
-// @material-ui/icons
-import Add from '@material-ui/icons/Add'
+// @mui/icons-material
+import Add from '@mui/icons-material/Add'
 // core components
 import CustomerSelectionDialogue from '-components/CustomDialogues/CustomerSelectionDialogue'
 import * as utils from '-utils'
 import dayjs from 'dayjs'
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
+import { DatePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import classnames from 'classnames'
 import Confirmation from '-components/CustomDialogues/Confirmation'
@@ -23,25 +23,31 @@ import {
     ListItemText,
     IconButton,
     Avatar
-} from '@material-ui/core'
-import DayjsUtils from '@date-io/dayjs'
+} from '@mui/material'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import i18N from '../../lang'
-import Dialog from '@material-ui/core/Dialog'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
+import Dialog from '@mui/material/Dialog'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
 import Titlebar from '../../components/TitleBar/Titlebar'
 import DotBadge from '../../components/DotBadge/DotBadge'
 import CalendarStyleDatepicker from '../../components/CalendarStyleDatePicker/CalendarStyleDatePicker'
 import RoundButton from '../../components/RoundButton/RoundButton'
 
-const L = i18N('Dashboard')
+const PREFIX = 'Dashboard';
 
-const dashboardStyle = {
-    headerContainer: {
+const classes = {
+    headerContainer: `${PREFIX}-headerContainer`
+};
+
+const Root = styled('div')({
+    [`& .${classes.headerContainer}`]: {
         display: 'flex',
         alignItems: 'center'
     }
-}
+});
+
+const L = i18N('Dashboard')
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -87,7 +93,7 @@ class Dashboard extends React.Component {
         // return nextProps.gym !== this.props.gym || this.state.showDeleteConfirmation !== nextState.showDeleteCoachConfirmation;
     }
 
-    componentWillMount() {
+    componentDidMount() {
         if (this.props.selectedGym.id) {
             this.props.actions.loadCoach(this.props.selectedGym.id)
             // this.props.actions.loadCustomer(this.props.selectedGym.id)
@@ -155,7 +161,7 @@ class Dashboard extends React.Component {
     }
 
     scheduleDetailCard = detail => {
-        const { classes } = this.props
+        const { } = this.props
         const actions = detail.filter(t => {
             return t.contenttype === 'action'
         })
@@ -166,7 +172,7 @@ class Dashboard extends React.Component {
             <List>
                 {actions.map(item => (
                     //卧推 3 组 * 10个 100kg 休息 30s
-                    <ListItem
+                    (<ListItem
                         className={classes.scheduleDetail}
                         key={`${item.sortIndex}`}
                     >
@@ -189,10 +195,10 @@ class Dashboard extends React.Component {
                             className={classes.scheduleDetailInterval}
                             primary={' 休息 ' + item.interval}
                         />
-                    </ListItem>
+                    </ListItem>)
                 ))}
             </List>
-        )
+        );
     }
 
     scheduleDetailsDialog = () => {
@@ -435,7 +441,7 @@ class Dashboard extends React.Component {
 
         const workhours = this.getWorkingHours()
         return (
-            <div key={c.id} className="gym-day-view-body-col">
+            <Root key={c.id} className="gym-day-view-body-col">
                 <List>
                     {utils.range(workhours.min, workhours.max + 1).map(t => {
                         let borderCls = 'none'
@@ -483,8 +489,8 @@ class Dashboard extends React.Component {
                         )
                     })}
                 </List>
-            </div>
-        )
+            </Root>
+        );
     }
 
     nextDay = () => {
@@ -504,26 +510,28 @@ class Dashboard extends React.Component {
             <div className="gym-day-view-container">
                 <div className="gym-day-view-header">
                     <div className="gym-day-view-date-picker">
-                        <MuiPickersUtilsProvider
-                            utils={DayjsUtils}
-                            locale={'zh-cn'}
+                        <LocalizationProvider
+                            dateAdapter={AdapterDayjs}
+                            adapterLocale={'zh-cn'}
                         >
-                            <DatePicker
+                            <DatePicker enableAccessibleFieldDOMStructure={false}
                                 format="YYYY/MM/DD"
-                                value={this.state.selectedDate}
+                                value={dayjs(this.state.selectedDate)}
                                 onChange={this.handleDateChange}
                                 autoOk
-                                TextFieldComponent={({ onClick, value }) => (
-                                    <CalendarStyleDatepicker
-                                        date={value}
-                                        onClick={onClick}
-                                        setDate={newDate => {
-                                            this.handleDateChange(newDate)
-                                        }}
-                                    />
-                                )}
+                                slots={{
+                                    textField: ({ onClick, value }) => (
+                                        <CalendarStyleDatepicker
+                                            date={value}
+                                            onClick={onClick}
+                                            setDate={newDate => {
+                                                this.handleDateChange(newDate)
+                                            }}
+                                        />
+                                    )
+                                }}
                             />
-                        </MuiPickersUtilsProvider>
+                        </LocalizationProvider>
                     </div>
                     <div className="gym-day-view-coaches">
                         {this.props.gym.coaches
@@ -564,7 +572,7 @@ class Dashboard extends React.Component {
     getColoredBadge = ({}) => {}
 
     getSummaryHeader = () => {
-        const { classes } = this.props
+        const { } = this.props
         return (
             <div className={classes.headerContainer}>
                 <Titlebar label={'日程'} />
@@ -643,9 +651,7 @@ class Dashboard extends React.Component {
     }
 }
 
-Dashboard.propTypes = {
-    classes: PropTypes.object.isRequired
-}
+
 
 const mapStoreToProps = store => {
     return {
@@ -666,4 +672,4 @@ const LinkedDashboard = connect(
     mapDispatchToProps
 )(Dashboard)
 
-export default withStyles(dashboardStyle)(LinkedDashboard)
+export default (LinkedDashboard)

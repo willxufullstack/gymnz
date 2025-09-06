@@ -1,17 +1,23 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React from 'react'
 import classNames from 'classnames'
 
-const styles = {
-    container: {
+const PREFIX = 'Panel';
+
+const classes = {
+    container: `${PREFIX}-container`
+};
+
+const Root = styled('div')({
+    [`&.${classes.container}`]: {
         overflow: 'hidden',
         border: '1px solid #f3f3f3',
         background: '#fff',
         borderRadius: 12
     }
-}
+});
 
-const Panel = ({ classes, children, flex, scroll, className, style }) => {
+const Panel = ({  children, flex, scroll, className, style }) => {
     let defaultStyle = {}
     if (flex) {
         defaultStyle = { ...defaultStyle, flex: 1 }
@@ -21,10 +27,10 @@ const Panel = ({ classes, children, flex, scroll, className, style }) => {
     }
 
     return (
-        <div className={classNames(classes.container, className)} style={{...defaultStyle, ...style}}>
+        <Root className={classNames(classes.container, className)} style={{...defaultStyle, ...style}}>
             {children}
-        </div>
-    )
+        </Root>
+    );
 }
 
-export default withStyles(styles)(Panel)
+export default (Panel)

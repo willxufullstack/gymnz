@@ -36,7 +36,7 @@ return [
     'connections' => [
         'redis' => [
 
-            'client' => 'predis',
+            'client' => 'phpredis',
 
             'default' => [
                 'host' => env('REDIS_HOST', '127.0.0.1'),
@@ -139,7 +139,7 @@ return [
 
     'redis' => [
 
-        'client' => env('REDIS_CLIENT', 'predis'),
+        'client' => env('REDIS_CLIENT', 'phpredis'),
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'predis'),

@@ -1,17 +1,19 @@
 import React from 'react'
+import { styled } from '@mui/material/styles';
 import connect from 'react-redux/es/connect/connect'
 import {bindActionCreators} from 'redux'
 import * as Actions from '../../actions'
-import withStyles from '@material-ui/core/styles/withStyles'
 import '../../../sass/gymdayview.scss'
 import SearchableTable from "-components/SearchableTable/SearchableTable";
 import i18N from "../../lang";
 import RoundButton from "-components/RoundButton/RoundButton";
 import CreateNewDialogue from "-components/CustomDialogues/CreateNewDialogue";
 
-const L = i18N('Documents')
+const PREFIX = 'Documents';
+const classes = {};
+const Root = styled('div')({});
 
-const styles = {}
+const L = i18N('Documents')
 
 class Documents extends React.Component {
     constructor(props) {
@@ -166,7 +168,7 @@ class Documents extends React.Component {
 
     addNewDocumentButton = () => {
         return (
-            <div style={{display: 'flex'}} key='addNewDocumentButton'>
+            <Root style={{display: 'flex'}} key='addNewDocumentButton'>
                 <RoundButton
                     color="#29aa99"
                     shadow
@@ -178,8 +180,8 @@ class Documents extends React.Component {
                     label={'添加文档'}
                     style={{ marginRight: 12 }}
                 />
-            </div>
-        )
+            </Root>
+        );
     }
 
     render() {
@@ -220,4 +222,4 @@ const LinkedDocuments = connect(
     mapDispatchToProps
 )(Documents)
 
-export default withStyles(styles)(LinkedDocuments)
+export default (LinkedDocuments)

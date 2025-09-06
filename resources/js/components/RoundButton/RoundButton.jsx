@@ -1,10 +1,16 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React from 'react'
 import classNames from 'classnames'
 import * as utils from '-utils'
 
-const styles = {
-    container: {
+const PREFIX = 'RoundButton';
+
+const classes = {
+    container: `${PREFIX}-container`
+};
+
+const Root = styled('div')({
+    [`&.${classes.container}`]: {
         border: '1px solid #ECECEC',
         background: '#fff',
         borderRadius: 100,
@@ -15,10 +21,9 @@ const styles = {
                 '0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149)'
         }
     }
-}
+});
 
 const RoundButton = ({
-    classes,
     className,
     variant,
     label,
@@ -48,14 +53,14 @@ const RoundButton = ({
     }
 
     return (
-        <div
+        <Root
             className={classNames(classes.container, className)}
             style={{ ...style, ...defaultStyle }}
             onClick={e => !disabled && onClick(e)}
         >
             {label}
-        </div>
-    )
+        </Root>
+    );
 }
 
-export default withStyles(styles)(RoundButton)
+export default (RoundButton)

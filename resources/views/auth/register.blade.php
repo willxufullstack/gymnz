@@ -11,8 +11,8 @@
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
-                        <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">姓名</label>
+                        <div class="row mb-3">
+                            <label for="name" class="col-md-4 col-form-label text-md-end">姓名</label>
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
@@ -25,11 +25,11 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="email" class="col-md-4 col-form-label text-md-right">电话</label>
+                        <div class="row mb-3">
+                            <label for="email" class="col-md-4 col-form-label text-md-end">电话</label>
 
                             <div class="col-md-6">
-                                <input id="email" class="form-control" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                <input id="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
 
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
@@ -39,8 +39,8 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="password" class="col-md-4 col-form-label text-md-right">密码</label>
+                        <div class="row mb-3">
+                            <label for="password" class="col-md-4 col-form-label text-md-end">密码</label>
 
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
@@ -52,15 +52,15 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-right">确认密码</label>
+                        <div class="row mb-3">
+                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">确认密码</label>
 
                             <div class="col-md-6">
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                             </div>
                         </div>
 
-                        <div class="form-group row mb-0">
+                        <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
                                    注册

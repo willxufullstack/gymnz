@@ -1,29 +1,40 @@
 import '../../../sass/customer.scss'
+import { styled } from '@mui/material/styles';
 import React from 'react'
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import dayjs from 'dayjs'
 import ChartistGraph from 'react-chartist'
-import MaterialTable from 'material-table'
-import { withStyles, Dialog, Divider } from '@material-ui/core'
+import MaterialTable from '@material-table/core'
+import { Dialog, Divider } from '@mui/material';
 import i18N from '../../lang'
 import RoundButton from '../../components/RoundButton/RoundButton'
 import Panel from '../../components/Panel/Panel'
 import Titlebar from '../../components/TitleBar/Titlebar'
 
-const L = i18N('CustomerDataSection')
-const styles = {
-    chartCard: {
+const PREFIX = 'CustomerDataSection';
+
+const classes = {
+    chartCard: `${PREFIX}-chartCard`,
+    chartListContainer: `${PREFIX}-chartListContainer`,
+    dialogueBody: `${PREFIX}-dialogueBody`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')({
+    [`& .${classes.chartCard}`]: {
         margin: 4,
         padding: 12
     },
-    chartListContainer: {
+    [`& .${classes.chartListContainer}`]: {
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)'
     },
-    dialogueBody: {
+    [`& .${classes.dialogueBody}`]: {
         padding: '0 20px'
     }
-}
+});
+
+const L = i18N('CustomerDataSection')
 
 class CustomerDataSection extends React.Component {
     constructor(props) {
@@ -72,7 +83,7 @@ class CustomerDataSection extends React.Component {
             })
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.actions.loadGroupedCustomerBodyData(this.props.customerId)
     }
 
@@ -165,9 +176,9 @@ class CustomerDataSection extends React.Component {
     }
 
     render() {
-        const { classes } = this.props
+        const { } = this.props
         return (
-            <React.Fragment>
+            <Root>
                 {this.state.addDialogueField && this.getCreateDialogue()}
                 {this.state.editingOption && this.getEditDialogue()}
                 <div style={{ display: 'flex', marginBottom: 8 }}>
@@ -229,9 +240,9 @@ class CustomerDataSection extends React.Component {
                             </Panel>
                         ))}
                 </div>
-            </React.Fragment>
-        )
+            </Root>
+        );
     }
 }
 
-export default withStyles(styles)(CustomerDataSection)
+export default (CustomerDataSection)

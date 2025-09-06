@@ -13,7 +13,7 @@ use DateTime;
 
 class Gym extends Model
 {
-    protected $tableName = "gyms";
+    protected $table = 'gyms';
     const DEFAULT_TIMEZONE = 'Asia/Shanghai';
     const GYM_LATEST_SCHEDULE_PREFIX = 'lastest_schedule_gym__';
 
@@ -93,22 +93,29 @@ class Gym extends Model
         return $this->timezone ? $this->timezone : self::DEFAULT_TIMEZONE;
     }
 
-    public function convertGymTimezoneToUTC($time, $format = 'Y-m-d H:i:s'): string
+    public function convertGymTimezoneToUTC($time, $format = 'Y-m-d H:i:s') : string
     {
-        // $timezone = $this->getTimezone();
-        // $utcTime = new \DateTime($time, new \DateTimeZone($timezone));
-        // $utcTime->setTimezone(new \DateTimeZone('UTC'));
-        // return $utcTime->format($format);
-        return $time;
+        $tz = $this->getTimezone();
+        // Accept Carbon/DateTime or string
+        if ($time instanceof \DateTimeInterface) {
+            $dt = (new \DateTime($time->format('Y-m-d H:i:s'), new \DateTimeZone($tz)));
+        } else {
+            $dt = new \DateTime(is_string($time) ? $time : (string)$time, new \DateTimeZone($tz));
+        }
+        $dt->setTimezone(new \DateTimeZone('UTC'));
+        return $dt->format($format);
     }
 
-    public function convertUTCToGymTimezone($time, $format = 'Y-m-d H:i:s'): string
+    public function convertUTCToGymTimezone($time, $format = 'Y-m-d H:i:s') : string
     {
-        // $timezone = $this->getTimezone();
-        // $gymTime = new \DateTime($time, new \DateTimeZone('UTC'));
-        // $gymTime->setTimezone(new \DateTimeZone($timezone));
-        // return $gymTime->format($format);
-        return $time;
+        $tz = $this->getTimezone();
+        if ($time instanceof \DateTimeInterface) {
+            $dt = (new \DateTime($time->format('Y-m-d H:i:s'), new \DateTimeZone('UTC')));
+        } else {
+            $dt = new \DateTime(is_string($time) ? $time : (string)$time, new \DateTimeZone('UTC'));
+        }
+        $dt->setTimezone(new \DateTimeZone($tz));
+        return $dt->format($format);
     }
 
     public static function timeRange(string $date, int $days): DatePeriod
@@ -195,10 +202,10 @@ class Gym extends Model
     public function crawlTrafficDay(string $date, bool $force = false)
     {
         // skip if exist
-        $dianping = Dianping::where('date', $date)
-            ->where('gym_id', $this->gym_id)
-            ->count();
-        if ($dianping && $dianping->view_uv !== 0) {
+        $existing = Dianping::where('date', $date)
+            ->where('gym_id', $this->id)
+            ->first();
+        if ($existing && (int)$existing->view_uv !== 0) {
             return;
         }
 

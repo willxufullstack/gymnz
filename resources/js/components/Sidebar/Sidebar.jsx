@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import './Sidebar.scss'
 import logo from '-assets/img/logo_pro.png'
-import LogoutIcon from '@material-ui/icons/PowerSettingsNew'
+import LogoutIcon from '@mui/icons-material/PowerSettingsNew'
 
 const Sidebar = ({ ...props }) => {
     const { routes } = props

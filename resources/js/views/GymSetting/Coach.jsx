@@ -1,24 +1,37 @@
 import React from 'react'
+import { styled } from '@mui/material/styles';
 import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import connect from 'react-redux/es/connect/connect'
-// @material-ui/icons
-import Add from '@material-ui/icons/Add'
+// @mui/icons-material
+import Add from '@mui/icons-material/Add'
 // core components
 import '../../../sass/coach.scss'
 import classNames from 'classnames'
 import CreateNewDialogue from '-components/CustomDialogues/CreateNewDialogue'
 import Confirmation from '-components/CustomDialogues/Confirmation'
 import i18N from '../../lang'
-import { Switch, withStyles } from '@material-ui/core'
+import { Switch } from '@mui/material';
 import Panel from '../../components/Panel/Panel'
 import RoundButton from '../../components/RoundButton/RoundButton'
 import Titlebar from '../../components/TitleBar/Titlebar'
 import QNUploader from '-components/QNUploader/QNUploader'
 
-const L = i18N('Coach')
-const styles = {
-    coachContainer: {
+const PREFIX = 'Coach';
+
+const classes = {
+    coachContainer: `${PREFIX}-coachContainer`,
+    avatar: `${PREFIX}-avatar`,
+    header: `${PREFIX}-header`,
+    row: `${PREFIX}-row`,
+    rowLabel: `${PREFIX}-rowLabel`,
+    bottom: `${PREFIX}-bottom`,
+    newCoach: `${PREFIX}-newCoach`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')({
+    [`& .${classes.coachContainer}`]: {
         '&:hover': {
             boxShadow: '0px 2px 24px rgba(0, 0, 0, 0.1)'
         },
@@ -28,18 +41,18 @@ const styles = {
             opacity: 1
         }
     },
-    avatar: {
+    [`& .${classes.avatar}`]: {
         width: "4rem",
         borderRadius: 4,
     },
-    header: {
+    [`& .${classes.header}`]: {
         padding: '8px 12px',
         fontSize: 16,
         fontWeight: '900',
         display: 'flex',
         alignItems: 'center'
     },
-    row: {
+    [`& .${classes.row}`]: {
         padding: '2px 16px',
         display: 'flex',
         alignItems: 'center',
@@ -47,12 +60,12 @@ const styles = {
         fontWeight: '500',
         color: '#666'
     },
-    rowLabel: {
+    [`& .${classes.rowLabel}`]: {
         flex: 1,
         fontSize: 14,
         fontWeight: '700'
     },
-    bottom: {
+    [`& .${classes.bottom}`]: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -61,7 +74,7 @@ const styles = {
         visibility: 'hidden',
         transition: 'opacity 0.15s linear, visibility 0.15s linear'
     },
-    newCoach: {
+    [`& .${classes.newCoach}`]: {
         margin: 'auto',
         fontSize: 72,
         color: '#aaa',
@@ -72,7 +85,9 @@ const styles = {
             color: '#29aa99'
         }
     }
-}
+});
+
+const L = i18N('Coach')
 class Coach extends React.Component {
     constructor(props) {
         super(props)
@@ -85,7 +100,7 @@ class Coach extends React.Component {
         }
     }
 
-    componentWillMount() {
+    componentDidMount() {
         if (this.props.selectedGym.id) {
             this.props.actions.loadCoach(this.props.selectedGym.id)
         }
@@ -251,9 +266,9 @@ class Coach extends React.Component {
             // }
         ]
 
-        const { classes } = this.props
+        const { } = this.props
         return (
-            <React.Fragment>
+            <Root>
                 {this.state.showDeleteConfirmation && (
                     <Confirmation {...deleteCoachParams} />
                 )}
@@ -429,7 +444,6 @@ class Coach extends React.Component {
                         className={classes.newCoach}
                     />
                 </div>
-
                 {/* create coach dialogue */}
                 {this.props.gym.showNewCoach && (
                     <CreateNewDialogue
@@ -446,8 +460,8 @@ class Coach extends React.Component {
                     />
                 )}
                 {this.state.editDescDialog && <this.editDescDialog />}
-            </React.Fragment>
-        )
+            </Root>
+        );
     }
 }
 
@@ -473,4 +487,4 @@ const LinkedCoach = connect(
     mapDispatchToProps
 )(Coach)
 
-export default withStyles(styles)(LinkedCoach)
+export default (LinkedCoach)

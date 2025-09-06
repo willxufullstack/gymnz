@@ -1,24 +1,27 @@
 import '../../../sass/customer.scss'
+import { styled } from '@mui/material/styles';
 import React from 'react'
 import connect from 'react-redux/es/connect/connect'
 import { bindActionCreators } from 'redux'
 import * as Actions from '../../actions'
 import CustomerDataSection from './CustomerDataSection'
 import CustomerPhotoSection from './CustomerPhotoSection'
-import Badge from '@material-ui/core/Badge'
+import Badge from '@mui/material/Badge'
 import * as utils from '-utils'
 import 'dayjs/locale/zh-cn'
 import Confirmation from '-components/CustomDialogues/Confirmation'
 import LightTabs from '-components/LightTabs/LightTabs'
-import SearchableTable from '-components/SearchableTable/SearchableTable'
+import SearchableTable from '../../components/SearchableTable/SearchableTable'
 import CreateNewDialogue from '../../components/CustomDialogues/CreateNewDialogue'
-import { withStyles } from '@material-ui/core'
 import i18N from '../../lang'
 import RoundButton from '../../components/RoundButton/RoundButton'
 
+const PREFIX = 'Customer';
+const classes = {};
+const Root = styled('div')({});
+
 const L = i18N('Customer')
 
-const styles = {}
 class Customer extends React.Component {
     constructor(props) {
         super(props)
@@ -325,7 +328,7 @@ class Customer extends React.Component {
                 title: '订单号',
                 flex: 1,
                 render: r => (
-                    <div
+                    <Root
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -342,7 +345,7 @@ class Customer extends React.Component {
                             }}
                         />
                         <span style={{ flex: 1 }}>{'#' + r.id}</span>
-                    </div>
+                    </Root>
                 )
             },
             {
@@ -451,7 +454,7 @@ class Customer extends React.Component {
         )
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.actions.loadCoach(this.props.selectedGym.id)
         this.props.actions.loadCustomerBodyDataOptions()
         this.props.actions.loadCustomerOrders(this.customerId, {
@@ -654,4 +657,4 @@ const LinkedCustomer = connect(
     mapDispatchToProps
 )(Customer)
 
-export default withStyles(styles)(LinkedCustomer)
+export default (LinkedCustomer)

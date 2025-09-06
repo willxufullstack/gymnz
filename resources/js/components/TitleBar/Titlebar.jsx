@@ -1,15 +1,24 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import classNames from 'classnames'
 import React from 'react'
 
-const styles = {
-    container: {
+const PREFIX = 'Titlebar';
+
+const classes = {
+    container: `${PREFIX}-container`,
+    title: `${PREFIX}-title`,
+    description: `${PREFIX}-description`,
+    vr: `${PREFIX}-vr`
+};
+
+const Root = styled('div')({
+    [`&.${classes.container}`]: {
         display: 'flex',
         padding: '12px 0',
         alignItems: 'center',
         flex: 1
     },
-    title: {
+    [`& .${classes.title}`]: {
         display: 'flex',
         fontSize: 24,
         fontWeight: '900',
@@ -17,13 +26,13 @@ const styles = {
         alignItems: 'center',
         flex: 1
     },
-    description: {
+    [`& .${classes.description}`]: {
         fontSize: 14,
         color: '#999',
         fontWeight: '500',
         marginLeft: 12
     },
-    vr: {
+    [`& .${classes.vr}`]: {
         width: 8,
         height: 22,
         background: '#29aa99',
@@ -33,11 +42,10 @@ const styles = {
         boxShadow:
             '0 1px 2px 0 rgba(60,64,67,0.202), 0 1px 3px 1px rgba(60,64,67,0.079);'
     }
-}
+});
 
 const Titlebar = ({
     noVr,
-    classes,
     color,
     label,
     description = '',
@@ -47,7 +55,7 @@ const Titlebar = ({
     style
 }) => {
     return (
-        <div className={classNames(className, classes.container)} style={style}>
+        <Root className={classNames(className, classes.container)} style={style}>
             {!noVr && (
                 <span
                     className={classes.vr}
@@ -68,8 +76,8 @@ const Titlebar = ({
                 </span>
             </span>
             {children}
-        </div>
-    )
+        </Root>
+    );
 }
 
-export default withStyles(styles)(Titlebar)
+export default (Titlebar)

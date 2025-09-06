@@ -1,32 +1,41 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React, { useState } from 'react'
 import Panel from '../Panel/Panel'
 import AreaChart from '../../views/Overview/AreaChart'
 import OptionLabel from './OptionLabel'
 
-const styles = {
-    chart: {
+const PREFIX = 'LineChart';
+
+const classes = {
+    chart: `${PREFIX}-chart`,
+    chartTitleContainer: `${PREFIX}-chartTitleContainer`,
+    chartOptions: `${PREFIX}-chartOptions`,
+    chartTitle: `${PREFIX}-chartTitle`
+};
+
+const StyledPanel = styled(Panel)({
+    [`&.${classes.chart}`]: {
         position: 'relative',
         display: 'inline-block',
         paddingLeft: 0,
         paddingTop: 16,
         flex: 1
     },
-    chartTitleContainer: {
+    [`& .${classes.chartTitleContainer}`]: {
         display: 'flex',
         alignItems: 'center',
         padding: '0 0 0 38px'
     },
-    chartOptions: {
+    [`& .${classes.chartOptions}`]: {
         display: 'flex'
     },
-    chartTitle: {
+    [`& .${classes.chartTitle}`]: {
         color: '#333',
         fontWeight: '700',
         fontSize: 22,
         flex: 1
     }
-}
+});
 
 const LineChart = React.memo(({
     classes,
@@ -64,7 +73,7 @@ const LineChart = React.memo(({
         })
     }
     return (
-        <Panel className={classes.chart}>
+        <StyledPanel className={classes.chart}>
             <div className={classes.chartTitleContainer}>
                 <div className={classes.chartTitle}>{title}</div>
                 <div className={classes.chartOptions}>
@@ -88,8 +97,8 @@ const LineChart = React.memo(({
                 width={width? width : 360}
                 height={height ? height: 200}
             />
-        </Panel>
-    )
+        </StyledPanel>
+    );
 })
 
-export default withStyles(styles)(LineChart)
+export default (LineChart)

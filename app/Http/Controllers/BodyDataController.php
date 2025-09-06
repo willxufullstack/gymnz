@@ -34,7 +34,7 @@ class BodyDataController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request, $userId)
     {
@@ -81,19 +81,21 @@ class BodyDataController extends Controller
      */
     public function create()
     {
-        //
+        return response()->noContent();
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request, $userId)
     {
         //Batch create
-        $by = Auth::User()->id;
+        /** @var \App\User $authenticatedUser */
+        $authenticatedUser = Auth::User();
+        $by = $authenticatedUser->id;
         $user = User::find($userId);
         $ret = [];
         foreach ($request->input('batch') as $item) {
@@ -121,7 +123,7 @@ class BodyDataController extends Controller
      */
     public function show($id)
     {
-        //
+        return response()->noContent();
     }
 
     /**
@@ -132,7 +134,7 @@ class BodyDataController extends Controller
      */
     public function edit($id)
     {
-        //
+        return response()->noContent();
     }
 
     /**
@@ -140,7 +142,7 @@ class BodyDataController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse|\App\BodyData
      */
     public function update(Request $request, $userId, $id)
     {
@@ -159,7 +161,9 @@ class BodyDataController extends Controller
             $row->value = (float) $request->input('value');
         }
 
-        $row->created_by = Auth::User()->id;
+        /** @var \App\User $authenticatedUser */
+        $authenticatedUser = Auth::User();
+        $row->created_by = $authenticatedUser->id;
         $row->save();
         return $row;
     }
@@ -168,7 +172,7 @@ class BodyDataController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse|\App\BodyData
      */
     public function destroy(Request $request, $userId, $id)
     {

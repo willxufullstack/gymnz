@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <!-- Styles -->
-    <link href="{{ asset('css/app-release.css') }}?v=56" rel="stylesheet">
+    @viteReactRefresh
+    @vite(['resources/js/app.jsx'])
 </head>
 
 <body>
@@ -32,17 +33,9 @@
         }
         document.getElementById('logout-form').submit();
     };
-    var token = "{{Auth::user() ? JWTAuth::fromUser(Auth::user()) : "
-    " }}";
-    var username = "{{ Auth::user() ? Auth::user()->name : "
-    GUEST " }}";
+    window.token = "{{ Auth::user() ? JWTAuth::fromUser(Auth::user()) : '' }}";
+    var username = "{{ Auth::user() ? Auth::user()->name : 'GUEST' }}";
     var hasFinance = {{ Auth::user() ? (Auth::user()->can('manage gym finance') ? 1 : 0 ) : 0 }};
     var hasOrg = {{ Auth::user() ? (Auth::user()->can('manage org') ? 1 : 0 ) : 0 }};
 </script>
-<script src="http://static.o2-fit.com/pro/js/manifest.js?v=92" defer></script>
-<script src="http://static.o2-fit.com/pro/js/vendor.js?v=92" defer></script>
-<script src="http://static.o2-fit.com/pro/js/app.js?v=92" defer></script>
-<!-- <script src="{{ asset('js/manifest.js') }}?v=35" defer></script>
-<script src="{{ asset('js/vendor.js') }}?v=35" defer></script>
-<script src="{{ asset('js/app.js') }}?v=35" defer></script> -->
 </html>

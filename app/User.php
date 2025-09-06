@@ -125,9 +125,9 @@ class User extends Authenticatable implements JWTSubject
             return json_decode($monthHot, true);
         }
 
-        $date = new Carbon(strtotime($date));
+        $date = Carbon::parse($date);
         $date->endOfMonth();
-        $fromDate = date('Y-m-d', strtotime($date . " -1 year"));
+        $fromDate = $date->copy()->subYear()->format('Y-m-d');
         $schedules = Schedule::where('date', '>', $fromDate)
             ->where('date', '<=', $date)
             ->where('gym_id', $gymId)
@@ -146,7 +146,7 @@ class User extends Authenticatable implements JWTSubject
             // $s->date->month
         }
 
-        Redis::set($key, json_encode($ret), 'EX', 24 * 60 * 60);
+        Redis::setex($key, 24 * 60 * 60, json_encode($ret));
         return $ret;
     }
 
@@ -309,7 +309,7 @@ class User extends Authenticatable implements JWTSubject
     {
         $key = 'vcode_' . $this->id;
         $vcode = rand(1000, 9999);
-        Redis::set($key, $vcode, 'EX', $expire);  // expire in 5 mins
+        Redis::setex($key, $expire, $vcode);  // expire in 5 mins
 
         return (string)$vcode;
     }

@@ -1,10 +1,19 @@
-import { withStyles } from '@material-ui/core'
+import { styled } from '@mui/material/styles';
 import React, { useState } from 'react'
-import SearchIcon from '@material-ui/icons/Search'
+import SearchIcon from '@mui/icons-material/Search'
 import classNames from 'classnames'
 
-const styles = {
-    container: {
+const PREFIX = 'SearchInput';
+
+const classes = {
+    container: `${PREFIX}-container`,
+    searchIcon: `${PREFIX}-searchIcon`,
+    active: `${PREFIX}-active`,
+    input: `${PREFIX}-input`
+};
+
+const Root = styled('div')({
+    [`&.${classes.container}`]: {
         border: '1px solid #d3d3d3',
         background: '#fcfcfc',
         borderRadius: 100,
@@ -15,7 +24,7 @@ const styles = {
         height: 28,
         alignItems: 'center'
     },
-    searchIcon: {
+    [`& .${classes.searchIcon}`]: {
         width: 18,
         height: 18,
         marginLeft: 8,
@@ -24,14 +33,14 @@ const styles = {
         fill: '#aaa',
         top: 1
     },
-    active: {
+    [`&.${classes.active}`]: {
         border: '1px solid #29aa99',
         '& svg': {
             stroke: 'transparent',
             fill: '#29aa99'
         }
     },
-    input: {
+    [`& .${classes.input}`]: {
         flex: 1,
         border: 'none',
         margin: 'auto 6px',
@@ -43,12 +52,12 @@ const styles = {
             fontWeight: '500'
         }
     }
-}
+});
 
-const SearchInput = ({ classes, placeholder, onChange, value, ...rest }) => {
+const SearchInput = ({  placeholder, onChange, value, ...rest }) => {
     const [active, setActive] = useState(false)
     return (
-        <div
+        <Root
             {...rest}
             className={classNames(classes.container, {
                 [classes.active]: active
@@ -63,8 +72,8 @@ const SearchInput = ({ classes, placeholder, onChange, value, ...rest }) => {
                 placeholder={placeholder}
                 value={value}
             />
-        </div>
-    )
+        </Root>
+    );
 }
 
-export default withStyles(styles)(SearchInput)
+export default (SearchInput)

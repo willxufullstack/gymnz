@@ -1,4 +1,4 @@
-@import "variables";
+@use "variables" as *;
 
 .input-range__track--active {
   background: #29aa99;
